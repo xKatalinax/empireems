@@ -103,8 +103,9 @@
 
   /* ===================== APP SHELL ===================== */
   #app{display:none}
-  #app.on{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+  #app.on{display:flex;min-height:100vh;width:100%}
   .side{
+    flex:0 0 232px;width:232px;box-sizing:border-box;
     border-right:1px solid var(--line);
     background:linear-gradient(180deg,var(--panel),#0f1822);
     display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
@@ -131,7 +132,7 @@
   .who .out{margin-left:auto;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:6px 8px;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;letter-spacing:.06em}
   .who .out:hover{border-color:var(--red);color:var(--ink)}
 
-  main{min-width:0}
+  main{flex:1 1 auto;min-width:0;max-width:100%}
   .topbar{
     display:flex;align-items:center;gap:12px;padding:13px 26px;
     border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
@@ -437,6 +438,46 @@
   .mini-empty{font-size:13px;color:var(--faint);padding:10px 0;font-style:italic}
   .ac-facts .f .v .over{color:var(--amber)}
 
+  /* ===================== ROSTER EDITOR ===================== */
+  .re-table{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--panel);margin-bottom:8px}
+  .re-head,.re-row{display:grid;grid-template-columns:96px 1fr 1fr 118px 40px;gap:8px;align-items:center;padding:8px 12px}
+  .re-head{background:var(--panel-2);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .re-row{border-bottom:1px solid var(--line-soft)}
+  .re-row .pinp.cs{color:var(--amber);font-weight:700}
+  .re-del{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:7px;height:32px;cursor:pointer;font-size:13px;transition:.12s}
+  .re-del:hover{border-color:var(--red);color:var(--red)}
+  .re-add{width:100%;background:transparent;border:1px dashed var(--line);color:var(--muted);border-radius:0;padding:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;transition:.12s}
+  .re-add:hover{border-color:var(--teal);color:var(--teal)}
+
+  /* ===================== POLISH ===================== */
+  .view.fade{animation:viewIn .26s cubic-bezier(.2,.7,.3,1) both}
+  @keyframes viewIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  .stat,.block,.exam-card,.app-card,.pt,.clock-card{transition:border-color .15s ease,transform .15s ease,box-shadow .15s ease}
+  .stat:hover,.exam-card:hover:not(.locked){transform:translateY(-2px);border-color:#3d5670}
+  .qlink{transition:background .12s ease,border-color .12s ease,transform .12s ease}
+  .qlink:hover{transform:translateX(2px)}
+  *::-webkit-scrollbar{width:11px;height:11px}
+  *::-webkit-scrollbar-track{background:var(--bg)}
+  *::-webkit-scrollbar-thumb{background:#2a3a4d;border-radius:6px;border:2px solid var(--bg)}
+  *::-webkit-scrollbar-thumb:hover{background:#3a4e66}
+
+  /* ---- richer login ---- */
+  #gate{position:relative;overflow:hidden}
+  #gate::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(60% 55% at 50% 0%, rgba(230,57,70,.14), transparent 70%),
+    radial-gradient(50% 50% at 80% 100%, rgba(88,101,242,.10), transparent 70%);
+    pointer-events:none}
+  #gate .card{position:relative;z-index:1;animation:cardIn .5s cubic-bezier(.2,.8,.25,1) both}
+  @keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
+  .ekg{height:34px;border-bottom:1px solid var(--line);background:var(--bg);overflow:hidden;position:relative}
+  .ekg svg{position:absolute;top:0;left:0;height:100%;width:200%;animation:ekgmove 3.2s linear infinite}
+  .ekg path{fill:none;stroke:var(--red);stroke-width:2;filter:drop-shadow(0 0 4px rgba(230,57,70,.6))}
+  @keyframes ekgmove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .gate-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 24px;border-top:1px solid var(--line);background:var(--panel-2);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .gate-foot .on{display:inline-flex;align-items:center;gap:6px;color:var(--teal)}
+  .gate-foot .on i{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 7px var(--teal);animation:pulse 1.6s ease-in-out infinite}
+  .card .bar .cross{animation:pulse 2.4s ease-in-out infinite}
+
   /* ===================== RESPONSIVE ===================== */
   .menu-btn{display:none}
   @media (max-width:860px){
@@ -465,6 +506,8 @@
     .rrow .st{display:none}
     .phead,.prow{grid-template-columns:50px 1fr 64px 96px;gap:7px}
     .phead .fine-c,.prow .fine-c{display:none}
+    .re-head,.re-row{grid-template-columns:70px 1fr 96px 34px}
+    .re-head span:nth-child(3),.re-row .pinp[data-k="role"]{display:none}
   }
 </style>
 </head>
@@ -480,6 +523,7 @@
         <div class="sub">DISPATCH PORTAL · SECURE TERMINAL</div>
       </div>
     </div>
+    <div class="ekg" aria-hidden="true"><svg viewBox="0 0 1600 34" preserveAspectRatio="none"><path d="M0 17 H160 l8 -3 l6 3 l8 -26 l10 36 l8 -16 l8 6 H960 l8 -3 l6 3 l8 -26 l10 36 l8 -16 l8 6 H1600"/></svg></div>
     <div class="body">
       <p class="lead">Sign in with the Discord account tied to your <b>Empire EMS</b> employment to reach the roster, SOPs, and certification exams.</p>
 
@@ -499,6 +543,7 @@
       <div class="cfgwarn" id="cfgWarn" style="display:none"></div>
       <p class="note">Guest mode gives full read access for training. Discord sign-in is required to be recognized as an active employee. <span id="cfgHint"></span></p>
     </div>
+    <div class="gate-foot"><span class="on"><i></i>Terminal online</span><span>Pillbox Medical · Empire RP</span></div>
   </div>
 </div>
 
@@ -550,7 +595,7 @@
       (e.g. https://empire-ems.netlify.app/ ) and paste the same URL below.
    Leave clientId "" to run in guest-only demo mode.
    ===================================================================== */
-const DISCORD = {
+  const DISCORD = {
   clientId:   "1530868140920279151",   // <-- paste your Discord Client ID here
   redirectUri:"https://empireems.com/",   // <-- paste the hosted URL here (must match Discord portal)
   scope:      "identify"
@@ -722,6 +767,17 @@ const DIVISIONS = [
   ]},
 ];
 
+/* ============================ ROSTER STATE (editable) ============================
+   DIVISIONS above is the seed. Management edits are stored in pstore and layered
+   on top via divs(), which every roster/payroll/dashboard read goes through. */
+let ROSTER=null;
+function loadRoster(){ const raw=pstore.get('ems_roster'); if(raw){ try{ ROSTER=JSON.parse(raw); }catch(e){ ROSTER=null; } }
+  if(!ROSTER || !Array.isArray(ROSTER) || !ROSTER.length) ROSTER=JSON.parse(JSON.stringify(DIVISIONS)); }
+function saveRoster(silent){ try{ pstore.set('ems_roster', JSON.stringify(ROSTER)); }catch(e){} if(!silent) flashSaved(); updateRosterCount(); }
+function divs(){ return (ROSTER && ROSTER.length) ? ROSTER : DIVISIONS; }
+function resetRoster(){ ROSTER=JSON.parse(JSON.stringify(DIVISIONS)); saveRoster(false); }
+function updateRosterCount(){ const el=$('#rosterCount'); if(!el) return; let n=0; divs().forEach(d=>d.members.forEach(m=>{ if(m.nm) n++; })); el.textContent=n?String(n):''; }
+
 /* ============================ PAYROLL ENGINE ============================
    Reuses the roster above as the single source of truth for who exists.
    Pay = hourly rate × hours + bonuses − fines. Rates come from rank. */
@@ -742,7 +798,7 @@ const SEED_HOURS = {
 
 function payablePeople(){
   const out=[];
-  DIVISIONS.forEach(d=>d.members.forEach(m=>{ if(m.nm) out.push({cs:m.cs, nm:m.nm, role:m.role, st:m.st, key:d.key, div:d.name, rate:rateFor(m,d.key)}); }));
+  divs().forEach(d=>d.members.forEach(m=>{ if(m.nm) out.push({cs:m.cs, nm:m.nm, role:m.role, st:m.st, key:d.key, div:d.name, rate:rateFor(m,d.key)}); }));
   return out;
 }
 
@@ -806,6 +862,7 @@ function renderPayroll(){
         <select id="wkSel">${weeks.map(id=>`<option value="${id}" ${id===PAYROLL.activeWeek?'selected':''}>${esc(PAYROLL.weeks[id].label||weekLabel(id))}</option>`).join('')}</select>
       </div>
       ${editable?'<button class="tbtn" id="newWk">＋ New week</button>':''}
+      ${editable?'<button class="tbtn go" id="pullClock" title="Fill hours from clocked time this week">⟲ Pull from Time Clock</button>':''}
       <span class="mode-tag ${editable?'edit':'ro'}"><span class="d"></span>${editable?'Editing':'Read-only'}</span>
       <div class="pay-tools">
         <div class="search" style="flex:0 1 200px;min-width:150px"><input id="paySearch" placeholder="Search name / callsign…" value="${esc(paySearch)}" autocomplete="off"></div>
@@ -824,17 +881,39 @@ function renderPayroll(){
   $('#expJson').onclick=exportJson;
   if(editable){
     $('#newWk').onclick=newWeek;
+    $('#pullClock').onclick=pullClockHours;
     $('#impJson').onclick=()=>$('#impFile').click();
     $('#impFile').onchange=importJson;
   }
   paintPayroll();
+}
+/* Auto-fill this week's payroll hours from clocked time */
+function isoWeekMonday(y,w){ const jan4=new Date(Date.UTC(y,0,4)); const day=(jan4.getUTCDay()+6)%7;
+  const w1=new Date(jan4); w1.setUTCDate(jan4.getUTCDate()-day); const mon=new Date(w1); mon.setUTCDate(w1.getUTCDate()+(w-1)*7);
+  return new Date(mon.getUTCFullYear(),mon.getUTCMonth(),mon.getUTCDate()); }
+function weekRange(weekId){ const m=/^(\d{4})-W(\d{2})/.exec(weekId||''); let mon = m? isoWeekMonday(+m[1],+m[2]) : weekStart(new Date());
+  const end=new Date(mon); end.setDate(end.getDate()+7); return [mon,end]; }
+function minsForNameInRange(name,start,end){ if(!CLOCK) return 0; const nm=(name||'').toLowerCase(); if(!nm) return 0; let m=0;
+  CLOCK.shifts.forEach(s=>{ if((s.name||'').toLowerCase()!==nm)return; const t=new Date(s.in); if(t>=start&&t<end) m+=s.mins||0; });
+  CLOCK.adjustments.forEach(a=>{ if(a.status!=='approved'||(a.name||'').toLowerCase()!==nm)return; const t=new Date(a.at); if(t>=start&&t<end) m+= a.type==='add'?a.mins:-a.mins; });
+  Object.values(CLOCK.open||{}).forEach(o=>{ if((o.name||'').toLowerCase()!==nm)return; const t=new Date(o.in); if(t>=start&&t<end) m+=Math.round((Date.now()-t)/60000); });
+  return Math.max(0,m); }
+function pullClockHours(){
+  if(!CLOCK||(!CLOCK.shifts.length && !Object.keys(CLOCK.open||{}).length)){ alert('No clocked time yet. Members need to clock in on the Time Clock tab first.'); return; }
+  const wk=curWeek();
+  if(!confirm(`Fill "${wk.label||weekLabel(PAYROLL.activeWeek)}" hours from the Time Clock? This overwrites hours for anyone with tracked time that week (bonuses and fines are untouched). Matches are by name.`)) return;
+  const [s,e]=weekRange(PAYROLL.activeWeek);
+  let filled=0;
+  payablePeople().forEach(p=>{ const mins=minsForNameInRange(p.nm,s,e); if(mins>0){ entryFor(p.cs).h=Math.round(mins/60*4)/4; filled++; } });
+  savePayroll(false); paintPayroll();
+  alert(filled? `Pulled hours for ${filled} member${filled>1?'s':''} from the Time Clock.` : 'No matching tracked time found for this pay week. Roster names must match the names people clocked in with.');
 }
 function paintPayroll(){
   const editable=canEditPayroll();
   const q=paySearch.trim().toLowerCase();
   const people=payablePeople();
   let html='', gross=0,totH=0,totB=0,totF=0,paid=0;
-  DIVISIONS.forEach(d=>{
+  divs().forEach(d=>{
     const rows=people.filter(p=>p.key===d.key).filter(p=> !q || p.nm.toLowerCase().includes(q)||p.cs.toLowerCase().includes(q)||(p.role||'').toLowerCase().includes(q));
     if(!rows.length) return;
     html+=`<div class="div-h"><span class="t">${esc(d.name)}</span><span class="ct">${rows.length}</span><span class="pay">${esc(d.pay)}</span><span class="rule"></span></div>`;
@@ -1570,10 +1649,45 @@ const INTERN_QUESTIONS = [
   {cat:"HIPAA",q:"During a surgery, who is allowed to record it?",a:["Anyone in the room","Only EMS personnel's bodycam — anyone else recording is a HIPAA violation","The patient's friends","Nobody, ever"],correct:1,why:"The surgery door stays locked; only EMS bodycam may record. Anyone else recording a surgery is a HIPAA violation."},
   {cat:"Promotion",q:"By when must an intern be cleared for solos?",a:["Within 1 week or you're demoted","Within two weeks of hire, or the job offer is rescinded","Within 30 days","There's no deadline"],correct:1,why:"Interns MUST be cleared for solos within two weeks of being hired, or the offer of employment is rescinded."},
 ];
+const EMT_QUESTIONS = [
+ {cat:"Scene Safety",q:"Before you approach ANY scene, your first priority is…",a:["Reach the patient as fast as possible","Ensure the scene is safe for you and your crew","Ask the patient for ID","Start CPR immediately"],correct:1,why:"Scene safety comes first — you can't help anyone if you become a second patient."},
+ {cat:"Scene Safety",q:"You arrive to a shooting that is still active. You should…",a:["Rush in to treat the victim","Stage at a safe distance until PD secures the scene","Pull out a weapon","Treat from inside the hot zone"],correct:1,why:"Never enter a hot/unsecured scene. Stage until PD clears it, then move in."},
+ {cat:"Vitals",q:"What is the normal resting heart rate for an adult?",a:["30–50 bpm","60–100 bpm","100–140 bpm","140–180 bpm"],correct:1,why:"A normal adult resting heart rate is 60–100 beats per minute."},
+ {cat:"Vitals",q:"Normal adult respiratory rate at rest is about…",a:["4–8 breaths/min","12–20 breaths/min","25–35 breaths/min","40+ breaths/min"],correct:1,why:"12–20 breaths per minute is the normal adult range."},
+ {cat:"CPR/AED",q:"The correct compression rate for adult CPR is…",a:["60–80 per min","80–100 per min","100–120 per min","140–160 per min"],correct:2,why:"Push at 100–120 compressions per minute."},
+ {cat:"CPR/AED",q:"The compression-to-ventilation ratio for adult CPR (single rescuer) is…",a:["15:2","30:2","5:1","10:2"],correct:1,why:"30 compressions to 2 breaths for adult CPR without an advanced airway."},
+ {cat:"CPR/AED",q:"Adequate adult compression depth is…",a:["About half an inch","About 1 inch","At least 2 inches (5 cm)","At least 4 inches"],correct:2,why:"Compress at least 2 inches (5 cm), no more than about 2.4 inches."},
+ {cat:"CPR/AED",q:"The AED says 'shock advised.' You should…",a:["Keep compressing during the shock","Make sure nobody is touching the patient, then shock","Remove the pads first","Give a breath, then shock"],correct:1,why:"Ensure everyone is clear so no one else is shocked, then deliver."},
+ {cat:"Bleeding",q:"The FIRST step to control severe external bleeding is…",a:["Apply a tourniquet","Firm direct pressure on the wound","Elevate and wait","Pour water on it"],correct:1,why:"Start with firm direct pressure; escalate to a tourniquet if it won't stop."},
+ {cat:"Bleeding",q:"A tourniquet is appropriate when…",a:["Any small cut is present","Life-threatening limb bleeding isn't controlled by direct pressure","The patient asks for one","Bleeding is coming from the chest"],correct:1,why:"Tourniquets are for severe limb bleeding that direct pressure can't control."},
+ {cat:"Assessment",q:"In the SAMPLE history, the 'M' stands for…",a:["Mechanism","Medications","Mobility","Mood"],correct:1,why:"SAMPLE = Signs/symptoms, Allergies, Medications, Past history, Last oral intake, Events."},
+ {cat:"Shock",q:"Which set of signs best suggests shock?",a:["Warm, dry, flushed skin and a slow pulse","Pale, cool, clammy skin with a rapid, weak pulse","Normal skin and a calm patient","Bright red cheeks only"],correct:1,why:"Shock classically presents with pale, cool, clammy skin, a fast weak pulse, and altered mental status."},
+ {cat:"Airway",q:"An adult is conscious, clutching their throat, and can't breathe or cough. You…",a:["Give them water","Perform abdominal thrusts (Heimlich)","Lay them flat on their back","Wait for it to pass"],correct:1,why:"For a conscious choking adult, give abdominal thrusts until it clears or they go unconscious."},
+ {cat:"Airway",q:"A breathing but unresponsive patient with no suspected spinal injury should be placed…",a:["Flat on their back","In the recovery position (on their side)","Sitting fully upright","Face down"],correct:1,why:"The recovery position keeps the airway open and lets fluids drain."},
+ {cat:"Operations",q:"The correct callsign prefix for an EMT is…",a:["I-#","E-#","P-#","N-#"],correct:1,why:"EMT = E-#. Intern = I-#, Paramedic = P-#, Nurse = N-#."},
+ {cat:"Operations",q:"Before transporting a patient in your ambulance, you must…",a:["Nothing — just drive","Secure and buckle the patient first","Turn the sirens off","Collect payment"],correct:1,why:"Always secure your patient before moving — not buckling them is unsafe and against SOP."},
+];
+const PARA_QUESTIONS = [
+ {cat:"Pharmacology",q:"Which drug is given during cardiac arrest every 3–5 minutes per ACLS?",a:["Aspirin","Epinephrine","Naloxone","Oral glucose"],correct:1,why:"Epinephrine is given every 3–5 minutes during cardiac arrest."},
+ {cat:"Pharmacology",q:"First-line drug for a patient in anaphylaxis is…",a:["Aspirin","Intramuscular epinephrine","Naloxone","Nitroglycerin"],correct:1,why:"IM epinephrine is the first-line treatment for anaphylaxis."},
+ {cat:"Pharmacology",q:"A suspected opioid overdose with slow, shallow breathing calls for…",a:["Epinephrine","Naloxone (Narcan)","Aspirin","Glucose"],correct:1,why:"Naloxone is an opioid antagonist that reverses opioid-induced respiratory depression."},
+ {cat:"Pharmacology",q:"For suspected cardiac chest pain with no contraindication, an early medication is…",a:["Naloxone","Aspirin","Glucagon","Activated charcoal"],correct:1,why:"Aspirin is given early in suspected cardiac chest pain to inhibit clot formation."},
+ {cat:"Pharmacology",q:"Naloxone works by…",a:["Speeding up the heart","Blocking opioids at their receptor sites","Raising blood sugar","Stopping bleeding"],correct:1,why:"Naloxone is a competitive opioid antagonist — it displaces opioids at their receptors."},
+ {cat:"Cardiac",q:"Which rhythms are SHOCKABLE?",a:["Asystole and PEA","Ventricular fibrillation and pulseless VT","Normal sinus rhythm only","Bradycardia and PEA"],correct:1,why:"Only VF and pulseless VT are shockable. Asystole and PEA are not."},
+ {cat:"Cardiac",q:"A STEMI (heart attack) is identified using…",a:["A blood pressure cuff","A 12-lead ECG","Pulse oximetry alone","A thermometer"],correct:1,why:"A 12-lead ECG identifies ST-elevation MI and drives rapid transport decisions."},
+ {cat:"Cardiac",q:"High-quality CPR most importantly requires…",a:["Frequent long pauses","Minimizing interruptions in compressions","Ventilating as fast as possible","Shocking asystole"],correct:1,why:"Minimize interruptions — every pause drops perfusion pressure to the heart and brain."},
+ {cat:"Cardiac",q:"Immediately after delivering a shock to a patient in VF, you should…",a:["Check a pulse for 2 minutes","Resume compressions right away","Stop and reassess the scene","Give three more shocks in a row"],correct:1,why:"Resume compressions immediately after a shock; reassess the rhythm after ~2 minutes of CPR."},
+ {cat:"Airway",q:"The saying 'GCS 8, intubate' means a Glasgow Coma Scale of 8 or lower suggests…",a:["The patient is fine","The airway is at risk and may need to be secured","Immediate discharge","No treatment needed"],correct:1,why:"A GCS ≤8 indicates the patient may not protect their own airway."},
+ {cat:"Airway",q:"Intraosseous (IO) access is used when…",a:["The patient refuses care","IV access can't be quickly obtained in a critical patient","Only for stable patients","Never in the field"],correct:1,why:"IO gives fast access for fluids/meds when a critical patient's IV is difficult or delayed."},
+ {cat:"Scene Command",q:"As the first senior medic on a multi-patient scene, you should…",a:["Focus all attention on one patient","Establish command, triage, and coordinate resources","Wait for PD to run medical","Leave and call it in"],correct:1,why:"Senior medics set up command and triage rather than tunnel-visioning on one patient."},
+ {cat:"Scene Command",q:"Hypoglycemia in a CONSCIOUS patient who can swallow is treated with…",a:["IV epinephrine","Oral glucose","A shock","Nothing"],correct:1,why:"Give oral glucose to a conscious hypoglycemic patient; use IV dextrose or IM glucagon if they can't swallow."},
+ {cat:"Operations",q:"With NO surgery-capable rank (Nurse or higher) on duty, a Code Blue is…",a:["Left until one logs on","Treated in the field: diagnose, bring all regions to 100%, then CPR","Ignored","Only transported, never treated"],correct:1,why:"Per SOP, with no surgery-capable rank on duty you treat in the field — diagnose, all regions to 100%, then CPR."},
+ {cat:"Operations",q:"The correct callsign prefix for a Paramedic is…",a:["E-#","P-#","I-#","A-#"],correct:1,why:"Paramedic = P-#."},
+];
 const EXAMS = [
   { id:"intern", tag:"Certification", title:"Intern SOP Exam", desc:"Every incoming Pillbox intern clears this before running solos. Drawn straight from the SOPs.", pass:90, questions:INTERN_QUESTIONS, locked:false },
-  { id:"emt",    tag:"Advancement", title:"EMT Exam", desc:"Field operations, treatment flow, and vehicle SOPs for the jump from Intern to EMT.", pass:90, questions:[], locked:true },
-  { id:"para",   tag:"Advancement", title:"Paramedic Exam", desc:"Advanced care, scene command, and Code Blue leadership.", pass:90, questions:[], locked:true },
+  { id:"emt",    tag:"Advancement", title:"EMT Exam", desc:"Field operations and patient care — scene safety, CPR/AED, bleeding control, and assessment for the jump from Intern to EMT.", pass:90, questions:EMT_QUESTIONS, locked:false },
+  { id:"para",   tag:"Advancement", title:"Paramedic Exam", desc:"Advanced care, ALS pharmacology, cardiac rhythms, and Code Blue scene command.", pass:90, questions:PARA_QUESTIONS, locked:false },
 ];
 
 /* ============================ HELPERS ============================ */
@@ -1652,10 +1766,12 @@ function enterApp(){
   loadApps();
   loadScores();
   loadClock();
+  loadRoster();
   updatePayrollTag();
   updateAppsTag();
   updateExamsTag();
   updateClockTag();
+  updateRosterCount();
   appsView='auto';
   paintWho();
   setView('dash');
@@ -1681,13 +1797,14 @@ function setView(v){
   else if(v==='apps') renderApps();
   else if(v==='sops') renderSops();
   else if(v==='exams') renderExamsHome();
+  const vw=$('#view'); if(vw){ vw.classList.remove('fade'); void vw.offsetWidth; vw.classList.add('fade'); }
   window.scrollTo({top:0});
 }
 
 /* ============================ DASHBOARD ============================ */
 function rosterStats(){
   let filled=0,total=0,active=0,loa=0;
-  DIVISIONS.forEach(d=>d.members.forEach(m=>{ total++; if(m.nm){filled++; if(m.st==='active')active++; if(m.st==='loa')loa++;} }));
+  divs().forEach(d=>d.members.forEach(m=>{ total++; if(m.nm){filled++; if(m.st==='active')active++; if(m.st==='loa')loa++;} }));
   return {filled,total,active,loa};
 }
 function renderDash(){
@@ -1702,7 +1819,7 @@ function renderDash(){
     ? `<button class="qlink" data-go="apps">Review applications${pend?` <span style="color:var(--amber)">· ${pend} pending</span>`:''}<span class="ar">→</span></button>`
     : `<button class="qlink" data-go="apps">Apply to Empire EMS<span class="ar">→</span></button>`;
   const first = (USER.name||'').split(/\s|—/)[0];
-  const byRank = DIVISIONS.map(d=>({name:d.name.split(/[—&]/)[0].trim(), n:d.members.filter(m=>m.nm).length}));
+  const byRank = divs().map(d=>({name:d.name.split(/[—&]/)[0].trim(), n:d.members.filter(m=>m.nm).length}));
   const max = Math.max(...byRank.map(r=>r.n),1);
   $('#view').innerHTML = `
     <div class="hello"><span class="hi">On shift,</span> ${esc(first)}.</div>
@@ -1739,13 +1856,17 @@ function renderDash(){
 /* ============================ ROSTER ============================ */
 let rosterFilter='all', rosterSearch='';
 function renderRoster(){
+  if(!ROSTER) loadRoster();
+  const mgr=canEditPayroll();
   const filters=[['all','All'],['command','Command'],['mgmt','Mgmt'],['head','Head Staff'],['para','Para'],['aemt','A-EMT'],['emt','EMT'],['intern','Interns']];
   $('#view').innerHTML = `
+    ${mgr?`<div class="pay-bar" style="margin-bottom:16px"><span class="mode-tag edit"><span class="d"></span>Management</span><div class="pay-tools"><button class="tbtn go" id="editRosterBtn">✎ Edit roster ▸</button></div></div>`:''}
     <div class="toolbar">
       <div class="search"><input id="rSearch" placeholder="Search name or callsign…" value="${esc(rosterSearch)}" autocomplete="off"></div>
       <div class="chips" id="rChips">${filters.map(([k,l])=>`<button class="chip ${rosterFilter===k?'on':''}" data-f="${k}">${l}</button>`).join('')}</div>
     </div>
     <div id="rosterBody"></div>`;
+  if(mgr) $('#editRosterBtn').onclick=renderRosterEditor;
   $('#rSearch').addEventListener('input',e=>{rosterSearch=e.target.value;paintRoster();});
   $$('#rChips .chip').forEach(c=>c.onclick=()=>{rosterFilter=c.dataset.f;$$('#rChips .chip').forEach(x=>x.classList.toggle('on',x===c));paintRoster();});
   paintRoster();
@@ -1753,7 +1874,7 @@ function renderRoster(){
 function paintRoster(){
   const q = rosterSearch.trim().toLowerCase();
   let html='', any=false;
-  DIVISIONS.forEach(d=>{
+  divs().forEach(d=>{
     if(rosterFilter!=='all' && rosterFilter!==d.key) return;
     const rows = d.members.filter(m=>{
       if(!q) return true;
@@ -1774,6 +1895,65 @@ function paintRoster(){
     html += `</div>`;
   });
   $('#rosterBody').innerHTML = any ? html : `<div class="empty">No personnel match “${esc(rosterSearch)}”.</div>`;
+}
+
+/* ---- Roster editor (management) ---- */
+function renderRosterEditor(){
+  if(!ROSTER) loadRoster();
+  const stOpts=[['active','Active'],['loa','LOA'],['vacant','Vacant']];
+  $('#view').innerHTML = `
+    <div class="pay-bar" style="margin-bottom:14px">
+      <button class="chip" id="reBack">← Back to roster</button>
+      <div class="pay-tools">
+        <button class="tbtn" id="reExp">⤓ Backup</button>
+        <button class="tbtn" id="reImp">⤒ Import</button><input type="file" id="reImpFile" accept="application/json" style="display:none">
+        <button class="tbtn" id="reReset">↺ Reset to default</button>
+      </div>
+    </div>
+    <div class="lockmsg"><b>Editing the roster.</b> Add, edit, or remove personnel. Changes save automatically and flow into Payroll and the dashboard. Callsigns feed the payroll sheet, so keep them unique.</div>
+    <div id="reBody">${divs().map((d,di)=>`
+      <div class="div-h"><span class="t">${esc(d.name)}</span><span class="ct">${d.members.length}</span><span class="pay">${esc(d.pay)}</span><span class="rule"></span></div>
+      <div class="re-table" data-di="${di}">
+        <div class="re-head"><span>Callsign</span><span>Name</span><span>Role</span><span>Status</span><span></span></div>
+        ${d.members.map((m,mi)=>`
+          <div class="re-row" data-di="${di}" data-mi="${mi}">
+            <input class="pinp cs" data-k="cs" value="${esc(m.cs||'')}" placeholder="e.g. I-99">
+            <input class="pinp" data-k="nm" value="${esc(m.nm||'')}" placeholder="(vacant)">
+            <input class="pinp" data-k="role" value="${esc(m.role||'')}" placeholder="Role">
+            <select class="pinp" data-k="st">${stOpts.map(([v,l])=>`<option value="${v}" ${m.st===v?'selected':''}>${l}</option>`).join('')}</select>
+            <button class="re-del" data-di="${di}" data-mi="${mi}" title="Remove">✕</button>
+          </div>`).join('')}
+        <button class="re-add" data-di="${di}">＋ Add member to ${esc(d.name.split(/[—&]/)[0].trim())}</button>
+      </div>`).join('')}</div>`;
+  $('#reBack').onclick=()=>{ saveRoster(true); renderRoster(); };
+  $('#reReset').onclick=()=>{ if(confirm('Reset the roster back to the original built-in list? Your edits will be lost.')){ resetRoster(); renderRosterEditor(); } };
+  $('#reExp').onclick=()=>dl(new Blob([JSON.stringify(divs(),null,2)],{type:'application/json'}),'empire-ems-roster.json');
+  $('#reImp').onclick=()=>$('#reImpFile').click();
+  $('#reImpFile').onchange=importRoster;
+  $$('#reBody .pinp').forEach(inp=>inp.addEventListener('change',()=>{
+    const row=inp.closest('.re-row'); const d=+row.dataset.di, mi=+row.dataset.mi;
+    let v=inp.value; if(inp.dataset.k!=='st') v=v.trim();
+    divs()[d].members[mi][inp.dataset.k]=v;
+    saveRoster(true);
+  }));
+  $$('#reBody .re-del').forEach(b=>b.onclick=()=>{
+    const d=+b.dataset.di, mi=+b.dataset.mi;
+    if(!confirm('Remove this callsign row?')) return;
+    divs()[d].members.splice(mi,1); saveRoster(true); renderRosterEditor();
+  });
+  $$('#reBody .re-add').forEach(b=>b.onclick=()=>{
+    const d=+b.dataset.di;
+    divs()[d].members.push({cs:'', nm:'', role:'', st:'vacant'});
+    saveRoster(true); renderRosterEditor();
+  });
+}
+function importRoster(ev){
+  const f=ev.target.files[0]; if(!f) return; const r=new FileReader();
+  r.onload=()=>{ try{ const data=JSON.parse(r.result); if(!Array.isArray(data)||!data[0]||!('members' in data[0])) throw 0;
+      if(!confirm('Replace the entire roster with this file?')){ ev.target.value=''; return; }
+      ROSTER=data; saveRoster(false); renderRosterEditor();
+    }catch(e){ alert('That file doesn\'t look like a roster backup.'); } ev.target.value=''; };
+  r.readAsText(f);
 }
 
 /* ============================ SOPS ============================ */
