@@ -766,6 +766,7 @@ const MANAGERS = {
 const WEBHOOK = {
   url: "",
   notifyDecisions: true,
+  moneyUrl: "",   // optional: separate webhook for the #money-log channel (falls back to url)
 };
 
 /* =====================================================================
@@ -1143,19 +1144,31 @@ function recalc(){
 /* ---- Payout tracking (RP): management marks who's been paid ---- */
 function markPaid(cs){
   const e=entryFor(cs); const p=payablePeople().find(x=>x.cs===cs); const pp=p?payParts(p):null;
-  if(e.paid){ if(!confirm('Mark this employee as UNPAID again for this period?')) return; delete e.paid; delete e.paidBy; }
-  else { e.paid=new Date().toISOString(); e.paidBy=(USER&&USER.name)||'Management'; if(WEBHOOK.url && p && pp) postWebhook(paystubPayload(p,pp)); }
+  if(e.paid){
+    if(!confirm('Mark this employee as UNPAID again? This reverses the money-log entry and refunds the stash.')) return;
+    if(e.payLogId){ reverseMoneyEntry(e.payLogId); delete e.payLogId; }
+    delete e.paid; delete e.paidBy;
+  } else {
+    e.paid=new Date().toISOString(); e.paidBy=(USER&&USER.name)||'Management';
+    if(p && pp && pp.pay>0){
+      const entry=logMoney({type:'payout', name:p.nm, cs:p.cs, amount:pp.pay, note:payNote(pp), period:(curWeek().label||weekLabel(PAYROLL.activeWeek))});
+      e.payLogId=entry.id;
+      if(WEBHOOK.url) postWebhook(paystubPayload(p,pp));
+    }
+  }
   savePayroll(false); paintPayroll();
 }
 function markAllPaid(){
   const unpaid=payablePeople().filter(p=>payParts(p).pay>0 && !((curWeek().entries[p.cs]||{}).paid));
   if(!unpaid.length){ alert('Everyone with pay is already marked paid for this period.'); return; }
-  if(!confirm(`Pay out all ${unpaid.length} unpaid employee${unpaid.length>1?'s':''} for "${curWeek().label||weekLabel(PAYROLL.activeWeek)}" and send their paystubs?`)) return;
-  let total=0; const now=new Date().toISOString(), by=(USER&&USER.name)||'Management';
-  unpaid.forEach(p=>{ const e=entryFor(p.cs); e.paid=now; e.paidBy=by; total+=payParts(p).pay; });
+  if(!confirm(`Pay out all ${unpaid.length} unpaid employee${unpaid.length>1?'s':''} for "${curWeek().label||weekLabel(PAYROLL.activeWeek)}"? Each is logged to the money log and deducted from the stash.`)) return;
+  let total=0; const now=new Date().toISOString(), by=(USER&&USER.name)||'Management', period=(curWeek().label||weekLabel(PAYROLL.activeWeek));
+  unpaid.forEach(p=>{ const pp=payParts(p); const e=entryFor(p.cs); e.paid=now; e.paidBy=by;
+    const entry=logMoney({type:'payout', name:p.nm, cs:p.cs, amount:pp.pay, note:payNote(pp), period, post:false}); // ledger each, no per-person webhook spam
+    e.payLogId=entry.id; total+=pp.pay; });
   savePayroll(false);
-  if(WEBHOOK.url) postWebhook({username:'Empire EMS Payroll', embeds:[{title:'💵 Payroll paid out', color:0x37c9a3,
-    fields:[{name:'Pay period',value:curWeek().label||weekLabel(PAYROLL.activeWeek),inline:true},{name:'Employees paid',value:String(unpaid.length),inline:true},{name:'Total',value:money(total),inline:true}], timestamp:now, footer:{text:'Paid out by '+by}}]});
+  if(moneyWebhookUrl()) postWebhook({username:'Empire EMS · Money Log', embeds:[{title:'💵 Payroll paid out',color:0x37c9a3,
+    fields:[{name:'Pay period',value:period,inline:true},{name:'Employees',value:String(unpaid.length),inline:true},{name:'Total',value:money(total),inline:true},{name:'Stash now',value:money(MONEY.stash),inline:true}], timestamp:now, footer:{text:'Paid out by '+by}}]});
   paintPayroll();
 }
 function paystubPayload(p,pp){ return { username:'Empire EMS Payroll', embeds:[{ title:'🧾 Paystub — '+(curWeek().label||weekLabel(PAYROLL.activeWeek)), color:0x37c9a3,
@@ -1782,8 +1795,9 @@ function activityFeed(limit){
 }
 function renderCommand(){
   if(!canEditPayroll()){ setView('dash'); return; }
-  if(!DISC) loadDisc(); if(!ANN) loadAnn(); if(!LOA) loadLoa();
+  if(!DISC) loadDisc(); if(!ANN) loadAnn(); if(!LOA) loadLoa(); if(!MONEY) loadMoney();
   if(cmdView==='discipline'){ return renderDiscipline(); }
+  if(cmdView==='money'){ return renderMoney(); }
   const s=rosterStats();
   const gross=(PAYROLL&&curWeek())?payablePeople().reduce((a,p)=>a+payFor(p),0):0;
   const otPay=(PAYROLL&&curWeek())?payablePeople().reduce((a,p)=>a+payParts(p).otPay,0):0;
@@ -1803,6 +1817,7 @@ function renderCommand(){
       <div class="pt"><div class="k">Overtime pay</div><div class="v" style="font-size:24px${otPay>0?';color:var(--amber)':''}">${money(otPay)}</div></div>
       <div class="pt"><div class="k">Pending apps</div><div class="v"${pApps?' style="color:var(--blurple)"':''}>${pApps}</div></div>
       <div class="pt"><div class="k">Pending time / LOA</div><div class="v"${(pAdj+pLoa)?' style="color:var(--amber)"':''}>${pAdj+pLoa}</div></div>
+      <div class="pt" style="${MONEY.stash<0?'border-color:rgba(230,57,70,.4)':''}"><div class="k">Boss stash</div><div class="v" style="font-size:24px;color:${MONEY.stash<0?'var(--red)':'var(--teal)'}">${money(MONEY.stash)}</div></div>
     </div>
 
     <div class="div-h"><span class="t">Needs attention</span><span class="rule"></span></div>
@@ -1820,6 +1835,7 @@ function renderCommand(){
 
     <div class="div-h"><span class="t">Department tools</span><span class="rule"></span></div>
     <div class="quick" style="margin-bottom:14px">
+      <button class="qlink" data-go="command-money">Money log &amp; boss stash<span style="color:var(--teal)"> · ${money(MONEY.stash)}</span><span class="ar">→</span></button>
       <button class="qlink" data-go="command-disc">Discipline &amp; strikes${risk.length?` <span style="color:var(--red)">· ${risk.length} flagged</span>`:''}<span class="ar">→</span></button>
       <button class="qlink" data-go="roster">Edit the roster<span class="ar">→</span></button>
       <button class="qlink" data-go="payroll">Weekly payroll<span class="ar">→</span></button>
@@ -1834,6 +1850,7 @@ function renderCommand(){
     <div class="feed">${(()=>{ const f=activityFeed(14); return f.length? f.map(e=>`<div class="feed-row"><span class="ic">${e.ic}</span><span class="tx">${e.tx}</span><span class="who">${e.by?esc(e.by)+' · ':''}${timeAgo(e.t)}</span></div>`).join('') : '<div class="feed-row"><span class="tx" style="color:var(--faint)">No activity yet.</span></div>'; })()}</div>`;
   $$('#view .act-item, #view .qlink').forEach(b=>b.onclick=()=>{ const g=b.dataset.go;
     if(g==='command-disc'){ cmdView='discipline'; renderCommand(); }
+    else if(g==='command-money'){ cmdView='money'; renderCommand(); }
     else if(g==='command-loa'){ const el=$('#loaReview'); if(el) el.scrollIntoView({behavior:'smooth'}); }
     else setView(g); });
   $('#annPost').onclick=()=>{ const t=$('#annTitle').value.trim(), b=$('#annBody').value.trim(); if(!t&&!b) return; postAnnouncement(t||'Announcement', b); renderCommand(); };
@@ -1971,7 +1988,7 @@ function openProfile(name){
 }
 
 /* ============================ FULL BACKUP / RESTORE ============================ */
-const BACKUP_KEYS=['ems_roster','ems_payroll','ems_apps','ems_exams','ems_clock','ems_discipline','ems_ann','ems_loa'];
+const BACKUP_KEYS=['ems_roster','ems_payroll','ems_apps','ems_exams','ems_clock','ems_discipline','ems_ann','ems_loa','ems_money'];
 function backupAll(){ const bundle={_type:'empire-ems-backup', _at:new Date().toISOString(), data:{}};
   BACKUP_KEYS.forEach(k=>{ const v=pstore.get(k); if(v!=null) bundle.data[k]=v; });
   dl(new Blob([JSON.stringify(bundle,null,2)],{type:'application/json'}), `empire-ems-FULL-backup-${new Date().toISOString().slice(0,10)}.json`); }
@@ -1980,12 +1997,90 @@ function restoreAll(ev){ const f=ev.target.files[0]; if(!f) return; const r=new 
       if(!confirm('Restore EVERYTHING from this backup? It replaces all portal data in this browser. A safety backup downloads first.')){ ev.target.value=''; return; }
       backupAll();
       Object.keys(b.data).forEach(k=>{ if(BACKUP_KEYS.includes(k)) pstore.set(k, b.data[k]); });
-      ROSTER=PAYROLL=APPS=SCORES=CLOCK=DISC=ANN=LOA=null;
-      loadRoster(); loadPayroll(); loadApps(); loadScores(); loadClock(); loadDisc(); loadAnn(); loadLoa();
+      ROSTER=PAYROLL=APPS=SCORES=CLOCK=DISC=ANN=LOA=MONEY=null;
+      loadRoster(); loadPayroll(); loadApps(); loadScores(); loadClock(); loadDisc(); loadAnn(); loadLoa(); loadMoney();
       updateRosterCount(); updatePayrollTag(); updateAppsTag(); updateExamsTag(); updateClockTag(); updateCmdTag();
       alert('Restore complete.'); setView('command');
     }catch(e){ alert('That isn\'t a valid Empire EMS full backup file.'); } ev.target.value=''; };
   r.readAsText(f); }
+
+/* ============================ MONEY LOG / BOSS STASH ============================
+   A treasury the department pays out of. Marking someone paid on payroll auto-logs
+   the payment and deducts it from the stash; management can also log manual
+   payouts/deposits. Entries mirror a #money-log channel and post to Discord. */
+let MONEY=null;
+function loadMoney(){ const raw=pstore.get('ems_money'); if(raw){ try{ MONEY=JSON.parse(raw); }catch(e){ MONEY=null; } } if(!MONEY||!Array.isArray(MONEY.log)) MONEY={stash:0, log:[]}; if(typeof MONEY.stash!=='number') MONEY.stash=0; }
+function saveMoney(silent){ try{ pstore.set('ems_money', JSON.stringify(MONEY)); }catch(e){} if(!silent) flashSaved(); }
+function moneyWebhookUrl(){ return (WEBHOOK.moneyUrl||WEBHOOK.url||''); }
+function payNote(pp){ return `${round2(pp.h)}h${pp.ot>0?` (${round2(pp.ot)}h OT)`:''}${pp.b>0?` + ${money(pp.b)} bonus`:''}`; }
+function logMoney(o){ if(!MONEY) loadMoney();
+  const entry={id:uid(), at:new Date().toISOString(), by:(USER&&USER.name)||'Management', type:o.type||'payout', name:o.name||'', cs:o.cs||'', amount:+o.amount||0, note:o.note||'', period:o.period||''};
+  MONEY.log.unshift(entry);
+  MONEY.stash = (MONEY.stash||0) + (entry.type==='deposit' ? entry.amount : -entry.amount);
+  saveMoney(true);
+  if(o.post!==false && moneyWebhookUrl()) postWebhook(moneyPayload(entry));
+  return entry;
+}
+function reverseMoneyEntry(id){ if(!MONEY) loadMoney(); const i=MONEY.log.findIndex(x=>x.id===id); if(i<0) return; const e=MONEY.log[i];
+  MONEY.stash = (MONEY.stash||0) + (e.type==='deposit' ? -e.amount : e.amount); MONEY.log.splice(i,1); saveMoney(true); }
+function moneyPayload(e){ const out = e.type!=='deposit';
+  return { username:'Empire EMS · Money Log', embeds:[{ color: out?0xe63946:0x37c9a3,
+    title: (e.name || (e.type==='deposit'?'Stash deposit':'Withdrawal')) + (e.cs?` · ${e.cs}`:''),
+    description: `${e.note?esc0(e.note)+'\n':''}**${out?'-':'+'}${money(e.amount)}**`,
+    footer:{text:`${e.type} · stash now ${money(MONEY.stash)} · logged by ${e.by}`}, timestamp:e.at }] }; }
+function esc0(s){ return String(s==null?'':s); }
+
+function renderMoney(){
+  if(!canEditPayroll()){ setView('dash'); return; }
+  if(!MONEY) loadMoney();
+  const names=[]; const seen={}; divs().forEach(d=>d.members.forEach(m=>{ if(m.nm&&!seen[m.nm.toLowerCase()]){ seen[m.nm.toLowerCase()]=1; names.push(m.nm); } }));
+  const paidOut=MONEY.log.filter(e=>e.type!=='deposit').reduce((a,e)=>a+e.amount,0);
+  const deposited=MONEY.log.filter(e=>e.type==='deposit').reduce((a,e)=>a+e.amount,0);
+  $('#view').innerHTML=`
+    <button class="chip" id="moBack" style="margin-bottom:16px">← Back to command center</button>
+    <div class="pay-totals" style="margin-bottom:20px">
+      <div class="pt big" style="${MONEY.stash<0?'border-color:rgba(230,57,70,.5)':''}"><div class="k">Boss stash</div><div class="v" style="color:${MONEY.stash<0?'var(--red)':'var(--teal)'}">${money(MONEY.stash)}</div></div>
+      <div class="pt"><div class="k">Paid out (all time)</div><div class="v" style="font-size:24px">${money(paidOut)}</div></div>
+      <div class="pt"><div class="k">Deposited</div><div class="v" style="font-size:24px">${money(deposited)}</div></div>
+      <div class="pt"><div class="k">Entries</div><div class="v">${MONEY.log.length}</div></div>
+    </div>
+
+    <div class="grid2" style="margin-bottom:20px">
+      <div class="block"><h3>Add to stash</h3><div class="inner">
+        <div class="field"><label for="depAmt">Deposit amount</label><input id="depAmt" type="number" min="0" step="1000" placeholder="e.g. 500000"></div>
+        <div class="field"><label for="depNote">Note (optional)</label><input id="depNote" placeholder="e.g. weekly gov funding"></div>
+        <button class="btn wide teal" id="depBtn">＋ Deposit to stash</button>
+      </div></div>
+      <div class="block"><h3>Log a payment</h3><div class="inner">
+        <div class="field"><label for="moName">Recipient</label><input id="moName" list="moNames" placeholder="Member or purpose"><datalist id="moNames">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></div>
+        <div class="af-row">
+          <div class="field"><label for="moAmt">Amount</label><input id="moAmt" type="number" min="0" step="1000" placeholder="e.g. 50000"></div>
+          <div class="field"><label for="moNote">Note</label><input id="moNote" placeholder="hours / reason"></div>
+        </div>
+        <div class="field err" id="moErr" style="display:none;color:#f5a3ab;font-size:12.5px;font-family:'JetBrains Mono',monospace"></div>
+        <button class="btn wide" id="moBtn">− Pay out from stash</button>
+      </div></div>
+    </div>
+
+    <div class="div-h"><span class="t">Money log</span><span class="ct">${MONEY.log.length}</span><span class="pay" style="margin-left:auto"><button class="tbtn" id="moCsv">⤓ CSV</button></span><span class="rule" style="flex:0"></span></div>
+    <div class="feed" id="moLog">${MONEY.log.length? MONEY.log.slice(0,60).map(e=>moneyRow(e)).join('') : '<div class="feed-row"><span class="tx" style="color:var(--faint)">No transactions logged yet.</span></div>'}</div>`;
+  $('#moBack').onclick=()=>{ cmdView='overview'; renderCommand(); };
+  $('#depBtn').onclick=()=>{ const amt=Math.max(0,+$('#depAmt').value||0); if(!amt) return; logMoney({type:'deposit', name:'Stash deposit', amount:amt, note:$('#depNote').value.trim()}); renderMoney(); };
+  $('#moBtn').onclick=()=>{
+    const name=$('#moName').value.trim(), amt=Math.max(0,+$('#moAmt').value||0), note=$('#moNote').value.trim();
+    const err=$('#moErr'); if(!amt){ err.style.display='block'; err.textContent='Enter an amount.'; return; }
+    if(MONEY.stash-amt<0 && !confirm('This exceeds the stash and will make it negative. Continue?')) return;
+    logMoney({type:'payout', name:name||'Payment', amount:amt, note}); renderMoney();
+  };
+  $('#moCsv').onclick=exportMoneyCsv;
+  $$('#moLog [data-model]').forEach(b=>b.onclick=()=>{ if(confirm('Remove this entry? The stash will be adjusted back.')){ reverseMoneyEntry(b.dataset.model); renderMoney(); } });
+}
+function moneyRow(e){ const out=e.type!=='deposit';
+  return `<div class="feed-row"><span class="ic">${e.type==='deposit'?'💰':'🧾'}</span><span class="tx"><b>${esc(e.name||(out?'Payment':'Deposit'))}</b>${e.cs?` <span class="mono" style="color:var(--amber)">${esc(e.cs)}</span>`:''}${e.note?` — ${esc(e.note)}`:''} <span class="mono" style="color:${out?'var(--red)':'var(--teal)'}">${out?'-':'+'}${money(e.amount)}</span></span><span class="who">${esc(e.by||'')} · ${timeAgo(e.at)}</span><button class="feed-del" data-model="${e.id}" title="Remove">✕</button></div>`; }
+function exportMoneyCsv(){ const rows=[['Date','Type','Recipient','Callsign','Amount','Direction','Note','Logged by','Period']];
+  MONEY.log.forEach(e=>rows.push([e.at,e.type,e.name,e.cs,e.amount,(e.type==='deposit'?'in':'out'),e.note,e.by,e.period||'']));
+  const csv=rows.map(r=>r.map(c=>{const s=String(c==null?'':c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  dl(new Blob([csv],{type:'text/csv'}),'empire-ems-money-log.csv'); }
 
 /* ============================ SOP DATA ============================ */
 const SOPS = [
@@ -2281,6 +2376,7 @@ function enterApp(){
   loadDisc();
   loadAnn();
   loadLoa();
+  loadMoney();
   autoEnroll();
   updatePayrollTag();
   updateAppsTag();
@@ -2309,7 +2405,7 @@ function setView(v){
   $('#viewTitle').textContent = TITLES[v]||'';
   closeSide();
   if(v==='dash') renderDash();
-  else if(v==='command'){ cmdView='overview'; renderCommand(); }
+  else if(v==='command'){ renderCommand(); }
   else if(v==='roster') renderRoster();
   else if(v==='clock') renderClock();
   else if(v==='payroll') renderPayroll();
@@ -2614,7 +2710,7 @@ function paletteItems(){
   const seen={}; divs().forEach(d=>d.members.forEach(m=>{ if(m.nm && !seen[m.nm.toLowerCase()]){ seen[m.nm.toLowerCase()]=1; items.push({ic:'○', label:m.nm, sub:m.cs, kind:'Member', act:()=>openProfile(m.nm)}); } }));
   const on=CLOCK&&myOpenShift();
   items.push({ic:'◷', label: on?'Clock out':'Clock in', kind:'Action', act:()=> on?clockOut():clockIn()});
-  if(canEditPayroll()){ items.push({ic:'⤓', label:'Back up everything', kind:'Action', act:()=>backupAll()}); items.push({ic:'★', label:'Discipline & strikes', kind:'Action', act:()=>{ cmdView='discipline'; setView('command'); }}); }
+  if(canEditPayroll()){ items.push({ic:'⤓', label:'Back up everything', kind:'Action', act:()=>backupAll()}); items.push({ic:'★', label:'Discipline & strikes', kind:'Action', act:()=>{ cmdView='discipline'; setView('command'); }}); items.push({ic:'💰', label:'Money log & boss stash', kind:'Action', act:()=>{ cmdView='money'; setView('command'); }}); }
   return items;
 }
 function openPalette(){ if(!$('#app').classList.contains('on')) return; $('#cmdk').classList.add('on'); const i=$('#cmdkInput'); i.value=''; cmdkSel=0; renderPalette(''); setTimeout(()=>i.focus(),20); }
@@ -2649,7 +2745,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='ArrowUp'){ e.preventDefault(); cmdkSel=Math.max(cmdkSel-1,0); highlightPalette(); }
   else if(e.key==='Enter'){ e.preventDefault(); activatePalette(); }
 });
-$$('#tabs .tab').forEach(t=>t.onclick=()=>setView(t.dataset.view));
+$$('#tabs .tab').forEach(t=>t.onclick=()=>{ if(t.dataset.view==='command') cmdView='overview'; setView(t.dataset.view); });
 
 /* ============================ INIT ============================ */
 (async function init(){
