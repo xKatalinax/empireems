@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Empire EMS — Dispatch Portal</title>
+<meta name="description" content="Empire EMS staff portal for Pillbox Medical — roster, weekly payroll, applications, SOPs, and certification exams.">
+<meta name="theme-color" content="#0d141c">
+<meta property="og:title" content="Empire EMS — Dispatch Portal">
+<meta property="og:description" content="Roster, weekly payroll, applications, SOPs, and certification exams for Empire EMS.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23e63946'/><rect x='13' y='6.5' width='6' height='19' rx='1.5' fill='white'/><rect x='6.5' y='13' width='19' height='6' rx='1.5' fill='white'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -270,6 +276,167 @@
   .btn-row .btn{flex:1}
   .missed-note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:16px}
 
+  /* ===================== PAYROLL ===================== */
+  .pay-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  .wk-sel{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:6px 8px 6px 12px}
+  .wk-sel label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .wk-sel select{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:12.5px;cursor:pointer}
+  .wk-sel select:focus{outline:none;border-color:var(--red)}
+  .pay-tools{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+  .tbtn{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;transition:.12s;display:inline-flex;align-items:center;gap:6px}
+  .tbtn:hover{border-color:var(--red);color:var(--ink)}
+  .tbtn.go{background:linear-gradient(180deg,var(--red),var(--red-deep));border-color:var(--red-deep);color:#fff}
+  .tbtn.go:hover{filter:brightness(1.08);color:#fff}
+
+  .mode-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:6px 11px;border-radius:7px;border:1px solid;display:inline-flex;align-items:center;gap:6px}
+  .mode-tag .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .mode-tag.edit{color:var(--teal);border-color:rgba(55,201,163,.4);background:rgba(55,201,163,.08)}
+  .mode-tag.ro{color:var(--muted);border-color:var(--line);background:var(--panel)}
+
+  .pay-totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:12px;margin-bottom:22px}
+  .pt{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel-2),var(--panel));border-radius:12px;padding:13px 15px}
+  .pt .k{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .pt .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:27px;line-height:.9}
+  .pt.big{border-color:rgba(55,201,163,.4);background:linear-gradient(180deg,rgba(55,201,163,.1),var(--panel))}
+  .pt.big .v{color:var(--teal)}
+
+  .ptable{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--panel);margin-bottom:6px}
+  .phead,.prow{display:grid;grid-template-columns:70px 1fr 74px 66px 78px 74px 116px;gap:10px;align-items:center;padding:10px 15px}
+  .phead{background:var(--panel-2);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .phead .r,.prow .r{text-align:right}
+  .prow{border-bottom:1px solid var(--line-soft);font-size:13.5px}
+  .prow:last-child{border-bottom:none}
+  .prow:hover{background:var(--panel-2)}
+  .prow .cs{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);font-weight:700}
+  .prow .nm{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prow .nm .role{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);letter-spacing:.04em;display:block}
+  .prow .rate{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);text-align:right}
+  .prow .pay{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal);font-weight:700;text-align:right}
+  .prow .pay.zero{color:var(--faint)}
+  .pcell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink)}
+  .pcell.fine{color:var(--red)}
+  .pinp{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:7px 8px;font-family:'JetBrains Mono',monospace;font-size:12.5px;text-align:right}
+  .pinp:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(230,57,70,.18)}
+  .pinp.fine{color:#f5a3ab}
+  .pinp.bonus{color:#8fe3cd}
+  .pfoot{display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end;padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)}
+  .pfoot b{color:var(--ink)}
+
+  .saved-pill{position:fixed;right:20px;bottom:20px;background:var(--panel-2);border:1px solid rgba(55,201,163,.5);color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;padding:10px 14px;border-radius:9px;box-shadow:0 12px 30px -12px #000;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:60}
+  .saved-pill.on{opacity:1;transform:none}
+  .lockmsg{border:1px solid #4a3a1c;background:rgba(242,177,52,.06);border-radius:10px;padding:13px 16px;font-size:12.5px;color:#e8c98a;line-height:1.55;margin-bottom:18px}
+  .lockmsg b{color:var(--amber)}
+
+  /* ===================== APPLICATIONS ===================== */
+  .app-wrap{max-width:680px}
+  .field textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:12px 14px;border-radius:9px;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;resize:vertical;min-height:92px}
+  .field textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(230,57,70,.18)}
+  .field .hint{font-size:11px;color:var(--faint);margin-top:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+  .field.err input,.field.err textarea{border-color:var(--red)}
+  .af-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .af-check{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;margin-bottom:12px;transition:.12s}
+  .af-check:hover{border-color:#3d5670}
+  .af-check.on{border-color:rgba(55,201,163,.5);background:rgba(55,201,163,.06)}
+  .af-check input{margin-top:2px;width:17px;height:17px;accent-color:var(--red);flex:0 0 auto}
+  .af-check .cl{font-size:13.5px;color:#c8d5e2}
+  .af-check .cl b{color:var(--ink)}
+  .app-note{border-left:3px solid var(--blurple);background:rgba(88,101,242,.08);border-radius:0 9px 9px 0;padding:11px 15px;font-size:12.5px;color:#c3c9f7;margin-bottom:20px;line-height:1.5}
+
+  .app-status{border:1px solid var(--line);border-radius:13px;padding:22px 24px;margin-bottom:20px;background:linear-gradient(180deg,var(--panel-2),var(--panel));display:flex;gap:16px;align-items:center}
+  .app-status .ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:22px;flex:0 0 auto}
+  .app-status.pending .ico{background:rgba(242,177,52,.14);color:var(--amber)}
+  .app-status.approved .ico{background:rgba(55,201,163,.14);color:var(--teal)}
+  .app-status.denied .ico{background:rgba(230,57,70,.14);color:var(--red)}
+  .app-status h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:3px}
+  .app-status p{font-size:13px;color:var(--muted);line-height:1.5}
+  .app-status .re{margin-top:6px;font-size:12.5px;color:#e6d6ad}
+
+  .app-badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:4px 10px;border-radius:6px;border:1px solid;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .app-badge .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .app-badge.pending{color:var(--amber);border-color:rgba(242,177,52,.4);background:rgba(242,177,52,.08)}
+  .app-badge.approved{color:var(--teal);border-color:rgba(55,201,163,.4);background:rgba(55,201,163,.08)}
+  .app-badge.denied{color:var(--red);border-color:rgba(230,57,70,.4);background:rgba(230,57,70,.08)}
+
+  .rev-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .app-card{border:1px solid var(--line);border-radius:13px;background:var(--panel);margin-bottom:14px;overflow:hidden}
+  .app-card.pending{border-left:3px solid var(--amber)}
+  .app-card.approved{border-left:3px solid var(--teal)}
+  .app-card.denied{border-left:3px solid var(--red)}
+  .ac-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+  .ac-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:.02em}
+  .ac-disc{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--blurple);margin-left:8px}
+  .ac-when{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--faint);white-space:nowrap}
+  .ac-body{padding:16px 18px}
+  .ac-facts{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px}
+  .ac-facts .f .k{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .ac-facts .f .v{font-size:13.5px;color:var(--ink)}
+  .ac-qa{margin-bottom:6px}
+  .ac-qa .q{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  .ac-qa .a{font-size:13.5px;color:#c8d5e2;line-height:1.55;white-space:pre-wrap}
+  .ac-actions{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line-soft)}
+  .abtn{flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;border:1px solid;border-radius:9px;padding:11px;cursor:pointer;transition:.12s;background:transparent}
+  .abtn.ok{color:var(--teal);border-color:rgba(55,201,163,.45)}
+  .abtn.ok:hover{background:rgba(55,201,163,.12)}
+  .abtn.no{color:var(--red);border-color:rgba(230,57,70,.45)}
+  .abtn.no:hover{background:rgba(230,57,70,.12)}
+  .ac-decided{padding:12px 18px;border-top:1px solid var(--line-soft);font-size:12.5px;color:var(--muted)}
+  .ac-decided b{color:var(--ink)}
+  .ac-decided .rsn{margin-top:5px;color:#e6d6ad}
+  .ac-decided .undo{margin-left:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);background:transparent;border:1px solid var(--line);border-radius:6px;padding:4px 8px;cursor:pointer}
+  .ac-decided .undo:hover{border-color:var(--red);color:var(--ink)}
+
+  /* ===================== EXAM RESULTS BOARD ===================== */
+  .sc-table{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--panel)}
+  .sc-head,.sc-row{display:grid;grid-template-columns:1fr 168px 78px 118px 74px;gap:10px;align-items:center;padding:11px 15px}
+  .sc-head{background:var(--panel-2);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .sc-head .r,.sc-row .pct{text-align:right}
+  .sc-row{border-bottom:1px solid var(--line-soft);font-size:13.5px}
+  .sc-row:last-child{border-bottom:none}
+  .sc-row:hover{background:var(--panel-2)}
+  .sc-row .cand{font-weight:500;min-width:0}
+  .sc-row .cand .sub{display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--amber);letter-spacing:.03em;margin-top:2px}
+  .sc-row .cand .gs{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);border-radius:5px;padding:1px 5px;margin-left:6px}
+  .sc-row .exam{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sc-row .pct{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted)}
+  .sc-row .res{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;font-weight:700}
+  .sc-row .res.pass{color:var(--teal)}
+  .sc-row .res.fail{color:var(--red)}
+  .sc-when{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--faint);text-align:right;white-space:nowrap}
+
+  /* ===================== TIME CLOCK ===================== */
+  .btn.teal{background:linear-gradient(180deg,var(--teal),#249b7d)}
+  .clock-card{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel-2),var(--panel));padding:22px 24px;margin-bottom:20px;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+  .clock-face{flex:1;min-width:220px}
+  .clock-face .clock-state{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+  .clock-face .clock-state.on{color:var(--teal)}
+  .clock-face .clock-state.off{color:var(--muted)}
+  .clock-face .clock-state .d{width:9px;height:9px;border-radius:50%;background:currentColor}
+  .clock-face .clock-state.on .d{box-shadow:0 0 9px var(--teal);animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .clock-face .big{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:54px;line-height:.95;letter-spacing:.03em;font-variant-numeric:tabular-nums}
+  .clock-face .big.off{color:var(--faint)}
+  .clock-face .lab{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.04em}
+  .wk-tot{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:12px;background:var(--bg)}
+  .wk-tot .k{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .wk-tot .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;line-height:.9;color:var(--teal)}
+
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;width:100%}
+  .seg button{flex:1;background:var(--panel);color:var(--muted);border:none;padding:11px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:14px;transition:.12s}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.add.on{background:linear-gradient(180deg,var(--teal),#249b7d);color:#04231b}
+  .seg button.rem.on{background:linear-gradient(180deg,var(--red),var(--red-deep));color:#fff}
+  .adj-hint{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1.5;margin:-4px 0 14px}
+  .adj-hint b{color:var(--ink)}
+  .my-adj{margin-top:14px;border-top:1px solid var(--line-soft);padding-top:12px;display:flex;flex-direction:column;gap:7px}
+  .ma-row{display:flex;align-items:center;justify-content:space-between;font-size:13px}
+  .ma-row .mono{font-family:'JetBrains Mono',monospace;color:var(--ink)}
+
+  .shift-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13px;color:#c8d5e2}
+  .shift-row:last-child{border-bottom:none}
+  .shift-row .dur{font-family:'JetBrains Mono',monospace;color:var(--teal);font-weight:700}
+  .mini-empty{font-size:13px;color:var(--faint);padding:10px 0;font-style:italic}
+  .ac-facts .f .v .over{color:var(--amber)}
+
   /* ===================== RESPONSIVE ===================== */
   .menu-btn{display:none}
   @media (max-width:860px){
@@ -285,11 +452,19 @@
     .rrow{grid-template-columns:64px 1fr 84px;gap:9px}
     .rrow .hire{display:none}
     .view{padding:20px 16px 80px}
+    .pay-tools{margin-left:0;width:100%}
+    .phead,.prow{grid-template-columns:56px 1fr 62px 70px 104px;gap:8px}
+    .phead .rate-c,.prow .rate,.phead .bonus-c,.prow .bonus-c{display:none}
+    .af-row{grid-template-columns:1fr}
+    .sc-head,.sc-row{grid-template-columns:1fr 96px 74px}
+    .sc-head .exam-c,.sc-row .exam,.sc-head .when-c,.sc-when{display:none}
   }
   @media (max-width:480px){
     .qtext{font-size:21px}.bignum{font-size:60px}.btn-row{flex-direction:column}
     .rrow{grid-template-columns:60px 1fr;gap:8px}
     .rrow .st{display:none}
+    .phead,.prow{grid-template-columns:50px 1fr 64px 96px;gap:7px}
+    .phead .fine-c,.prow .fine-c{display:none}
   }
 </style>
 </head>
@@ -338,8 +513,11 @@
     <nav class="tabs" id="tabs">
       <button class="tab active" data-view="dash"><span class="ic">◧</span>Dashboard</button>
       <button class="tab" data-view="roster"><span class="ic">☰</span>Roster<span class="cs" id="rosterCount"></span></button>
+      <button class="tab" data-view="clock"><span class="ic">◷</span>Time Clock<span class="cs" id="clockTag"></span></button>
+      <button class="tab" data-view="payroll"><span class="ic">$</span>Payroll<span class="cs" id="payrollTag"></span></button>
+      <button class="tab" data-view="apps"><span class="ic">✚</span>Applications<span class="cs" id="appsTag"></span></button>
       <button class="tab" data-view="sops"><span class="ic">§</span>SOPs</button>
-      <button class="tab" data-view="exams"><span class="ic">✎</span>Exams</button>
+      <button class="tab" data-view="exams"><span class="ic">✎</span>Exams<span class="cs" id="examsTag"></span></button>
     </nav>
     <div class="who">
       <div class="av" id="whoAv">—</div>
@@ -360,6 +538,7 @@
     <div class="view" id="view"><!-- rendered by JS --></div>
     <div class="foot">EMPIRE RP · PILLBOX MEDICAL · UNOFFICIAL DEPARTMENT PORTAL</div>
   </main>
+  <div class="saved-pill" id="savedPill">✓ Saved</div>
 </div>
 
 <script>
@@ -377,6 +556,46 @@ const DISCORD = {
   scope:      "identify"
 };
 
+/* =====================================================================
+   PAYROLL EDIT ACCESS  —  who is allowed to edit hours & pay.
+   Add the Discord USER IDs of your management team below (recommended —
+   IDs never change). You can also list lowercase Discord usernames.
+   To find an ID: Discord → Settings → Advanced → Developer Mode ON,
+   then right-click a user → "Copy User ID".
+
+     managerIds:   ["123456789012345678", "987654321098765432"],
+     managerNames: ["bonnielin", "joshua wilks"],
+
+   • Anyone in these lists gets full edit access after Discord sign-in.
+   • Everyone else (and guests) sees Payroll as READ-ONLY.
+   • If BOTH lists are left empty, ANY Discord-verified user can edit —
+     handy for first-time testing. Lock it down before you go live.
+   ===================================================================== */
+const MANAGERS = {
+  managerIds:   [],
+  managerNames: [],
+};
+
+/* =====================================================================
+   EMS APPLICATIONS  —  where new applications are delivered.
+   Because this is a static site (no server), applications are saved in
+   the reviewer's browser AND — if you set a webhook below — posted
+   straight into a Discord channel so management actually receives every
+   one in real time.
+
+   To set it up: Discord → your management channel → Edit Channel →
+   Integrations → Webhooks → New Webhook → Copy Webhook URL → paste below.
+
+   Leave url "" to skip Discord posting (applications still queue in-app).
+   Note: a webhook URL placed in front-end code is visible to visitors; if
+   it ever gets spammed, just delete that webhook in Discord and make a new
+   one. Decisions (approve/deny) are also posted if notifyDecisions is true.
+   ===================================================================== */
+const WEBHOOK = {
+  url: "",
+  notifyDecisions: true,
+};
+
 /* ============================ SAFE STORAGE ============================
    sessionStorage is used when available (keeps you logged in across
    refresh on your real site) and silently falls back to memory in
@@ -384,6 +603,22 @@ const DISCORD = {
 const store = (()=>{ let mem={}; try{ const k="__t";sessionStorage.setItem(k,"1");sessionStorage.removeItem(k);
   return {get:k=>sessionStorage.getItem(k),set:(k,v)=>sessionStorage.setItem(k,v),del:k=>sessionStorage.removeItem(k)};
 }catch(e){ return {get:k=>mem[k]??null,set:(k,v)=>{mem[k]=v},del:k=>{delete mem[k]}};} })();
+
+/* Persistent store for PAYROLL — prefers localStorage so a week's numbers
+   survive refresh and browser close on the real deployment. Falls back to
+   sessionStorage, then memory, in locked-down preview sandboxes.
+   Note: localStorage is per-browser/device. To move a week between managers,
+   use the Export / Import buttons in the Payroll tab (or wire the
+   savePayrollRemote / loadPayrollRemote stubs at the bottom to a backend). */
+const pstore = (()=>{ let mem={};
+  try{ const k="__p";localStorage.setItem(k,"1");localStorage.removeItem(k);
+    return {get:k=>localStorage.getItem(k),set:(k,v)=>localStorage.setItem(k,v),del:k=>localStorage.removeItem(k),ok:true};
+  }catch(e){}
+  try{ const k="__p";sessionStorage.setItem(k,"1");sessionStorage.removeItem(k);
+    return {get:k=>sessionStorage.getItem(k),set:(k,v)=>sessionStorage.setItem(k,v),del:k=>sessionStorage.removeItem(k),ok:false};
+  }catch(e){}
+  return {get:k=>mem[k]??null,set:(k,v)=>{mem[k]=v},del:k=>{delete mem[k]},ok:false};
+})();
 
 /* ============================ ROSTER DATA ============================
    Pulled from the Empire EMS Roster & Payroll sheet. Names are the
@@ -486,6 +721,699 @@ const DIVISIONS = [
     {cs:"I-94", nm:"Ali Kat", role:"Intern", st:"active", hire:"7/22/26"},
   ]},
 ];
+
+/* ============================ PAYROLL ENGINE ============================
+   Reuses the roster above as the single source of truth for who exists.
+   Pay = hourly rate × hours + bonuses − fines. Rates come from rank. */
+const PAY_RATES = { command:11000, mgmt:11000, head:9000, para:8000, aemt:7000, emt:6000, intern:5000 };
+function rateFor(m, key){ if(/chief/i.test(m.role||'')) return 12000; return PAY_RATES[key] ?? 8000; }
+
+/* Real hours snapshot pulled from the uploaded sheet — seeds the FIRST week
+   only, so the current week opens with live numbers. Everything after is
+   entered by management. Keyed by callsign. */
+const SEED_HOURS = {
+  'M-1':23.25,'M-2':11.5,'M-3':11.5,'C-1':13.5,'AC-1':17.25,
+  'HR-1':2,'HR-2':11.5,'RM-1':1.66,'HM-1':3.2,'HP-1':8.33,
+  'P-1':9.75,'P-2':43.75,'P-3':16,'P-5':13,'P-6':11.5,
+  'A-13':0,'A-14':51.75,'A-16':3.5,'A-18':11.25,
+  'E-28':0.66,'E-33':12,'E-34':6.5,'E-36':8,'E-37':12.25,'E-38':19.75,'E-39':15.5,'E-40':25.75,'E-42':10.5,
+  'I-66':1.2,'I-70':7,'I-74':7.25,'I-75':4.75,'I-76':1.75,'I-80':10,'I-83':12.5,'I-90':1,'I-91':0.75,'I-93':1.33
+};
+
+function payablePeople(){
+  const out=[];
+  DIVISIONS.forEach(d=>d.members.forEach(m=>{ if(m.nm) out.push({cs:m.cs, nm:m.nm, role:m.role, st:m.st, key:d.key, div:d.name, rate:rateFor(m,d.key)}); }));
+  return out;
+}
+
+function isoWeekId(dt){ const d=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate())); const day=d.getUTCDay()||7; d.setUTCDate(d.getUTCDate()+4-day); const ys=new Date(Date.UTC(d.getUTCFullYear(),0,1)); const wk=Math.ceil((((d-ys)/86400000)+1)/7); return d.getUTCFullYear()+'-W'+String(wk).padStart(2,'0'); }
+function weekLabel(id){ const m=/^(\d{4})-W(\d{2})/.exec(id); return m? `Week ${+m[2]} · ${m[1]}` : id; }
+
+/* Payroll state: { activeWeek, weeks:{ [id]:{ label, entries:{ [cs]:{h,b,f} } } } } */
+let PAYROLL=null, payDebounce=null, saveTimer=null;
+function loadPayroll(){
+  const raw=pstore.get('ems_payroll');
+  if(raw){ try{ PAYROLL=JSON.parse(raw); }catch(e){ PAYROLL=null; } }
+  if(!PAYROLL || !PAYROLL.weeks) PAYROLL={activeWeek:null, weeks:{}};
+  if(!PAYROLL.activeWeek || !PAYROLL.weeks[PAYROLL.activeWeek]){
+    const id=isoWeekId(new Date());
+    if(!PAYROLL.weeks[id]){
+      const entries={}; payablePeople().forEach(p=>{ if(p.cs in SEED_HOURS) entries[p.cs]={h:SEED_HOURS[p.cs],b:0,f:0}; });
+      PAYROLL.weeks[id]={label:weekLabel(id), entries};
+    }
+    PAYROLL.activeWeek=id; savePayroll(true);
+  }
+}
+function savePayroll(silent){
+  try{ pstore.set('ems_payroll', JSON.stringify(PAYROLL)); }catch(e){}
+  if(typeof savePayrollRemote==='function'){ try{ savePayrollRemote(PAYROLL); }catch(e){} }
+  if(!silent) flashSaved();
+}
+function savePayrollDebounced(){ clearTimeout(payDebounce); payDebounce=setTimeout(()=>savePayroll(false),400); }
+function flashSaved(){ const p=$('#savedPill'); if(!p) return; p.classList.add('on'); clearTimeout(saveTimer); saveTimer=setTimeout(()=>p.classList.remove('on'),1400); }
+function curWeek(){ return PAYROLL.weeks[PAYROLL.activeWeek]; }
+function entryFor(cs){ const w=curWeek(); if(!w.entries[cs]) w.entries[cs]={h:0,b:0,f:0}; return w.entries[cs]; }
+function payFor(p){ const e=curWeek().entries[p.cs]||{h:0,b:0,f:0}; return Math.max(0, p.rate*(+e.h||0) + (+e.b||0) - (+e.f||0)); }
+
+function canEditPayroll(){
+  if(!USER || USER.guest) return false;
+  const ids=(MANAGERS.managerIds||[]).map(String);
+  const names=(MANAGERS.managerNames||[]).map(s=>String(s).toLowerCase());
+  if(ids.length===0 && names.length===0) return true; // open until configured
+  if(USER.id && ids.includes(String(USER.id))) return true;
+  return names.includes((USER.name||'').toLowerCase());
+}
+function managersConfigured(){ return (MANAGERS.managerIds||[]).length>0 || (MANAGERS.managerNames||[]).length>0; }
+
+function money(n){ n=Math.round(+n||0); return (n<0?'-$':'$')+Math.abs(n).toLocaleString('en-US'); }
+function round2(n){ return Math.round((+n||0)*100)/100; }
+function cssid(s){ return String(s).replace(/[^a-zA-Z0-9_-]/g,'_'); }
+
+/* ---------------------------- PAYROLL VIEW ---------------------------- */
+let paySearch='';
+function renderPayroll(){
+  if(!PAYROLL) loadPayroll();
+  const editable=canEditPayroll();
+  const weeks=Object.keys(PAYROLL.weeks).sort().reverse();
+  $('#view').innerHTML = `
+    <div class="subline" style="margin-bottom:16px">
+      Weekly hours &amp; pay for every filled callsign. Pay auto-calculates as <b>hourly × hours + bonuses − fines</b>.
+      ${editable?' You have <b style="color:var(--teal)">edit access</b> — changes save automatically to this browser.':' You have <b>read-only</b> access.'}
+    </div>
+    <div class="pay-bar">
+      <div class="wk-sel">
+        <label for="wkSel">Pay week</label>
+        <select id="wkSel">${weeks.map(id=>`<option value="${id}" ${id===PAYROLL.activeWeek?'selected':''}>${esc(PAYROLL.weeks[id].label||weekLabel(id))}</option>`).join('')}</select>
+      </div>
+      ${editable?'<button class="tbtn" id="newWk">＋ New week</button>':''}
+      <span class="mode-tag ${editable?'edit':'ro'}"><span class="d"></span>${editable?'Editing':'Read-only'}</span>
+      <div class="pay-tools">
+        <div class="search" style="flex:0 1 200px;min-width:150px"><input id="paySearch" placeholder="Search name / callsign…" value="${esc(paySearch)}" autocomplete="off"></div>
+        <button class="tbtn" id="expCsv" title="Download this week as a spreadsheet">⤓ CSV</button>
+        <button class="tbtn" id="expJson" title="Download a full backup of every week">⤓ Backup</button>
+        ${editable?'<button class="tbtn" id="impJson" title="Load a backup file">⤒ Import</button><input type="file" id="impFile" accept="application/json" style="display:none">':''}
+      </div>
+    </div>
+    ${!editable?`<div class="lockmsg"><b>Read-only.</b> ${(USER&&USER.guest)?'Guests can view payroll but not edit it. Sign in with a management Discord account to make changes.':'Your Discord account isn\'t on the management edit list. An admin can add your Discord ID to the page config to grant access.'}</div>`:''}
+    ${editable && !managersConfigured()?`<div class="lockmsg"><b>Open edit mode.</b> No managers are configured yet, so every Discord-verified user can edit. Add your management team's Discord IDs to <code style="color:var(--amber)">MANAGERS</code> in the page source before going live.</div>`:''}
+    <div class="pay-totals" id="payTotals"></div>
+    <div id="payrollBody"></div>`;
+  $('#wkSel').onchange=e=>{ PAYROLL.activeWeek=e.target.value; savePayroll(true); updatePayrollTag(); paintPayroll(); };
+  $('#paySearch').addEventListener('input',e=>{ paySearch=e.target.value; paintPayroll(); });
+  $('#expCsv').onclick=exportCsv;
+  $('#expJson').onclick=exportJson;
+  if(editable){
+    $('#newWk').onclick=newWeek;
+    $('#impJson').onclick=()=>$('#impFile').click();
+    $('#impFile').onchange=importJson;
+  }
+  paintPayroll();
+}
+function paintPayroll(){
+  const editable=canEditPayroll();
+  const q=paySearch.trim().toLowerCase();
+  const people=payablePeople();
+  let html='', gross=0,totH=0,totB=0,totF=0,paid=0;
+  DIVISIONS.forEach(d=>{
+    const rows=people.filter(p=>p.key===d.key).filter(p=> !q || p.nm.toLowerCase().includes(q)||p.cs.toLowerCase().includes(q)||(p.role||'').toLowerCase().includes(q));
+    if(!rows.length) return;
+    html+=`<div class="div-h"><span class="t">${esc(d.name)}</span><span class="ct">${rows.length}</span><span class="pay">${esc(d.pay)}</span><span class="rule"></span></div>`;
+    html+=`<div class="ptable"><div class="phead"><span>Callsign</span><span>Name</span><span class="r rate-c">Rate</span><span class="r">Hours</span><span class="r bonus-c">Bonus</span><span class="r fine-c">Fine</span><span class="r">Pay</span></div>`;
+    let sub=0;
+    rows.forEach(p=>{
+      const e=curWeek().entries[p.cs]||{h:0,b:0,f:0};
+      const pay=payFor(p); gross+=pay; sub+=pay; totH+=(+e.h||0); totB+=(+e.b||0); totF+=(+e.f||0); if((+e.h||0)>0||(+e.b||0)>0) paid++;
+      const hCell = editable? `<input class="pinp" data-cs="${esc(p.cs)}" data-k="h" type="number" min="0" step="0.25" value="${e.h||0}">` : `<span class="pcell">${e.h||0}</span>`;
+      const bCell = editable? `<input class="pinp bonus" data-cs="${esc(p.cs)}" data-k="b" type="number" min="0" step="500" value="${e.b||0}">` : `<span class="pcell">${money(e.b||0)}</span>`;
+      const fCell = editable? `<input class="pinp fine" data-cs="${esc(p.cs)}" data-k="f" type="number" min="0" step="500" value="${e.f||0}">` : `<span class="pcell fine">${(e.f||0)?('-'+money(e.f)):money(0)}</span>`;
+      html+=`<div class="prow">
+        <span class="cs">${esc(p.cs)}</span>
+        <span class="nm">${esc(p.nm)}<span class="role">${esc(p.role||'')}</span></span>
+        <span class="rate rate-c">$${p.rate/1000}k</span>
+        <span>${hCell}</span>
+        <span class="bonus-c">${bCell}</span>
+        <span class="fine-c">${fCell}</span>
+        <span class="pay ${pay?'':'zero'}" id="pay-${cssid(p.cs)}">${money(pay)}</span>
+      </div>`;
+    });
+    html+=`<div class="pfoot">Division subtotal <b id="sub-${d.key}">${money(sub)}</b></div></div>`;
+  });
+  $('#payrollBody').innerHTML = html || `<div class="empty">No one matches “${esc(paySearch)}”.</div>`;
+  $('#payTotals').innerHTML = `
+    <div class="pt big"><div class="k">Gross payroll</div><div class="v" id="tGross">${money(gross)}</div></div>
+    <div class="pt"><div class="k">Employees paid</div><div class="v" id="tPaid">${paid}</div></div>
+    <div class="pt"><div class="k">Total hours</div><div class="v" id="tHours">${round2(totH)}</div></div>
+    <div class="pt"><div class="k">Bonuses</div><div class="v" id="tBonus">${money(totB)}</div></div>
+    <div class="pt"><div class="k">Fines</div><div class="v" id="tFine">${money(totF)}</div></div>`;
+  if(editable){
+    $$('#payrollBody .pinp').forEach(inp=>inp.addEventListener('input',()=>{
+      const e=entryFor(inp.dataset.cs); e[inp.dataset.k]= inp.value===''?0:Math.max(0,+inp.value||0);
+      recalc(); savePayrollDebounced();
+    }));
+  }
+}
+function recalc(){
+  let gross=0,totH=0,totB=0,totF=0,paid=0; const subs={};
+  payablePeople().forEach(p=>{
+    const e=curWeek().entries[p.cs]||{h:0,b:0,f:0}; const pay=payFor(p);
+    const el=document.getElementById('pay-'+cssid(p.cs));
+    if(el){ el.textContent=money(pay); el.classList.toggle('zero', !pay); }
+    gross+=pay; totH+=(+e.h||0); totB+=(+e.b||0); totF+=(+e.f||0); if((+e.h||0)>0||(+e.b||0)>0) paid++;
+    subs[p.key]=(subs[p.key]||0)+pay;
+  });
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('tGross',money(gross)); set('tPaid',paid); set('tHours',round2(totH)); set('tBonus',money(totB)); set('tFine',money(totF));
+  Object.keys(subs).forEach(k=>set('sub-'+k, money(subs[k])));
+}
+function newWeek(){
+  const label=prompt('Name this pay week:', weekLabel(isoWeekId(new Date())));
+  if(label===null) return;
+  let id=isoWeekId(new Date());
+  if(PAYROLL.weeks[id]){ let n=2; while(PAYROLL.weeks[id+'-'+n]) n++; id=id+'-'+n; }
+  PAYROLL.weeks[id]={label:(label.trim()||weekLabel(id)), entries:{}};
+  PAYROLL.activeWeek=id; savePayroll(false); updatePayrollTag(); renderPayroll();
+}
+function dl(blob,name){ const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500); }
+function exportCsv(){
+  const w=curWeek(); const rows=[['Callsign','Name','Role','Division','Hourly','Hours','Bonus','Fine','Pay','Status']];
+  payablePeople().forEach(p=>{ const e=w.entries[p.cs]||{h:0,b:0,f:0}; rows.push([p.cs,p.nm,p.role,p.div,p.rate,e.h||0,e.b||0,e.f||0,Math.round(payFor(p)),p.st]); });
+  const csv=rows.map(r=>r.map(c=>{const s=String(c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  dl(new Blob([csv],{type:'text/csv'}), `empire-ems-payroll-${PAYROLL.activeWeek}.csv`);
+}
+function exportJson(){ dl(new Blob([JSON.stringify(PAYROLL,null,2)],{type:'application/json'}), 'empire-ems-payroll-backup.json'); }
+function importJson(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const data=JSON.parse(r.result); if(!data||!data.weeks) throw 0;
+      if(!confirm('Import replaces ALL payroll weeks stored in this browser. Your current data will be downloaded as a backup first. Continue?')){ ev.target.value=''; return; }
+      exportJson();
+      PAYROLL=data; if(!PAYROLL.activeWeek||!PAYROLL.weeks[PAYROLL.activeWeek]) PAYROLL.activeWeek=Object.keys(PAYROLL.weeks).sort().reverse()[0];
+      savePayroll(false); updatePayrollTag(); renderPayroll();
+    }catch(e){ alert('That file doesn\'t look like a payroll backup.'); }
+    ev.target.value=''; };
+  r.readAsText(f);
+}
+function updatePayrollTag(){ const el=$('#payrollTag'); if(el && PAYROLL){ const m=/W(\d{2})/.exec(PAYROLL.activeWeek||''); el.textContent = m?('W'+m[1]):''; } }
+
+/* Optional backend sync — leave as-is to keep payroll local to each browser,
+   or wire these to Firebase / Supabase / a Cloudflare Worker + KV / a Google
+   Apps Script endpoint to share one live copy across all managers. */
+async function savePayrollRemote(data){ /* await fetch('/api/payroll',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); */ }
+async function loadPayrollRemote(){ /* return await (await fetch('/api/payroll')).json(); */ return null; }
+
+/* ============================ APPLICATIONS ENGINE ============================
+   Applicants submit through the portal; management approves or denies.
+   Stored in this browser (pstore) AND optionally posted to Discord via the
+   WEBHOOK above so management receives every application in their server. */
+let APPS=null, appsView='auto';
+function loadApps(){
+  const raw=pstore.get('ems_apps');
+  if(raw){ try{ APPS=JSON.parse(raw); }catch(e){ APPS=null; } }
+  if(!APPS || !Array.isArray(APPS.apps)) APPS={apps:[]};
+}
+function saveApps(silent){
+  try{ pstore.set('ems_apps', JSON.stringify(APPS)); }catch(e){}
+  if(typeof saveAppsRemote==='function'){ try{ saveAppsRemote(APPS); }catch(e){} }
+  if(!silent) flashSaved();
+  updateAppsTag();
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function trunc(s,n){ s=String(s||''); return s.length>(n||1000)? s.slice(0,(n||1000)-1)+'…' : s; }
+function timeAgo(iso){ const t=new Date(iso).getTime(); if(isNaN(t)) return ''; const s=Math.floor((Date.now()-t)/1000);
+  if(s<60) return 'just now'; const m=Math.floor(s/60); if(m<60) return m+'m ago'; const h=Math.floor(m/60); if(h<24) return h+'h ago'; const d=Math.floor(h/24); return d+'d ago'; }
+function pendingApps(){ return APPS?APPS.apps.filter(a=>a.status==='pending').length:0; }
+function myLatestApp(){
+  if(!APPS||!USER) return null;
+  const mine=APPS.apps.filter(a=> (USER.id && a.discordId && a.discordId===USER.id) || (a.name||'').toLowerCase()===(USER.name||'').toLowerCase() || (a.discord||'').toLowerCase()===(USER.name||'').toLowerCase());
+  return mine.sort((a,b)=>b.submitted.localeCompare(a.submitted))[0]||null;
+}
+function updateAppsTag(){ const el=$('#appsTag'); if(!el) return; if(canEditPayroll()){ const p=pendingApps(); el.textContent=p?String(p):''; } else el.textContent=''; }
+
+/* ---- Discord webhook posting (optional) ---- */
+function postWebhook(payload){ if(!WEBHOOK.url) return; try{ fetch(WEBHOOK.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch(e){} }
+function submitPayload(a){
+  return { username:'Empire EMS Applications', embeds:[{ title:'📥 New EMS Application', color:0xe63946,
+    fields:[
+      {name:'Character', value:trunc(a.name,256)||'—', inline:true},
+      {name:'Discord', value:trunc(a.discord,256)||'—', inline:true},
+      {name:'Timezone', value:trunc(a.tz,256)||'—', inline:true},
+      {name:'Availability', value:(a.hours?a.hours+' hrs/wk':'—'), inline:true},
+      {name:'Clip software', value:a.clips?'Yes ✅':'No ⚠️', inline:true},
+      {name:'Read SOPs', value:a.sops?'Yes ✅':'No', inline:true},
+      {name:'Experience', value:trunc(a.exp,1024)||'—'},
+      {name:'Why join Empire EMS', value:trunc(a.why,1024)||'—'},
+    ], timestamp:a.submitted, footer:{text:'Review it in the portal → Applications'} }] };
+}
+function decisionPayload(a){ const ok=a.status==='approved';
+  const fields=[{name:'Character',value:trunc(a.name,256)||'—',inline:true},{name:'Discord',value:trunc(a.discord,256)||'—',inline:true},{name:'Reviewer',value:trunc(a.review.by,256)||'—',inline:true}];
+  if(a.review.note) fields.push({name:'Note to applicant',value:trunc(a.review.note,1024)});
+  return { username:'Empire EMS Applications', embeds:[{ title:ok?'✅ Application Approved':'❌ Application Denied', color:ok?0x37c9a3:0xb31f2c, fields, timestamp:a.review.at }] };
+}
+
+/* ---- actions ---- */
+function submitApp(a){ APPS.apps.unshift(a); saveApps(true); postWebhook(submitPayload(a)); }
+function decide(id,status){
+  const a=APPS.apps.find(x=>x.id===id); if(!a) return;
+  if(status==='approved'){ if(!confirm(`Approve ${a.name || a.discord}? They can then be added to the roster.`)) return; }
+  let note='';
+  if(status==='denied'){ const r=prompt('Reason for denial (optional — shown to the applicant):',''); if(r===null) return; note=r.trim(); }
+  a.status=status; a.review={by:(USER&&USER.name)||'Management', byId:(USER&&USER.id)||'', at:new Date().toISOString(), note};
+  saveApps(false); if(WEBHOOK.notifyDecisions) postWebhook(decisionPayload(a)); paintAppReview();
+}
+function reopenApp(id){ const a=APPS.apps.find(x=>x.id===id); if(!a) return; if(!confirm('Move this application back to Pending?')) return; a.status='pending'; delete a.review; saveApps(false); paintAppReview(); }
+function withdrawApp(id){ if(!confirm('Withdraw your application? This removes it from the queue.')) return; APPS.apps=APPS.apps.filter(x=>x.id!==id); saveApps(false); renderApps(); }
+
+/* ---------------------------- APPLICATIONS VIEW ---------------------------- */
+let appFilter='pending';
+function renderApps(){
+  if(!APPS) loadApps();
+  const mgr=canEditPayroll();
+  if(mgr && appsView!=='form'){ renderAppReview(); }
+  else { renderAppForm(mgr); }
+}
+function renderAppForm(mgr){
+  const mine=myLatestApp();
+  if(mine && !mgr){
+    const lbl={pending:'Pending review', approved:'Approved', denied:'Not accepted'}[mine.status];
+    const ico={pending:'⏳', approved:'✓', denied:'✕'}[mine.status];
+    const msg={
+      pending:'Your application is in the queue. Management will review it and you\'ll hear back in your ticket or DMs.',
+      approved:'Congratulations — your application was accepted. Watch for onboarding instructions from an FTO.',
+      denied:'Your application wasn\'t accepted this time.'
+    }[mine.status];
+    $('#view').innerHTML=`
+      <div class="app-wrap">
+        <div class="app-status ${mine.status}">
+          <div class="ico">${ico}</div>
+          <div style="flex:1">
+            <h3>${lbl}</h3>
+            <p>${msg}${mine.review&&mine.review.note?`<span class="re"><br>Note from ${esc(mine.review.by)}: “${esc(mine.review.note)}”</span>`:''}</p>
+            <p style="margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint)">Submitted ${timeAgo(mine.submitted)} · ${esc(mine.name)}</p>
+          </div>
+        </div>
+        ${mine.status==='pending'?`<button class="btn ghost" id="withdrawBtn">Withdraw application</button>`:''}
+        ${mine.status==='denied'?`<button class="btn" id="reapplyBtn">Apply again ▸</button>`:''}
+      </div>`;
+    if(mine.status==='pending') $('#withdrawBtn').onclick=()=>withdrawApp(mine.id);
+    if(mine.status==='denied') $('#reapplyBtn').onclick=()=>{ appsView='form'; APPS.apps=APPS.apps.filter(x=>x.id!==mine.id); saveApps(true); drawForm(mgr); };
+    return;
+  }
+  drawForm(mgr);
+}
+function drawForm(mgr){
+  const preName = USER&&!USER.guest? USER.name : '';
+  const preDisc = USER&&!USER.guest? USER.name : '';
+  $('#view').innerHTML=`
+    <div class="app-wrap">
+      ${mgr?`<button class="chip" id="backRev" style="margin-bottom:16px">← Back to review queue</button>`:''}
+      <div class="subline" style="margin-bottom:14px">Apply to join <b style="color:var(--ink)">Empire EMS</b> at Pillbox Medical. All fields marked * are required. Management reviews every application.</div>
+      <div class="app-note">Tip: sign in with your Discord account before applying so your identity is attached automatically and management can reach you.</div>
+
+      <div class="af-row">
+        <div class="field"><label for="fName">Character name *</label><input id="fName" value="${esc(preName)}" placeholder="e.g. Ivy Kay" autocomplete="off"></div>
+        <div class="field"><label for="fDisc">Discord handle *</label><input id="fDisc" value="${esc(preDisc)}" placeholder="e.g. ivykay" autocomplete="off"></div>
+      </div>
+      <div class="af-row">
+        <div class="field"><label for="fTz">Timezone</label><input id="fTz" placeholder="e.g. EST / GMT" autocomplete="off"></div>
+        <div class="field"><label for="fHours">Availability (hours / week)</label><input id="fHours" placeholder="e.g. 15" autocomplete="off"></div>
+      </div>
+      <div class="field"><label for="fExp">Prior EMS or roleplay experience</label><textarea id="fExp" placeholder="Tell us about any EMS, medical, or serious-RP experience. New to it? Say so — interns are trained from scratch."></textarea></div>
+      <div class="field"><label for="fWhy">Why do you want to join Empire EMS? *</label><textarea id="fWhy" placeholder="A few sentences on why you want to run EMS at Pillbox."></textarea></div>
+
+      <label class="af-check" id="ckSops"><input type="checkbox" id="fSops"><span class="cl"><b>I have read the SOPs.</b> I understand the strike system, on-duty conduct, and triage rules.</span></label>
+      <label class="af-check" id="ckClips"><input type="checkbox" id="fClips"><span class="cl"><b>I can record clips.</b> My bodycam software captures at least 3 minutes with audio (required to clock in).</span></label>
+
+      <div class="field err" id="formErr" style="display:none;color:#f5a3ab;font-size:12.5px;font-family:'JetBrains Mono',monospace"></div>
+      <button class="btn wide" id="submitApp">Submit application ▸</button>
+      <p class="note" style="margin-top:14px">By submitting you confirm the information is accurate. Applications post to Empire EMS management for review.</p>
+    </div>`;
+  ['ckSops','ckClips'].forEach(id=>{ const box=$('#'+id); box.querySelector('input').addEventListener('change',e=>box.classList.toggle('on',e.target.checked)); });
+  if(mgr) $('#backRev').onclick=()=>{ appsView='review'; renderApps(); };
+  $('#submitApp').onclick=()=>{
+    const g=id=>$('#'+id).value.trim();
+    const a={ id:uid(), submitted:new Date().toISOString(), status:'pending',
+      name:g('fName'), discord:g('fDisc'), discordId:(USER&&USER.id)||'',
+      tz:g('fTz'), hours:g('fHours'), exp:g('fExp'), why:g('fWhy'),
+      sops:$('#fSops').checked, clips:$('#fClips').checked };
+    const miss=[];
+    if(!a.name) miss.push('character name');
+    if(!a.discord) miss.push('Discord handle');
+    if(!a.why) miss.push('why you want to join');
+    if(!a.sops) miss.push('confirming you read the SOPs');
+    if(miss.length){ const e=$('#formErr'); e.style.display='block'; e.textContent='Please add: '+miss.join(', ')+'.'; window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}); return; }
+    submitApp(a);
+    appsView='auto';
+    $('#view').innerHTML=`
+      <div class="app-wrap"><div class="app-status approved">
+        <div class="ico">✓</div>
+        <div><h3>Application submitted</h3><p>Thanks, ${esc(a.name)}. Your application is now with Empire EMS management. You'll hear back in your ticket or DMs.${WEBHOOK.url?'':''}</p></div>
+      </div>
+      <button class="btn ghost" id="toDash">Back to dashboard ▸</button></div>`;
+    $('#toDash').onclick=()=>setView('dash');
+    updateAppsTag();
+  };
+}
+function renderAppReview(){
+  appsView='review';
+  const total=APPS.apps.length, pend=pendingApps(), appr=APPS.apps.filter(a=>a.status==='approved').length, den=APPS.apps.filter(a=>a.status==='denied').length;
+  const filters=[['pending',`Pending · ${pend}`],['approved',`Approved · ${appr}`],['denied',`Denied · ${den}`],['all',`All · ${total}`]];
+  $('#view').innerHTML=`
+    <div class="subline" style="margin-bottom:16px">Review and decide on EMS applications. Approving marks the applicant ready for onboarding${WEBHOOK.url?'; decisions are posted back to Discord':''}.</div>
+    <div class="rev-head">
+      <div class="chips" id="appChips">${filters.map(([k,l])=>`<button class="chip ${appFilter===k?'on':''}" data-f="${k}">${l}</button>`).join('')}</div>
+      <div class="pay-tools">
+        <button class="tbtn" id="appForm">✚ New application</button>
+        <button class="tbtn" id="appExp">⤓ Backup</button>
+        <button class="tbtn" id="appImp">⤒ Import</button>
+        <input type="file" id="appImpFile" accept="application/json" style="display:none">
+      </div>
+    </div>
+    <div id="appList"></div>`;
+  $$('#appChips .chip').forEach(c=>c.onclick=()=>{ appFilter=c.dataset.f; $$('#appChips .chip').forEach(x=>x.classList.toggle('on',x===c)); paintAppReview(); });
+  $('#appForm').onclick=()=>{ appsView='form'; renderApps(); };
+  $('#appExp').onclick=()=>dl(new Blob([JSON.stringify(APPS,null,2)],{type:'application/json'}),'empire-ems-applications.json');
+  $('#appImp').onclick=()=>$('#appImpFile').click();
+  $('#appImpFile').onchange=importApps;
+  paintAppReview();
+}
+function paintAppReview(){
+  updateAppsTag();
+  const rows=APPS.apps.filter(a=>appFilter==='all'?true:a.status===appFilter);
+  if(!rows.length){ $('#appList').innerHTML=`<div class="empty">No ${appFilter==='all'?'':appFilter+' '}applications${appFilter==='pending'?' — the queue is clear.':'.'}</div>`; return; }
+  $('#appList').innerHTML = rows.map(a=>{
+    const facts=[['Timezone',a.tz],['Availability',a.hours?a.hours+' hrs/wk':''],['Clip software',a.clips?'Yes':'No'],['Read SOPs',a.sops?'Yes':'No']]
+      .filter(f=>f[1]).map(f=>`<div class="f"><div class="k">${f[0]}</div><div class="v">${esc(f[1])}</div></div>`).join('');
+    const qa=`${a.exp?`<div class="q">Experience</div><div class="a">${esc(a.exp)}</div>`:''}<div class="q">Why join</div><div class="a">${esc(a.why||'—')}</div>`;
+    let tail;
+    if(a.status==='pending'){
+      tail=`<div class="ac-actions"><button class="abtn ok" data-ok="${a.id}">✓ Approve</button><button class="abtn no" data-no="${a.id}">✕ Deny</button></div>`;
+    }else{
+      const who=a.review?`${esc(a.review.by)} · ${timeAgo(a.review.at)}`:'—';
+      tail=`<div class="ac-decided"><b>${a.status==='approved'?'Approved':'Denied'}</b> by ${who}<button class="undo" data-re="${a.id}">↺ Reopen</button>${a.review&&a.review.note?`<div class="rsn">“${esc(a.review.note)}”</div>`:''}</div>`;
+    }
+    return `<div class="app-card ${a.status}">
+      <div class="ac-head"><span class="ac-name">${esc(a.name||'Unnamed')}</span><span class="ac-disc">@${esc(a.discord||'—')}</span><span class="app-badge ${a.status}"><span class="d"></span>${a.status}</span><span class="ac-when">${timeAgo(a.submitted)}</span></div>
+      <div class="ac-body">${facts?`<div class="ac-facts">${facts}</div>`:''}<div class="ac-qa">${qa}</div></div>
+      ${tail}</div>`;
+  }).join('');
+  $$('#appList [data-ok]').forEach(b=>b.onclick=()=>decide(b.dataset.ok,'approved'));
+  $$('#appList [data-no]').forEach(b=>b.onclick=()=>decide(b.dataset.no,'denied'));
+  $$('#appList [data-re]').forEach(b=>b.onclick=()=>reopenApp(b.dataset.re));
+}
+function importApps(ev){
+  const f=ev.target.files[0]; if(!f) return; const r=new FileReader();
+  r.onload=()=>{ try{ const data=JSON.parse(r.result); if(!data||!Array.isArray(data.apps)) throw 0;
+      if(!confirm('Import replaces the applications stored in this browser. Continue?')){ ev.target.value=''; return; }
+      APPS=data; saveApps(false); renderApps();
+    }catch(e){ alert('That file doesn\'t look like an applications backup.'); } ev.target.value=''; };
+  r.readAsText(f);
+}
+async function saveAppsRemote(data){ /* await fetch('/api/apps',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); */ }
+async function loadAppsRemote(){ /* return await (await fetch('/api/apps')).json(); */ return null; }
+
+/* ============================ EXAM SCORES ENGINE ============================
+   Every completed exam is recorded (who, which exam, %, pass/fail, breakdown)
+   so management can review results. Saved in this browser (pstore) and — if a
+   WEBHOOK is set — posted to Discord so scores reach management across devices. */
+let SCORES=null, scoreSaved=false, scoreFilter='all', scoreSearch='';
+function loadScores(){ const raw=pstore.get('ems_exams'); if(raw){ try{ SCORES=JSON.parse(raw); }catch(e){ SCORES=null; } } if(!SCORES || !Array.isArray(SCORES.results)) SCORES={results:[]}; }
+function saveScores(silent){ try{ pstore.set('ems_exams', JSON.stringify(SCORES)); }catch(e){} if(typeof saveScoresRemote==='function'){ try{ saveScoresRemote(SCORES); }catch(e){} } if(!silent) flashSaved(); updateExamsTag(); }
+function recordScore(rec){ if(!SCORES) loadScores(); SCORES.results.unshift(rec); saveScores(true); if(WEBHOOK.url) postWebhook(scorePayload(rec)); }
+function scorePayload(r){ const ok=r.passed;
+  return { username:'Empire EMS Exams', embeds:[{ title:(ok?'✅ ':'❌ ')+trunc(r.examTitle,200)+' — '+r.pct+'%', color:ok?0x37c9a3:0xb31f2c,
+    fields:[
+      {name:'Candidate', value:trunc(r.name,256)+(r.guest?' (guest)':'')||'—', inline:true},
+      {name:'Score', value:r.correct+'/'+r.total+' ('+r.pct+'%)', inline:true},
+      {name:'Result', value:ok?'PASS ✅':'FAIL ❌', inline:true},
+    ], timestamp:r.at, footer:{text:'Pass mark '+r.pass+'% · logged in the portal'} }] };
+}
+async function saveScoresRemote(data){ /* await fetch('/api/scores',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); */ }
+async function loadScoresRemote(){ /* return await (await fetch('/api/scores')).json(); */ return null; }
+function updateExamsTag(){ const el=$('#examsTag'); if(!el) return; el.textContent = (canEditPayroll() && SCORES && SCORES.results.length)? String(SCORES.results.length) : ''; }
+
+/* ---------------------------- EXAM RESULTS BOARD (management) ---------------------------- */
+function renderScoreBoard(){
+  if(!SCORES) loadScores();
+  window.removeEventListener('scroll', window.__sopspy||(()=>{}));
+  const exams=[...new Set(SCORES.results.map(r=>r.exam))];
+  const filters=[['all','All'],['pass','Passed'],['fail','Failed'],...exams.map(id=>{ const t=(EXAMS.find(e=>e.id===id)||{}).title||id; return ['exam:'+id, t.replace(/ Exam.*/,'')]; })];
+  $('#view').innerHTML = `
+    <button class="chip" id="scBack" style="margin-bottom:16px">← Back to exams</button>
+    <div class="subline" style="margin-bottom:16px">Every exam attempt recorded through the portal. ${WEBHOOK.url?'New results also post to your Discord channel.':'Results are stored on this device — use Backup / Import to move them between managers.'}</div>
+    <div class="rev-head">
+      <div class="chips" id="scChips">${filters.map(([k,l])=>`<button class="chip ${scoreFilter===k?'on':''}" data-f="${k}">${esc(l)}</button>`).join('')}</div>
+      <div class="pay-tools">
+        <div class="search" style="flex:0 1 200px;min-width:150px"><input id="scSearch" placeholder="Search candidate…" value="${esc(scoreSearch)}" autocomplete="off"></div>
+        <button class="tbtn" id="scCsv">⤓ CSV</button>
+        <button class="tbtn" id="scExp">⤓ Backup</button>
+        <button class="tbtn" id="scImp">⤒ Import</button>
+        <input type="file" id="scImpFile" accept="application/json" style="display:none">
+      </div>
+    </div>
+    <div class="pay-totals" id="scTotals"></div>
+    <div id="scList"></div>`;
+  $('#scBack').onclick=renderExamsHome;
+  $$('#scChips .chip').forEach(c=>c.onclick=()=>{ scoreFilter=c.dataset.f; $$('#scChips .chip').forEach(x=>x.classList.toggle('on',x===c)); paintScoreBoard(); });
+  $('#scSearch').addEventListener('input',e=>{ scoreSearch=e.target.value; paintScoreBoard(); });
+  $('#scCsv').onclick=exportScoresCsv;
+  $('#scExp').onclick=()=>dl(new Blob([JSON.stringify(SCORES,null,2)],{type:'application/json'}),'empire-ems-exam-scores.json');
+  $('#scImp').onclick=()=>$('#scImpFile').click();
+  $('#scImpFile').onchange=importScores;
+  paintScoreBoard();
+}
+function paintScoreBoard(){
+  updateExamsTag();
+  const q=scoreSearch.trim().toLowerCase();
+  let rows=SCORES.results.filter(r=>{
+    if(scoreFilter==='pass' && !r.passed) return false;
+    if(scoreFilter==='fail' && r.passed) return false;
+    if(scoreFilter.startsWith('exam:') && r.exam!==scoreFilter.slice(5)) return false;
+    if(q && !(r.name||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const n=rows.length, passes=rows.filter(r=>r.passed).length;
+  const avg=n?Math.round(rows.reduce((a,r)=>a+r.pct,0)/n):0;
+  const rate=n?Math.round(passes/n*100):0;
+  $('#scTotals').innerHTML=`
+    <div class="pt big"><div class="k">Attempts</div><div class="v">${n}</div></div>
+    <div class="pt"><div class="k">Passed</div><div class="v">${passes}</div></div>
+    <div class="pt"><div class="k">Pass rate</div><div class="v">${rate}<small style="font-size:15px;color:var(--muted)">%</small></div></div>
+    <div class="pt"><div class="k">Avg score</div><div class="v">${avg}<small style="font-size:15px;color:var(--muted)">%</small></div></div>`;
+  if(!n){ $('#scList').innerHTML=`<div class="empty">No exam results${scoreSearch?` for “${esc(scoreSearch)}”`:''} yet.</div>`; return; }
+  const body=rows.map(r=>{
+    const exam=(EXAMS.find(e=>e.id===r.exam)||{}).title||r.examTitle||r.exam;
+    const weak=Object.entries(r.byCat||{}).filter(([k,v])=>v.t&&(v.c/v.t)<0.6).map(([k])=>k);
+    return `<div class="sc-row">
+      <span class="cand">${esc(r.name||'Unknown')}${r.guest?' <span class="gs">guest</span>':''}${weak.length?`<span class="sub">weak: ${esc(weak.join(', '))}</span>`:''}</span>
+      <span class="exam">${esc(exam)}</span>
+      <span class="pct">${r.correct}/${r.total}</span>
+      <span class="res ${r.passed?'pass':'fail'}">${r.pct}% ${r.passed?'PASS':'FAIL'}</span>
+      <span class="sc-when">${timeAgo(r.at)}</span>
+    </div>`;
+  }).join('');
+  $('#scList').innerHTML=`<div class="sc-table"><div class="sc-head"><span>Candidate</span><span class="exam-c">Exam</span><span class="r">Correct</span><span>Result</span><span class="when-c">When</span></div>${body}</div>`;
+}
+function exportScoresCsv(){
+  const rows=[['Candidate','Guest','Exam','Correct','Total','Percent','Result','PassMark','When']];
+  SCORES.results.forEach(r=>{ const exam=(EXAMS.find(e=>e.id===r.exam)||{}).title||r.exam; rows.push([r.name,r.guest?'yes':'no',exam,r.correct,r.total,r.pct,r.passed?'PASS':'FAIL',r.pass,r.at]); });
+  const csv=rows.map(r=>r.map(c=>{const s=String(c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  dl(new Blob([csv],{type:'text/csv'}),'empire-ems-exam-scores.csv');
+}
+function importScores(ev){
+  const f=ev.target.files[0]; if(!f) return; const r=new FileReader();
+  r.onload=()=>{ try{ const data=JSON.parse(r.result); if(!data||!Array.isArray(data.results)) throw 0;
+      if(!confirm('Import replaces the exam results stored in this browser. Continue?')){ ev.target.value=''; return; }
+      SCORES=data; saveScores(false); renderScoreBoard();
+    }catch(e){ alert('That file doesn\'t look like an exam-scores backup.'); } ev.target.value=''; };
+  r.readAsText(f);
+}
+
+/* ============================ TIME CLOCK ENGINE ============================
+   Members clock in / out to track duty time. They can request time
+   adjustments: additions are capped at +60 minutes per day (per SOP), while
+   removals (time they went over) are uncapped. Management approves or denies. */
+let CLOCK=null;
+function loadClock(){ const raw=pstore.get('ems_clock'); if(raw){ try{ CLOCK=JSON.parse(raw); }catch(e){ CLOCK=null; } }
+  if(!CLOCK) CLOCK={shifts:[],open:{},adjustments:[]};
+  CLOCK.shifts=CLOCK.shifts||[]; CLOCK.open=CLOCK.open||{}; CLOCK.adjustments=CLOCK.adjustments||[]; }
+function saveClock(silent){ try{ pstore.set('ems_clock', JSON.stringify(CLOCK)); }catch(e){} if(typeof saveClockRemote==='function'){ try{ saveClockRemote(CLOCK); }catch(e){} } if(!silent) flashSaved(); updateClockTag(); }
+async function saveClockRemote(data){ /* await fetch('/api/clock',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); */ }
+async function loadClockRemote(){ /* return await (await fetch('/api/clock')).json(); */ return null; }
+
+function userKey(){ return USER ? (USER.id?('id:'+USER.id):('nm:'+(USER.name||'').toLowerCase())) : 'nm:guest'; }
+function keyOf(r){ return r.discordId?('id:'+r.discordId):('nm:'+(r.name||'').toLowerCase()); }
+function myOpenShift(){ return (CLOCK&&CLOCK.open)? CLOCK.open[userKey()] : null; }
+function pendingAdjustments(){ return CLOCK? CLOCK.adjustments.filter(a=>a.status==='pending').length : 0; }
+function onDutyCount(){ return CLOCK? Object.keys(CLOCK.open||{}).length : 0; }
+function updateClockTag(){ const el=$('#clockTag'); if(!el) return; const p=canEditPayroll()?pendingAdjustments():0; const o=onDutyCount(); el.textContent = p? String(p) : (o?('•'+o):''); }
+
+function fmtHM(mins){ mins=Math.max(0,Math.round(mins)); const h=Math.floor(mins/60), m=mins%60; return h?`${h}h${m?' '+m+'m':''}`:`${m}m`; }
+function fmtClock(ms){ let s=Math.max(0,Math.floor(ms/1000)); const h=Math.floor(s/3600); s%=3600; const m=Math.floor(s/60); s%=60; return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+function weekStart(dt){ const d=new Date(dt); const day=(d.getDay()+6)%7; d.setHours(0,0,0,0); d.setDate(d.getDate()-day); return d; }
+function inThisWeek(iso){ const t=new Date(iso), s=weekStart(new Date()), e=new Date(s); e.setDate(e.getDate()+7); return t>=s && t<e; }
+function minsForKey(key,opt){ opt=opt||{}; let m=0;
+  CLOCK.shifts.forEach(s=>{ if(keyOf(s)!==key)return; if(opt.weekOnly&&!inThisWeek(s.in))return; m+=s.mins||0; });
+  CLOCK.adjustments.forEach(a=>{ if(a.status!=='approved'||keyOf(a)!==key)return; if(opt.weekOnly&&!inThisWeek(a.at))return; m+= a.type==='add'?a.mins:-a.mins; });
+  if(opt.includeOpen){ const o=CLOCK.open[key]; if(o&&(!opt.weekOnly||inThisWeek(o.in))) m+=Math.round((Date.now()-new Date(o.in))/60000); }
+  return Math.max(0,m);
+}
+function addedTodayMins(key){ const today=new Date().toDateString();
+  return CLOCK.adjustments.filter(a=>keyOf(a)===key && a.type==='add' && a.status!=='denied' && new Date(a.at).toDateString()===today).reduce((s,a)=>s+a.mins,0); }
+
+/* actions */
+function clockIn(){ if(myOpenShift())return; CLOCK.open[userKey()]={name:(USER&&USER.name)||'Unknown', discordId:(USER&&USER.id)||'', in:new Date().toISOString()}; saveClock(false); renderClock(); }
+function clockOut(){ const o=myOpenShift(); if(!o)return; const mins=Math.max(0,Math.round((Date.now()-new Date(o.in))/60000));
+  CLOCK.shifts.unshift({id:uid(), name:o.name, discordId:o.discordId, in:o.in, out:new Date().toISOString(), mins}); delete CLOCK.open[userKey()]; saveClock(false); renderClock(); }
+function submitAdjustment(type,mins,reason){
+  const a={id:uid(), name:(USER&&USER.name)||'Unknown', discordId:(USER&&USER.id)||'', type, mins, reason, at:new Date().toISOString(), status:'pending'};
+  CLOCK.adjustments.unshift(a); saveClock(true); if(WEBHOOK.url) postWebhook(adjPayload(a)); renderClock();
+}
+function decideAdjustment(id,status){
+  const a=CLOCK.adjustments.find(x=>x.id===id); if(!a) return;
+  let note='';
+  if(status==='denied'){ const r=prompt('Reason for denying this time adjustment (optional):',''); if(r===null) return; note=r.trim(); }
+  else { if(!confirm(`Approve a ${a.type==='add'?'+':'−'}${a.mins} min adjustment for ${a.name}?`)) return; }
+  a.status=status; a.review={by:(USER&&USER.name)||'Management', byId:(USER&&USER.id)||'', at:new Date().toISOString(), note};
+  saveClock(false); if(WEBHOOK.notifyDecisions&&WEBHOOK.url) postWebhook(adjDecisionPayload(a)); renderClockBoard();
+}
+function adjPayload(a){ const sign=a.type==='add'?'+':'−';
+  return { username:'Empire EMS Time Clock', embeds:[{ title:'⏱️ Time adjustment request', color:0xf2b134,
+    fields:[{name:'Member',value:trunc(a.name,256)||'—',inline:true},{name:'Change',value:sign+a.mins+' min',inline:true},{name:'Reason',value:trunc(a.reason,1024)||'—'}], timestamp:a.at }] }; }
+function adjDecisionPayload(a){ const ok=a.status==='approved', sign=a.type==='add'?'+':'−';
+  const fields=[{name:'Member',value:trunc(a.name,256)||'—',inline:true},{name:'Change',value:sign+a.mins+' min',inline:true},{name:'Reviewer',value:trunc(a.review.by,256)||'—',inline:true}];
+  if(a.review.note) fields.push({name:'Note',value:trunc(a.review.note,1024)});
+  return { username:'Empire EMS Time Clock', embeds:[{ title:ok?'✅ Adjustment approved':'❌ Adjustment denied', color:ok?0x37c9a3:0xb31f2c, fields, timestamp:a.review.at }] }; }
+
+/* ---------------------------- TIME CLOCK VIEW (member) ---------------------------- */
+let adjType='add';
+function renderClock(){
+  if(!CLOCK) loadClock();
+  const mgr=canEditPayroll();
+  const o=myOpenShift();
+  const wk=minsForKey(userKey(),{weekOnly:true,includeOpen:true});
+  const myShifts=CLOCK.shifts.filter(s=>keyOf(s)===userKey()).slice(0,5);
+  const myAdj=CLOCK.adjustments.filter(a=>keyOf(a)===userKey()).slice(0,4);
+  const remain=Math.max(0,60-addedTodayMins(userKey()));
+  $('#view').innerHTML = `
+    ${mgr?`<div class="pay-bar" style="margin-bottom:18px"><span class="mode-tag edit"><span class="d"></span>Management</span><div class="pay-tools"><button class="tbtn go" id="clockBoardBtn">▤ Time clock board · ${pendingAdjustments()} pending ▸</button></div></div>`:''}
+
+    <div class="clock-card">
+      <div class="clock-face">
+        <div class="clock-state ${o?'on':'off'}"><span class="d"></span>${o?'On duty':'Off duty'}</div>
+        <div class="big ${o?'':'off'}"${o?'':''}>${o?`<span class="live-elapsed" data-in="${o.in}">${fmtClock(Date.now()-new Date(o.in))}</span>`:'—:—:—'}</div>
+        <div class="lab" style="margin-top:8px">${o?`Clocked in ${new Date(o.in).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`:'Not currently clocked in'}</div>
+      </div>
+      <div style="min-width:170px">
+        <div class="wk-tot"><div class="k">Tracked this week</div><div class="v">${fmtHM(wk)}</div></div>
+        <button class="btn wide ${o?'':'teal'}" id="clockBtn">${o?'Clock out ▸':'Clock in ▸'}</button>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="block">
+        <h3>Recent shifts</h3>
+        <div class="inner">
+          ${myShifts.length? myShifts.map(s=>`<div class="shift-row"><span>${new Date(s.in).toLocaleDateString([], {month:'short',day:'numeric'})} · ${new Date(s.in).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}–${new Date(s.out).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span><span class="dur">${fmtHM(s.mins)}</span></div>`).join('') : '<div class="mini-empty">No shifts logged yet. Clock in to start.</div>'}
+        </div>
+      </div>
+      <div class="block">
+        <h3>Request a time adjustment</h3>
+        <div class="inner">
+          <div class="seg" id="adjSeg">
+            <button type="button" class="add ${adjType==='add'?'on':''}" data-t="add">＋ Add time</button>
+            <button type="button" class="rem ${adjType==='remove'?'on':''}" data-t="remove">－ Remove time</button>
+          </div>
+          <div class="field" style="margin-top:14px"><label for="adjMin">Minutes</label><input id="adjMin" type="number" min="1" ${adjType==='add'?'max="60"':''} placeholder="${adjType==='add'?'up to 60':'e.g. 25'}" autocomplete="off"></div>
+          <div class="adj-hint" id="adjHint"></div>
+          <div class="field"><label for="adjReason">Reason</label><textarea id="adjReason" placeholder="Why the correction? e.g. forgot to clock out, DC'd mid-shift."></textarea></div>
+          <div class="field err" id="adjErr" style="display:none;color:#f5a3ab;font-size:12.5px;font-family:'JetBrains Mono',monospace"></div>
+          <button class="btn wide" id="adjSubmit">Submit request ▸</button>
+          ${myAdj.length?`<div class="my-adj">${myAdj.map(a=>`<div class="ma-row"><span class="mono">${a.type==='add'?'+':'−'}${a.mins}m</span><span class="app-badge ${a.status==='pending'?'pending':a.status==='approved'?'approved':'denied'}"><span class="d"></span>${a.status}</span></div>`).join('')}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  if(mgr) $('#clockBoardBtn').onclick=renderClockBoard;
+  $('#clockBtn').onclick=()=> o? clockOut() : clockIn();
+  $$('#adjSeg button').forEach(b=>b.onclick=()=>{ adjType=b.dataset.t; renderClock(); });
+  paintAdjHint(remain);
+  $('#adjSubmit').onclick=()=>{
+    const mins=parseInt($('#adjMin').value,10);
+    const reason=$('#adjReason').value.trim();
+    const err=$('#adjErr'); const fail=m=>{ err.style.display='block'; err.textContent=m; };
+    if(!mins||mins<1) return fail('Enter how many minutes to adjust.');
+    if(!reason) return fail('Add a short reason — management needs it to approve.');
+    if(adjType==='add'){
+      if(mins>60) return fail('Additions are capped at 60 minutes.');
+      if(mins>remain) return fail(`That exceeds today's 60-minute add limit. You have ${remain} min left to add today.`);
+    }
+    submitAdjustment(adjType, mins, reason);
+  };
+}
+function paintAdjHint(remain){ const el=$('#adjHint'); if(!el) return;
+  el.innerHTML = adjType==='add'
+    ? `Additions are capped at <b>60 min/day</b>. You have <b style="color:var(--teal)">${remain} min</b> left to add today.`
+    : `Removals aren't capped — <b>remove however much time you went over</b>.`;
+}
+
+/* ---------------------------- TIME CLOCK BOARD (management) ---------------------------- */
+function renderClockBoard(){
+  if(!CLOCK) loadClock();
+  const onDuty=Object.entries(CLOCK.open||{}).map(([k,o])=>({key:k,...o})).sort((a,b)=>a.in.localeCompare(b.in));
+  const pend=CLOCK.adjustments.filter(a=>a.status==='pending');
+  const decided=CLOCK.adjustments.filter(a=>a.status!=='pending').slice(0,10);
+  const members=allMemberKeys().map(mk=>({...mk, week:minsForKey(mk.key,{weekOnly:true,includeOpen:true}), on:!!CLOCK.open[mk.key]})).sort((a,b)=>b.week-a.week);
+  $('#view').innerHTML = `
+    <button class="chip" id="cbBack" style="margin-bottom:16px">← Back to my clock</button>
+    <div class="subline" style="margin-bottom:16px">Live duty status, time-adjustment requests, and weekly tracked hours for the whole department.${WEBHOOK.url?' Decisions post to Discord.':''}</div>
+
+    <div class="pay-totals" style="margin-bottom:22px">
+      <div class="pt big"><div class="k">On duty now</div><div class="v">${onDuty.length}</div></div>
+      <div class="pt"><div class="k">Pending requests</div><div class="v"${pend.length?' style="color:var(--amber)"':''}>${pend.length}</div></div>
+      <div class="pt"><div class="k">Members tracked</div><div class="v">${members.length}</div></div>
+      <div class="pt"><div class="k">Dept hours (wk)</div><div class="v">${fmtHM(members.reduce((a,m)=>a+m.week,0))}</div></div>
+    </div>
+
+    <div class="div-h"><span class="t">On duty now</span><span class="ct">${onDuty.length}</span><span class="rule"></span></div>
+    ${onDuty.length? `<div class="rtable" style="margin-bottom:8px">${onDuty.map(o=>`<div class="rrow" style="grid-template-columns:1fr 120px 96px"><span class="nm">${esc(o.name||'Unknown')}</span><span class="hire">since ${new Date(o.in).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span><span class="st"><span class="live-elapsed mono" data-in="${o.in}" style="color:var(--teal)">${fmtClock(Date.now()-new Date(o.in))}</span></span></div>`).join('')}</div>` : '<div class="mini-empty" style="margin-bottom:8px">Nobody is clocked in right now.</div>'}
+
+    <div class="div-h" style="margin-top:22px"><span class="t">Adjustment requests</span><span class="ct">${pend.length} pending</span><span class="pay" style="margin-left:auto"><button class="tbtn" id="cbCsv">⤓ CSV</button></span><span class="rule" style="flex:0"></span></div>
+    <div id="adjList"></div>
+
+    ${decided.length?`<div class="div-h" style="margin-top:22px"><span class="t">Recent decisions</span><span class="rule"></span></div><div class="rtable">${decided.map(a=>`<div class="rrow" style="grid-template-columns:1fr auto auto;gap:12px"><span class="nm">${esc(a.name)} <span class="mono" style="color:${a.type==='add'?'var(--teal)':'var(--red)'}">${a.type==='add'?'+':'−'}${a.mins}m</span></span><span class="app-badge ${a.status==='approved'?'approved':'denied'}"><span class="d"></span>${a.status}</span><span class="hire">${a.review?timeAgo(a.review.at):''}</span></div>`).join('')}</div>`:''}
+
+    <div class="div-h" style="margin-top:22px"><span class="t">Weekly tracked hours</span><span class="ct">${members.length}</span><span class="rule"></span></div>
+    ${members.length?`<div class="rtable">${members.map(m=>`<div class="rrow" style="grid-template-columns:1fr 110px 90px"><span class="nm">${esc(m.name||'Unknown')}</span><span class="st">${m.on?'<span class="badge active"><span class="d"></span>On duty</span>':'<span class="badge vac">Off</span>'}</span><span class="hire mono" style="text-align:right;color:var(--ink)">${fmtHM(m.week)}</span></div>`).join('')}</div>`:'<div class="mini-empty">No tracked time yet.</div>'}`;
+  $('#cbBack').onclick=renderClock;
+  $('#cbCsv').onclick=exportClockCsv;
+  paintAdjQueue();
+}
+function paintAdjQueue(){
+  const pend=CLOCK.adjustments.filter(a=>a.status==='pending');
+  if(!pend.length){ $('#adjList').innerHTML='<div class="mini-empty">No pending time adjustments.</div>'; return; }
+  $('#adjList').innerHTML = pend.map(a=>{
+    const cap = a.type==='add' ? (a.mins>60?'<span class="over">over 60-min cap</span>':'within cap') : 'removal · uncapped';
+    return `<div class="app-card pending">
+      <div class="ac-head"><span class="ac-name">${esc(a.name||'Unknown')}</span><span class="mono" style="color:${a.type==='add'?'var(--teal)':'var(--red)'};font-size:16px;font-weight:700">${a.type==='add'?'+':'−'}${a.mins} min</span><span class="ac-when">${timeAgo(a.at)}</span></div>
+      <div class="ac-body"><div class="ac-facts"><div class="f"><div class="k">Type</div><div class="v">${a.type==='add'?'Add time':'Remove time'}</div></div><div class="f"><div class="k">Cap</div><div class="v">${cap}</div></div></div><div class="ac-qa"><div class="q">Reason</div><div class="a">${esc(a.reason||'—')}</div></div></div>
+      <div class="ac-actions"><button class="abtn ok" data-ok="${a.id}">✓ Approve</button><button class="abtn no" data-no="${a.id}">✕ Deny</button></div>
+    </div>`;
+  }).join('');
+  $$('#adjList [data-ok]').forEach(b=>b.onclick=()=>decideAdjustment(b.dataset.ok,'approved'));
+  $$('#adjList [data-no]').forEach(b=>b.onclick=()=>decideAdjustment(b.dataset.no,'denied'));
+}
+function allMemberKeys(){ const map={}; const add=(k,nm)=>{ if(!map[k]) map[k]={key:k,name:nm}; else if(nm&&!map[k].name) map[k].name=nm; };
+  CLOCK.shifts.forEach(s=>add(keyOf(s),s.name));
+  CLOCK.adjustments.forEach(a=>add(keyOf(a),a.name));
+  Object.entries(CLOCK.open||{}).forEach(([k,o])=>add(k,o.name));
+  return Object.values(map);
+}
+function exportClockCsv(){
+  const rows=[['Member','On duty','Week hours (min)','Week hours']];
+  allMemberKeys().map(mk=>({...mk,week:minsForKey(mk.key,{weekOnly:true,includeOpen:true}),on:!!CLOCK.open[mk.key]})).sort((a,b)=>b.week-a.week)
+    .forEach(m=>rows.push([m.name,m.on?'yes':'no',m.week,fmtHM(m.week)]));
+  const csv=rows.map(r=>r.map(c=>{const s=String(c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  dl(new Blob([csv],{type:'text/csv'}),'empire-ems-timeclock.csv');
+}
 
 /* ============================ SOP DATA ============================ */
 const SOPS = [
@@ -657,7 +1585,8 @@ function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Ma
 function initials(n){return (n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();}
 
 /* live clock */
-setInterval(()=>{const el=$('#clock');if(el){el.textContent=new Date().toTimeString().slice(0,8);}},1000);
+setInterval(()=>{const el=$('#clock');if(el){el.textContent=new Date().toTimeString().slice(0,8);} tickLive();},1000);
+function tickLive(){ $$('.live-elapsed').forEach(el=>{ const t=el.dataset.in; if(t) el.textContent=fmtClock(Date.now()-new Date(t)); }); }
 
 /* ============================ SESSION ============================ */
 let USER = null; // {name, role, avatar, guest}
@@ -719,6 +1648,15 @@ function showGate(){
 function enterApp(){
   $('#gate').style.display='none';
   $('#app').classList.add('on');
+  loadPayroll();
+  loadApps();
+  loadScores();
+  loadClock();
+  updatePayrollTag();
+  updateAppsTag();
+  updateExamsTag();
+  updateClockTag();
+  appsView='auto';
   paintWho();
   setView('dash');
 }
@@ -731,13 +1669,16 @@ function paintWho(){
 }
 
 /* ============================ ROUTER ============================ */
-const TITLES = {dash:'Dashboard', roster:'Roster', sops:'Standard Operating Procedures', exams:'Exams'};
+const TITLES = {dash:'Dashboard', roster:'Roster', clock:'Time Clock', payroll:'Weekly Payroll', apps:'EMS Applications', sops:'Standard Operating Procedures', exams:'Exams'};
 function setView(v){
   $$('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
   $('#viewTitle').textContent = TITLES[v]||'';
   closeSide();
   if(v==='dash') renderDash();
   else if(v==='roster') renderRoster();
+  else if(v==='clock') renderClock();
+  else if(v==='payroll') renderPayroll();
+  else if(v==='apps') renderApps();
   else if(v==='sops') renderSops();
   else if(v==='exams') renderExamsHome();
   window.scrollTo({top:0});
@@ -751,6 +1692,15 @@ function rosterStats(){
 }
 function renderDash(){
   const s = rosterStats();
+  const grossNow = (PAYROLL && curWeek()) ? payablePeople().reduce((a,p)=>a+payFor(p),0) : 0;
+  const mgr = canEditPayroll();
+  const pend = pendingApps();
+  const onDuty = CLOCK ? onDutyCount() : 0;
+  const iAmOn = !!(CLOCK && myOpenShift());
+  const clockLink = `<button class="qlink" data-go="clock">${iAmOn?'You\'re on duty — clock out':'Clock in for a shift'}${onDuty?` <span style="color:var(--teal)">· ${onDuty} on duty</span>`:''}<span class="ar">→</span></button>`;
+  const appsLink = mgr
+    ? `<button class="qlink" data-go="apps">Review applications${pend?` <span style="color:var(--amber)">· ${pend} pending</span>`:''}<span class="ar">→</span></button>`
+    : `<button class="qlink" data-go="apps">Apply to Empire EMS<span class="ar">→</span></button>`;
   const first = (USER.name||'').split(/\s|—/)[0];
   const byRank = DIVISIONS.map(d=>({name:d.name.split(/[—&]/)[0].trim(), n:d.members.filter(m=>m.nm).length}));
   const max = Math.max(...byRank.map(r=>r.n),1);
@@ -759,15 +1709,19 @@ function renderDash(){
     <div class="subline">${USER.guest?'Guest access — full read of the roster, SOPs, and exams.':'You\'re signed in as a verified employee.'} Empire RP · Pillbox Medical.</div>
     <div class="stat-grid">
       <div class="stat accent"><div class="k">Active on roster</div><div class="v">${s.active}</div></div>
-      <div class="stat"><div class="k">Filled callsigns</div><div class="v">${s.filled}<small>/${s.total}</small></div></div>
+      <div class="stat"><div class="k">On duty now</div><div class="v"${onDuty?' style="color:var(--teal)"':''}>${onDuty}</div></div>
+      <div class="stat"><div class="k">This week's payroll</div><div class="v" style="font-size:29px">${money(grossNow)}</div></div>
       <div class="stat"><div class="k">On LOA</div><div class="v">${s.loa}</div></div>
-      <div class="stat"><div class="k">Divisions</div><div class="v">${DIVISIONS.length}</div></div>
+      ${mgr?`<div class="stat"><div class="k">Pending apps</div><div class="v"${pend?' style="color:var(--amber)"':''}>${pend}</div></div>`:''}
     </div>
     <div class="grid2">
       <div class="block">
         <h3>Jump in</h3>
         <div class="inner"><div class="quick">
+          ${clockLink}
           <button class="qlink" data-go="roster">View the roster<span class="ar">→</span></button>
+          ${appsLink}
+          <button class="qlink" data-go="payroll">Open weekly payroll<span class="ar">→</span></button>
           <button class="qlink" data-go="sops">Read the SOPs<span class="ar">→</span></button>
           <button class="qlink" data-go="exams">Take the Intern exam<span class="ar">→</span></button>
         </div></div>
@@ -845,8 +1799,11 @@ function renderSops(){
 /* ============================ EXAMS ============================ */
 function renderExamsHome(){
   window.removeEventListener('scroll', window.__sopspy||(()=>{}));
+  if(!SCORES) loadScores();
+  const mgr=canEditPayroll();
   $('#view').innerHTML = `
-    <div class="subline" style="margin-bottom:20px">Certification and advancement exams. You need the listed score to pass. Nothing is submitted automatically — screenshot your result for your FTO.</div>
+    ${mgr?`<div class="pay-bar" style="margin-bottom:18px"><span class="mode-tag edit"><span class="d"></span>Management</span><div class="pay-tools"><button class="tbtn go" id="viewScores">▤ Exam results · ${SCORES.results.length} recorded ▸</button></div></div>`:''}
+    <div class="subline" style="margin-bottom:20px">Certification and advancement exams. You need the listed score to pass. ${mgr?'Every attempt is recorded to the results board above.':'Your score is logged for management when you finish.'}</div>
     <div class="exam-grid">
       ${EXAMS.map(e=>`
         <div class="exam-card ${e.locked?'locked':''}">
@@ -858,6 +1815,7 @@ function renderExamsHome(){
           <button class="btn ${e.locked?'':'wide'}" data-exam="${e.id}" ${e.locked?'disabled':''}>${e.locked?'Locked':'Begin exam ▸'}</button>
         </div>`).join('')}
     </div>`;
+  if(mgr) $('#viewScores').onclick=renderScoreBoard;
   $$('#view [data-exam]').forEach(b=>{ if(!b.disabled) b.onclick=()=>startExam(b.dataset.exam); });
 }
 
@@ -868,6 +1826,7 @@ function startExam(id){
   exOrder = shuffle([...Array(EX.questions.length).keys()]);
   exAns = new Array(EX.questions.length).fill(null);
   exIdx = 0;
+  scoreSaved = false;
   renderQ();
 }
 function examShell(inner){ $('#view').innerHTML = `<div style="max-width:680px">${inner}</div>`; }
@@ -899,6 +1858,11 @@ function renderResults(){
   const total=EX.questions.length; let correct=0; const byCat={};
   exOrder.forEach(qi=>{const Q=EX.questions[qi];const ok=exAns[qi]===Q.correct;if(ok)correct++;byCat[Q.cat]=byCat[Q.cat]||{c:0,t:0};byCat[Q.cat].t++;if(ok)byCat[Q.cat].c++;});
   const pct=Math.round(correct/total*100), passed=pct>=EX.pass;
+  if(!scoreSaved){
+    recordScore({ id:uid(), exam:EX.id, examTitle:EX.title, name:(USER&&USER.name)||'Unknown', discordId:(USER&&USER.id)||'', guest:!!(USER&&USER.guest), at:new Date().toISOString(), pct, passed, correct, total, pass:EX.pass, byCat });
+    scoreSaved=true;
+  }
+  const logged = WEBHOOK.url ? 'Your result was sent to Empire EMS management.' : 'Your result has been logged for management review on this device.';
   const rows=Object.entries(byCat).sort((a,b)=>a[0].localeCompare(b[0])).map(([n,{c,t}])=>{const p=c/t,low=p<0.6;return `<div class="brow"><span class="name">${esc(n)}</span><span class="bt ${low?'low':''}"><i style="width:${Math.round(p*100)}%"></i></span><span class="frac">${c}/${t}</span></div>`;}).join('');
   examShell(`
     <div class="score-hero">
@@ -907,7 +1871,7 @@ function renderResults(){
       <div class="score-sub">${correct} / ${total} correct · ${esc(USER.name)} · pass mark ${EX.pass}%</div>
     </div>
     <div class="breakdown">${rows}</div>
-    <p class="missed-note">${passed?'Screenshot this breakdown and send it to your FTO in your ticket.':`${total-correct} to review. Retake once you're solid on the weak sections — retakes reshuffle.`}</p>
+    <p class="missed-note">${passed?logged+' Screenshot the breakdown for your FTO too.':`${logged} ${total-correct} to review — retake once you're solid on the weak sections (retakes reshuffle).`}</p>
     <div class="btn-row"><button class="btn ghost" id="review">Review answers</button><button class="btn" id="retake">Retake exam</button></div>
     <div style="text-align:center;margin-top:16px"><button class="chip" id="done">← Back to all exams</button></div>`);
   $('#retake').onclick=()=>startExam(EX.id);
