@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empire EMS — Dispatch Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d141c;
+    --panel:#141e29;
+    --panel-2:#1b2836;
+    --line:#2a3a4c;
+    --line-soft:#22303f;
+    --ink:#e8eef4;
+    --muted:#8fa3b8;
+    --faint:#54697e;
+    --red:#e63946;
+    --red-deep:#b31f2c;
+    --teal:#37c9a3;
+    --amber:#f2b134;
+    --blurple:#5865f2;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:
+      radial-gradient(1100px 500px at 50% -10%, #16222f 0%, transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;line-height:1.5;
+  }
+  a{color:inherit}
+  ::selection{background:rgba(230,57,70,.35)}
+  .mono{font-family:'JetBrains Mono',monospace}
+
+  /* ===================== SHARED CHROME ===================== */
+  .cross{
+    flex:0 0 auto;width:30px;height:30px;border-radius:7px;
+    background:var(--red);position:relative;
+    box-shadow:0 0 0 3px rgba(230,57,70,.18);
+  }
+  .cross::before,.cross::after{content:"";position:absolute;background:var(--white);border-radius:1px}
+  .cross::before{width:16px;height:5px;top:12.5px;left:7px}
+  .cross::after{width:5px;height:16px;top:7px;left:12.5px}
+  .cross.sm{width:24px;height:24px;border-radius:6px}
+  .cross.sm::before{width:13px;height:4px;top:10px;left:5.5px}
+  .cross.sm::after{width:4px;height:13px;top:5.5px;left:10px}
+
+  .btn{
+    appearance:none;border:none;cursor:pointer;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:.07em;
+    text-transform:uppercase;color:#fff;
+    background:linear-gradient(180deg,var(--red),var(--red-deep));
+    padding:13px 20px;border-radius:10px;transition:transform .05s ease,filter .15s ease;
+  }
+  .btn:hover{filter:brightness(1.08)}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--red);filter:none}
+  .btn.wide{width:100%}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.discord{background:linear-gradient(180deg,#6b78ff,var(--blurple));display:inline-flex;align-items:center;gap:10px;justify-content:center}
+
+  /* ===================== LOGIN GATE ===================== */
+  #gate{display:grid;place-items:center;min-height:100vh;padding:24px 16px}
+  .card{
+    width:100%;max-width:440px;
+    border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border-radius:16px;overflow:hidden;box-shadow:0 30px 70px -25px #000;
+  }
+  .card .bar{
+    display:flex;align-items:center;gap:12px;padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg,var(--red-deep),transparent 72%);
+  }
+  .card .bar h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+  .card .bar .sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:#f3c9cd;letter-spacing:.14em;margin-top:4px}
+  .card .body{padding:26px 24px}
+  .lead{font-size:14.5px;color:var(--muted);margin-bottom:22px}
+  .lead b{color:var(--ink)}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .field input{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:12px 14px;border-radius:9px;font-family:'Inter',sans-serif;font-size:15px}
+  .field input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(230,57,70,.18)}
+  .divider{display:flex;align-items:center;gap:14px;margin:22px 0;color:var(--faint);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em}
+  .divider::before,.divider::after{content:"";height:1px;background:var(--line);flex:1}
+  .note{font-size:11.5px;color:var(--faint);line-height:1.55;margin-top:14px;font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+  .note code{color:var(--amber)}
+  .cfgwarn{border:1px solid #4a3a1c;background:rgba(242,177,52,.06);border-radius:9px;padding:11px 13px;margin-top:16px;font-size:11.5px;color:#e8c98a;line-height:1.5}
+
+  /* ===================== APP SHELL ===================== */
+  #app{display:none}
+  #app.on{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+  .side{
+    border-right:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),#0f1822);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding:18px 18px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,var(--red-deep),transparent 80%)}
+  .brand h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:.05em;text-transform:uppercase;line-height:1}
+  .brand .sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:#f3c9cd;letter-spacing:.16em;margin-top:3px}
+  nav.tabs{padding:12px 10px;display:flex;flex-direction:column;gap:3px;flex:1}
+  .tab{
+    display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
+    background:transparent;border:1px solid transparent;color:var(--muted);
+    padding:11px 12px;border-radius:9px;font-size:14px;font-weight:500;transition:.12s;
+  }
+  .tab .ic{width:18px;text-align:center;color:var(--faint);font-size:14px}
+  .tab .cs{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);letter-spacing:.08em}
+  .tab:hover{background:var(--panel-2);color:var(--ink)}
+  .tab.active{background:rgba(230,57,70,.1);border-color:rgba(230,57,70,.35);color:var(--ink)}
+  .tab.active .ic{color:var(--red)}
+  .who{border-top:1px solid var(--line);padding:14px 14px;display:flex;align-items:center;gap:11px}
+  .who .av{width:34px;height:34px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);object-fit:cover;flex:0 0 auto;display:grid;place-items:center;font-family:'Barlow Condensed';font-weight:700;color:var(--muted)}
+  .who .meta{min-width:0}
+  .who .nm{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .who .rl{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .who .out{margin-left:auto;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:6px 8px;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;letter-spacing:.06em}
+  .who .out:hover{border-color:var(--red);color:var(--ink)}
+
+  main{min-width:0}
+  .topbar{
+    display:flex;align-items:center;gap:12px;padding:13px 26px;
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
+    background:rgba(13,20,28,.86);backdrop-filter:blur(8px);
+  }
+  .topbar .ttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;letter-spacing:.05em;text-transform:uppercase}
+  .topbar .status{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.1em;text-align:right;line-height:1.5}
+  .topbar .status .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);margin-right:5px;vertical-align:middle;box-shadow:0 0 8px var(--teal)}
+  .view{padding:26px 26px 90px;max-width:1080px}
+
+  .foot{text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:.1em;padding:20px}
+
+  /* ===================== DASHBOARD ===================== */
+  .hello{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px;letter-spacing:.02em;line-height:1.05;margin-bottom:4px}
+  .hello .hi{color:var(--muted);font-weight:600}
+  .subline{color:var(--muted);font-size:13.5px;margin-bottom:26px}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:28px}
+  .stat{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel-2),var(--panel));border-radius:13px;padding:16px 17px}
+  .stat .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+  .stat .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:38px;line-height:.9}
+  .stat .v small{font-size:16px;color:var(--muted);font-weight:600}
+  .stat.accent{border-color:rgba(230,57,70,.4);background:linear-gradient(180deg,rgba(230,57,70,.12),var(--panel))}
+  .stat.accent .v{color:var(--red)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .block{border:1px solid var(--line);background:var(--panel);border-radius:13px;overflow:hidden}
+  .block h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;padding:14px 18px;border-bottom:1px solid var(--line);color:var(--ink);background:var(--panel-2)}
+  .block .inner{padding:16px 18px}
+  .quick{display:flex;flex-direction:column;gap:8px}
+  .qlink{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:9px;background:var(--bg);cursor:pointer;color:var(--ink);font-size:14px;text-align:left;transition:.12s}
+  .qlink:hover{border-color:var(--red);background:var(--panel-2)}
+  .qlink .ar{margin-left:auto;color:var(--red);font-weight:700}
+  .rankbar{display:flex;flex-direction:column;gap:11px}
+  .rb{display:flex;align-items:center;gap:10px}
+  .rb .lab{width:112px;font-size:12.5px;color:var(--muted)}
+  .rb .tk{flex:1;height:7px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--line-soft)}
+  .rb .tk>i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--amber))}
+  .rb .n{width:30px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+
+  /* ===================== ROSTER ===================== */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:11px 13px 11px 36px;border-radius:9px;font-size:14px}
+  .search input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(230,57,70,.15)}
+  .search::before{content:"⌕";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;transition:.12s}
+  .chip:hover{border-color:#3d5670;color:var(--ink)}
+  .chip.on{background:rgba(230,57,70,.14);border-color:rgba(230,57,70,.45);color:var(--ink)}
+
+  .div-h{display:flex;align-items:center;gap:12px;margin:24px 0 12px}
+  .div-h .t{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.12em;text-transform:uppercase}
+  .div-h .ct{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+  .div-h .pay{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal)}
+  .div-h .rule{height:1px;background:var(--line);flex:1}
+
+  .rtable{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--panel)}
+  .rrow{display:grid;grid-template-columns:74px 1fr 120px 96px;gap:12px;align-items:center;padding:11px 15px;border-bottom:1px solid var(--line-soft);font-size:14px}
+  .rrow:last-child{border-bottom:none}
+  .rrow:hover{background:var(--panel-2)}
+  .rrow .cs{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--amber);font-weight:700;letter-spacing:.04em}
+  .rrow .nm{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rrow .nm.vac{color:var(--faint);font-style:italic;font-weight:400}
+  .rrow .hire{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)}
+  .rrow .st{justify-self:end}
+  .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:6px;border:1px solid;display:inline-flex;align-items:center;gap:5px}
+  .badge .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .badge.active{color:var(--teal);border-color:rgba(55,201,163,.4);background:rgba(55,201,163,.08)}
+  .badge.loa{color:var(--amber);border-color:rgba(242,177,52,.4);background:rgba(242,177,52,.08)}
+  .badge.vac{color:var(--faint);border-color:var(--line);background:transparent}
+  .empty{padding:40px;text-align:center;color:var(--muted);font-size:14px}
+
+  /* ===================== SOP ===================== */
+  .sop-wrap{display:grid;grid-template-columns:212px 1fr;gap:26px;align-items:start}
+  .sop-nav{position:sticky;top:74px;display:flex;flex-direction:column;gap:2px}
+  .sop-nav a{padding:8px 11px;border-radius:8px;font-size:13px;color:var(--muted);border-left:2px solid transparent;cursor:pointer}
+  .sop-nav a:hover{color:var(--ink);background:var(--panel)}
+  .sop-nav a.on{color:var(--ink);border-left-color:var(--red);background:rgba(230,57,70,.08)}
+  .sop-body{max-width:680px}
+  .sop-sec{margin-bottom:34px;scroll-margin-top:82px}
+  .sop-sec h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:11px}
+  .sop-sec h2 .no{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--red);letter-spacing:.05em;font-weight:700}
+  .sop-sec .rule{height:2px;background:linear-gradient(90deg,var(--red),transparent);margin-bottom:16px}
+  .sop-sec p{font-size:14.5px;color:#c8d5e2;margin-bottom:12px}
+  .sop-sec ul{list-style:none;margin-bottom:12px}
+  .sop-sec li{position:relative;padding:7px 0 7px 22px;font-size:14px;color:#c8d5e2;border-bottom:1px solid var(--line-soft)}
+  .sop-sec li:last-child{border-bottom:none}
+  .sop-sec li::before{content:"▸";position:absolute;left:2px;top:7px;color:var(--red)}
+  .sop-sec li b{color:var(--ink)}
+  .callout{border-left:3px solid var(--amber);background:rgba(242,177,52,.06);border-radius:0 9px 9px 0;padding:12px 16px;font-size:13.5px;color:#e6d6ad;margin:14px 0}
+  .callout b{color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+  .callout.red{border-left-color:var(--red);background:rgba(230,57,70,.07);color:#f0c4c8}
+  .callout.red b{color:var(--red)}
+
+  /* ===================== EXAMS ===================== */
+  .exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+  .exam-card{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel-2),var(--panel));border-radius:13px;padding:20px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
+  .exam-card .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+  .exam-card h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;letter-spacing:.03em;text-transform:uppercase}
+  .exam-card p{font-size:13px;color:var(--muted);margin:2px 0 14px;flex:1}
+  .exam-card .meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);margin-bottom:14px}
+  .exam-card.locked{opacity:.6}
+  .exam-card .lock{position:absolute;top:16px;right:16px;font-size:14px;color:var(--faint)}
+
+  /* exam runner */
+  .prog-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .prog-head .cat{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--red);text-transform:uppercase}
+  .prog-head .count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .track{height:6px;background:var(--bg);border:1px solid var(--line);border-radius:99px;overflow:hidden;margin-bottom:24px}
+  .track>i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--amber));transition:width .3s ease}
+  .qnum{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--muted);margin-bottom:8px}
+  .qtext{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:24px;line-height:1.25;margin-bottom:20px}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{text-align:left;cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 15px 14px 48px;position:relative;color:var(--ink);font-size:15px;transition:border-color .12s ease,background .12s ease}
+  .opt:hover:not(.locked){border-color:#3d5670;background:#1f2f40}
+  .opt .key{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:6px;border:1px solid var(--line);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .opt.correct{border-color:var(--teal);background:rgba(55,201,163,.12)}
+  .opt.correct .key{background:var(--teal);border-color:var(--teal);color:#04231b}
+  .opt.wrong{border-color:var(--red);background:rgba(230,57,70,.12)}
+  .opt.wrong .key{background:var(--red);border-color:var(--red);color:#fff}
+  .opt.locked{cursor:default}
+  .opt.dim{opacity:.5}
+  .explain{margin-top:16px;border-left:3px solid var(--red);background:var(--bg);border-radius:0 8px 8px 0;padding:13px 16px;font-size:13.5px;color:#c4d2df}
+  .explain b{color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+  .nav{margin-top:22px}
+  .score-hero{text-align:center;padding:8px 0 20px}
+  .verdict{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
+  .verdict.pass{color:var(--teal)}
+  .verdict.fail{color:var(--red)}
+  .bignum{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:76px;line-height:.9}
+  .bignum small{font-size:30px;color:var(--muted)}
+  .score-sub{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:8px;letter-spacing:.06em}
+  .breakdown{margin:22px 0 6px}
+  .brow{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .brow:last-child{border-bottom:none}
+  .brow .name{flex:1;font-size:13.5px}
+  .brow .bt{width:120px;height:5px;background:var(--bg);border-radius:99px;overflow:hidden}
+  .brow .bt>i{display:block;height:100%;background:var(--teal)}
+  .brow .bt.low>i{background:var(--red)}
+  .brow .frac{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);width:42px;text-align:right}
+  .btn-row{display:flex;gap:12px;margin-top:24px}
+  .btn-row .btn{flex:1}
+  .missed-note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:16px}
+
+  /* ===================== RESPONSIVE ===================== */
+  .menu-btn{display:none}
+  @media (max-width:860px){
+    #app.on{grid-template-columns:1fr}
+    .side{position:fixed;left:0;top:0;z-index:40;width:250px;transform:translateX(-100%);transition:transform .2s ease}
+    .side.open{transform:none;box-shadow:0 0 60px #000}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30}
+    .scrim.on{display:block}
+    .menu-btn{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);background:var(--panel);border-radius:9px;cursor:pointer;color:var(--ink);font-size:16px}
+    .grid2{grid-template-columns:1fr}
+    .sop-wrap{grid-template-columns:1fr}
+    .sop-nav{position:static;flex-direction:row;flex-wrap:wrap;margin-bottom:8px}
+    .rrow{grid-template-columns:64px 1fr 84px;gap:9px}
+    .rrow .hire{display:none}
+    .view{padding:20px 16px 80px}
+  }
+  @media (max-width:480px){
+    .qtext{font-size:21px}.bignum{font-size:60px}.btn-row{flex-direction:column}
+    .rrow{grid-template-columns:60px 1fr;gap:8px}
+    .rrow .st{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================ LOGIN GATE ============================ -->
+<div id="gate">
+  <div class="card">
+    <div class="bar">
+      <div class="cross" aria-hidden="true"></div>
+      <div>
+        <h1>Empire EMS</h1>
+        <div class="sub">DISPATCH PORTAL · SECURE TERMINAL</div>
+      </div>
+    </div>
+    <div class="body">
+      <p class="lead">Sign in with the Discord account tied to your <b>Empire EMS</b> employment to reach the roster, SOPs, and certification exams.</p>
+
+      <button class="btn discord wide" id="discordBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.8 19.8 0 0 0 15.885 3a13.6 13.6 0 0 0-.617 1.267 18.3 18.3 0 0 0-5.535 0A13 13 0 0 0 9.11 3a19.7 19.7 0 0 0-4.43 1.372C1.87 8.573 1.104 12.67 1.49 16.71a19.9 19.9 0 0 0 6.06 3.058 14.6 14.6 0 0 0 1.297-2.11 12.9 12.9 0 0 1-2.043-.978c.171-.125.339-.256.5-.39a14.2 14.2 0 0 0 12.19 0c.163.14.331.27.5.39a12.8 12.8 0 0 1-2.047.98 14.4 14.4 0 0 0 1.297 2.108 19.8 19.8 0 0 0 6.063-3.058c.454-4.686-.776-8.745-3.29-12.34ZM8.02 14.278c-1.183 0-2.157-1.085-2.157-2.42 0-1.334.955-2.42 2.157-2.42 1.21 0 2.176 1.095 2.157 2.42 0 1.335-.955 2.42-2.157 2.42Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.42 0-1.334.955-2.42 2.157-2.42 1.21 0 2.176 1.095 2.157 2.42 0 1.335-.946 2.42-2.157 2.42Z"/></svg>
+        Sign in with Discord
+      </button>
+
+      <div class="divider">OR</div>
+
+      <div class="field">
+        <label for="guestName">Continue as guest — name / callsign</label>
+        <input id="guestName" placeholder="e.g. Ivy Kay — I-80" autocomplete="off">
+      </div>
+      <button class="btn ghost wide" id="guestBtn">Enter as guest ▸</button>
+
+      <div class="cfgwarn" id="cfgWarn" style="display:none"></div>
+      <p class="note">Guest mode gives full read access for training. Discord sign-in is required to be recognized as an active employee. <span id="cfgHint"></span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ APP SHELL ============================ -->
+<div id="app">
+  <div class="scrim" id="scrim"></div>
+  <aside class="side" id="side">
+    <div class="brand">
+      <div class="cross" aria-hidden="true"></div>
+      <div><h1>Empire EMS</h1><div class="sub">DISPATCH PORTAL</div></div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-view="dash"><span class="ic">◧</span>Dashboard</button>
+      <button class="tab" data-view="roster"><span class="ic">☰</span>Roster<span class="cs" id="rosterCount"></span></button>
+      <button class="tab" data-view="sops"><span class="ic">§</span>SOPs</button>
+      <button class="tab" data-view="exams"><span class="ic">✎</span>Exams</button>
+    </nav>
+    <div class="who">
+      <div class="av" id="whoAv">—</div>
+      <div class="meta">
+        <div class="nm" id="whoName">—</div>
+        <div class="rl" id="whoRole">—</div>
+      </div>
+      <button class="out" id="logoutBtn">Exit</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+      <div class="ttl" id="viewTitle">Dashboard</div>
+      <div class="status"><span class="dot"></span>TERMINAL ONLINE<br><span class="mono" id="clock">--:--:--</span></div>
+    </div>
+    <div class="view" id="view"><!-- rendered by JS --></div>
+    <div class="foot">EMPIRE RP · PILLBOX MEDICAL · UNOFFICIAL DEPARTMENT PORTAL</div>
+  </main>
+</div>
+
+<script>
+/* =====================================================================
+   CONFIG  —  set these two values to enable real Discord sign-in.
+   1. Make a Discord application: https://discord.com/developers/applications
+   2. Copy its Client ID below.
+   3. Under OAuth2 → Redirects, add the EXACT URL this page is hosted at
+      (e.g. https://empire-ems.netlify.app/ ) and paste the same URL below.
+   Leave clientId "" to run in guest-only demo mode.
+   ===================================================================== */
+const DISCORD = {
+  clientId:   "",   // <-- paste your Discord Client ID here
+  redirectUri:"",   // <-- paste the hosted URL here (must match Discord portal)
+  scope:      "identify"
+};
+
+/* ============================ SAFE STORAGE ============================
+   sessionStorage is used when available (keeps you logged in across
+   refresh on your real site) and silently falls back to memory in
+   sandboxed previews. */
+const store = (()=>{ let mem={}; try{ const k="__t";sessionStorage.setItem(k,"1");sessionStorage.removeItem(k);
+  return {get:k=>sessionStorage.getItem(k),set:(k,v)=>sessionStorage.setItem(k,v),del:k=>sessionStorage.removeItem(k)};
+}catch(e){ return {get:k=>mem[k]??null,set:(k,v)=>{mem[k]=v},del:k=>{delete mem[k]}};} })();
+
+/* ============================ ROSTER DATA ============================
+   Pulled from the Empire EMS Roster & Payroll sheet. Names are the
+   in-character personnel assigned to each callsign. */
+const PAY = { staff:12000, medboard:11000, command:12000, mgmt:11000, head:9000, para:8000, aemt:7000, emt:6000, intern:5000 };
+const DIVISIONS = [
+  { key:"command", name:"High Command & Staff", pay:"$11K–$12K / hr", members:[
+    {cs:"B-420", nm:"BLK", role:"Empire OS", st:"active"},
+    {cs:"—",     nm:"Kat", role:"Medboard Lead", st:"active"},
+    {cs:"N/A",   nm:"Briz", role:"Medboard", st:"active"},
+    {cs:"M-1",   nm:"Raine Garcia", role:"Medboard", st:"loa", hire:"", loa:"14/06 – 20/06"},
+    {cs:"M-2",   nm:"Luna Smith", role:"Medboard", st:"active"},
+    {cs:"M-3",   nm:"Clark Smith", role:"Medboard", st:"active"},
+    {cs:"C-1",   nm:"Joshua Wilks", role:"Chief", st:"active"},
+    {cs:"AC-1",  nm:"Jimmy Neutron", role:"Assistant Chief", st:"active"},
+  ]},
+  { key:"mgmt", name:"Management", pay:"$11,000 / hr", members:[
+    {cs:"HM-1", nm:"Bonnie Lin", role:"Hospital Manager", st:"active"},
+    {cs:"HM-2", nm:"", role:"Hospital Manager", st:"vac"},
+    {cs:"CM-1", nm:"Drew Lin", role:"Compliance Manager", st:"active"},
+    {cs:"HR-1", nm:"Teal Edge", role:"Human Resources", st:"active"},
+    {cs:"HR-2", nm:"Jaymee Stark", role:"Human Resources", st:"active"},
+    {cs:"RM-1", nm:"Cletus Kirk", role:"Response Manager", st:"active"},
+  ]},
+  { key:"head", name:"Head Staff — Doctors · Nurses · Paramedics", pay:"$9,000 / hr", members:[
+    {cs:"HP-1", nm:"Jerimah Smith", role:"Head Paramedic", st:"active"},
+    {cs:"HP-2", nm:"", role:"Head Paramedic", st:"vac"},
+    {cs:"HN-1", nm:"", role:"Head Nurse", st:"vac"},
+    {cs:"HD-1", nm:"", role:"Head Doctor", st:"vac"},
+    {cs:"ND-1", nm:"", role:"Nurse Director", st:"vac"},
+  ]},
+  { key:"para", name:"Paramedics", pay:"$8,000 / hr", members:[
+    {cs:"P-1", nm:"Deejay Droolz", role:"Paramedic", st:"active"},
+    {cs:"P-2", nm:"Elena Val", role:"Paramedic", st:"active"},
+    {cs:"P-3", nm:"Johny Blaze", role:"Paramedic", st:"active"},
+    {cs:"P-5", nm:"Perseus Sinclair", role:"Paramedic", st:"active"},
+    {cs:"P-6", nm:"John Smith", role:"Paramedic", st:"active"},
+  ]},
+  { key:"aemt", name:"Advanced EMTs", pay:"$7,000 / hr", members:[
+    {cs:"A-13", nm:"Miranda Mireles", role:"Advanced EMT", st:"loa", loa:"5/24 – 6/5"},
+    {cs:"A-14", nm:"Alyssa Mcallister", role:"Advanced EMT", st:"active"},
+    {cs:"A-15", nm:"Emi Love", role:"Advanced EMT", st:"active"},
+    {cs:"A-16", nm:"Johnny Sins", role:"Advanced EMT", st:"active"},
+    {cs:"A-18", nm:"Gutta Dre", role:"Advanced EMT", st:"active"},
+  ]},
+  { key:"emt", name:"EMTs", pay:"$6,000 / hr", members:[
+    {cs:"E-26", nm:"Jimmy Hendricson", role:"EMT", st:"active"},
+    {cs:"E-27", nm:"Todd Peterson", role:"EMT", st:"active"},
+    {cs:"E-28", nm:"Eathen Warrener", role:"EMT", st:"active"},
+    {cs:"E-29", nm:"Kasandra Willington", role:"EMT", st:"active"},
+    {cs:"E-30", nm:"Cuky Ortiz", role:"EMT", st:"active"},
+    {cs:"E-31", nm:"Emanuel Harper", role:"EMT", st:"active"},
+    {cs:"E-32", nm:"Ruby Fletcher", role:"EMT", st:"loa", loa:"5/22 – 6/3"},
+    {cs:"E-33", nm:"Arthur Morgan", role:"EMT", st:"active"},
+    {cs:"E-34", nm:"Jaden Kennedy", role:"EMT", st:"active"},
+    {cs:"E-35", nm:"Cielle Moon", role:"EMT", st:"active"},
+    {cs:"E-36", nm:"Tony Gallo", role:"EMT", st:"active"},
+    {cs:"E-37", nm:"Sadany Almulla", role:"EMT", st:"active"},
+    {cs:"E-38", nm:"Lauren Jones", role:"EMT", st:"active"},
+    {cs:"E-39", nm:"Joseph Aguirre", role:"EMT", st:"loa", loa:"5/22 – 5/29"},
+    {cs:"E-40", nm:"Tati Johnson", role:"EMT", st:"active"},
+    {cs:"E-42", nm:"Carlitos Blanturd", role:"EMT", st:"active"},
+  ]},
+  { key:"intern", name:"Interns", pay:"$5,000 / hr", members:[
+    {cs:"I-47", nm:"Mia Blair", role:"Intern", st:"active"},
+    {cs:"I-50", nm:"Nolan Hayes", role:"Intern", st:"active"},
+    {cs:"I-52", nm:"Meri Mercer", role:"Intern", st:"active"},
+    {cs:"I-56", nm:"John Hay", role:"Intern", st:"active"},
+    {cs:"I-57", nm:"Kevin Bartomolul", role:"Intern", st:"active"},
+    {cs:"I-58", nm:"Angel Grayson", role:"Intern", st:"active"},
+    {cs:"I-59", nm:"Zoey Brooks", role:"Intern", st:"active"},
+    {cs:"I-61", nm:"RJ Sosa", role:"Intern", st:"active"},
+    {cs:"I-62", nm:"Nard Zilla", role:"Intern", st:"active"},
+    {cs:"I-63", nm:"Buhni Rose", role:"Intern", st:"active"},
+    {cs:"I-66", nm:"Charlie Watleh", role:"Intern", st:"active"},
+    {cs:"I-67", nm:"Lamar Lenz", role:"Intern", st:"active"},
+    {cs:"I-68", nm:"King NoSleep", role:"Intern", st:"active"},
+    {cs:"I-69", nm:"Jon Edwards", role:"Intern", st:"active"},
+    {cs:"I-70", nm:"Christian Boulton", role:"Intern", st:"active"},
+    {cs:"I-71", nm:"Shaun Murphy", role:"Intern", st:"active", hire:"7/24/26"},
+    {cs:"I-72", nm:"Desmond Doss", role:"Intern", st:"active"},
+    {cs:"I-73", nm:"Que Ding", role:"Intern", st:"active"},
+    {cs:"I-74", nm:"Quinn Meadows", role:"Intern", st:"active"},
+    {cs:"I-75", nm:"Frankie Lob", role:"Intern", st:"active"},
+    {cs:"I-76", nm:"Celeste Daegon", role:"Intern", st:"active", hire:"7/13/26"},
+    {cs:"I-77", nm:"Axel Axton", role:"Intern", st:"active", hire:"7/24/26"},
+    {cs:"I-80", nm:"Ivy Kay", role:"Intern", st:"active", hire:"7/10/26"},
+    {cs:"I-81", nm:"Sm Sm", role:"Intern", st:"active", hire:"7/24/26"},
+    {cs:"I-82", nm:"Frank Jameson", role:"Intern", st:"active", hire:"7/10/26"},
+    {cs:"I-83", nm:"Emilia Sinclair", role:"Intern", st:"active", hire:"7/10/26"},
+    {cs:"I-84", nm:"Reira Kiwis", role:"Intern", st:"active", hire:"7/10/26"},
+    {cs:"I-85", nm:"Emily Graves", role:"Intern", st:"active", hire:"7/10/26"},
+    {cs:"I-86", nm:"Ghost Riley", role:"Intern", st:"active", hire:"7/24/26"},
+    {cs:"I-87", nm:"Devil Six", role:"Intern", st:"active", hire:"7/24/26"},
+    {cs:"I-89", nm:"Camz Black", role:"Intern", st:"active", hire:"7/12/26"},
+    {cs:"I-90", nm:"JR Money", role:"Intern", st:"active", hire:"7/13/26"},
+    {cs:"I-91", nm:"Ava Summers", role:"Intern", st:"active", hire:"7/13/26"},
+    {cs:"I-92", nm:"Ariaa Young", role:"Intern", st:"active", hire:"7/17/26"},
+    {cs:"I-93", nm:"Dan Goddy", role:"Intern", st:"active", hire:"7/19/26"},
+    {cs:"I-94", nm:"Ali Kat", role:"Intern", st:"active", hire:"7/22/26"},
+  ]},
+];
+
+/* ============================ SOP DATA ============================ */
+const SOPS = [
+  { id:"discipline", no:"01", title:"Strikes & Warnings", body:`
+    <p>Discipline runs on a warning-and-strike ladder. Know exactly where each step puts you before it happens.</p>
+    <ul>
+      <li><b>Two warnings = one strike.</b> Warnings are guidance and carry less risk than a strike.</li>
+      <li><b>Strike 2</b> brings a demotion plus suspension. An EMT who reaches two strikes is terminated — there is no drop back to Intern.</li>
+      <li><b>Strike 3 = termination.</b></li>
+      <li>A single strike lasts <b>14 days</b>. Pick up a second strike inside that window and both take <b>28 days</b> to clear.</li>
+    </ul>
+    <div class="callout red"><b>Off-duty charges</b>Arrested and charged with a crime (not murder) = 3-day suspension. Get a lawyer and expunge the record within those 3 days to keep your job. A murder charge is immediate termination.</div>`
+  },
+  { id:"jobabuse", no:"02", title:"Exploiting & Job Abuse", body:`
+    <p>Any exploitation or job abuse is a <b>minimum of two strikes and a suspension</b>, and it also breaks Empire RP server rules.</p>
+    <ul>
+      <li>Using or possessing medical equipment while <b>off duty</b>.</li>
+      <li>Staying clocked in when you are not actively working EMS.</li>
+      <li>Clocking into the F4 just to <b>avoid being robbed</b> or to dodge stress.</li>
+      <li>Joining EMS radio while not on duty.</li>
+    </ul>`
+  },
+  { id:"bodycam", no:"03", title:"Bodycam & Clipping", body:`
+    <p>Clips are your evidence. They stay on at all times while on duty.</p>
+    <ul>
+      <li>If your third-party clipping software isn't working, <b>do not clock in</b> until it's fixed.</li>
+      <li>Your OOC bodycam must be able to clip <b>at least three minutes, with audio</b>, for the footage to be usable.</li>
+    </ul>
+    <div class="callout"><b>Clip it and ship it</b>When something goes wrong, the clip is what protects you. No working clips means no duty.</div>`
+  },
+  { id:"conduct", no:"04", title:"Conduct & Harassment", body:`
+    <p>EMS holds a zero-tolerance line on harassment.</p>
+    <ul>
+      <li>A patient makes racist or sexual remarks OOC → <b>discontinue treatment</b>, move to a safe location, and report their ID by ticket with your recording.</li>
+      <li>Harassment or hazing between employees = <b>termination and a blacklist</b> from EMS rehire. Getting hired back requires an appeal.</li>
+    </ul>`
+  },
+  { id:"ranks", no:"05", title:"Chain of Command & Callsigns", body:`
+    <p>Set your callsign in the dispatch (Large UI) menu to match your rank.</p>
+    <ul>
+      <li><b>I-#</b> Intern &nbsp;·&nbsp; <b>E-#</b> EMT &nbsp;·&nbsp; <b>A-#</b> Advanced EMT &nbsp;·&nbsp; <b>P-#</b> Paramedic &nbsp;·&nbsp; <b>N-#</b> Nurse</li>
+      <li>The <b>Chief</b> is head of the department with final say on everything.</li>
+      <li><b>Hospital Managers</b> are the first management rank — the first that can hire and fire, and they oversee FTOs.</li>
+    </ul>`
+  },
+  { id:"triage", no:"06", title:"Triage", body:`
+    <p>Order of care, highest priority first:</p>
+    <ul>
+      <li><b>EMS personnel</b> first, then <b>PD</b>.</li>
+      <li>Civilians on their <b>sides</b> next.</li>
+      <li>Patients on their <b>backs</b> (Code Blue — neurological damage, memories gone) are treated <b>last</b>.</li>
+    </ul>
+    <div class="callout red"><b>Scene safety first</b>Never provide care in the roadway or a dangerous area. Move to a sidewalk, grass, or inside a building before you treat anyone.</div>`
+  },
+  { id:"codeblue", no:"07", title:"Code Blue", body:`
+    <ul>
+      <li>Find a Code Blue with <b>no Nurse (or higher) on duty</b> → you're clear to treat in the field: diagnose, bring every region to 100%, then administer CPR.</li>
+      <li>A <b>PD officer</b> who is Code Blue is treated in the field regardless of who is on duty.</li>
+    </ul>`
+  },
+  { id:"emergencies", no:"08", title:"Panic & Combat Response", body:`
+    <ul>
+      <li>No more than <b>4 EMS</b> respond to a panic button — everyone else stays available for the rest of the city.</li>
+      <li>Hold <b>two blocks out</b> until Code 4.</li>
+      <li>EMS is <b>never</b> to engage in hostile behavior. If your life is in danger with no other option, that is when you use <b>/panic</b>.</li>
+      <li>Gang vs gang with no PD and no sky-note → wait <b>2+ minutes</b> after shooting stops. Ongoing robbing means the scene is still active.</li>
+    </ul>`
+  },
+  { id:"blacklisting", no:"09", title:"Blacklisting", body:`
+    <ul>
+      <li>Return to the same individual(s) <b>4+ times within 10 minutes</b> → you may refuse their calls for 10 minutes. Tell them before you leave.</li>
+      <li>You may only blacklist <b>individuals, never locations</b>.</li>
+      <li>For spam: still tend to the patient first, then inform them <b>in person</b> they're blacklisted before refusing further calls.</li>
+    </ul>`
+  },
+  { id:"radio", no:"10", title:"Radio", body:`
+    <ul>
+      <li><b>Channel 2</b> is the primary EMS channel. Switch to Channel 1 only for clearer comms with PD on a shared scene.</li>
+      <li>PD on your radio → be respectful; if they want a response, ask them to send up a dispatch. On PD radio, you're a guest.</li>
+    </ul>`
+  },
+  { id:"equipment", no:"11", title:"Equipment", body:`
+    <ul>
+      <li>Trading, selling, or gifting <b>any</b> EMS equipment = <b>immediate termination</b>.</li>
+      <li><b>Bandaids</b> are self-heals for EMS only — never for patients or friends, never off duty, never on turfs.</li>
+      <li><b>First-Aid Kits</b> are for reviving only (incapacitated / Code Blue). Injections treat injuries to a body region.</li>
+      <li><b>No firearms</b> on your person while clocked in. All gear is stored off duty.</li>
+    </ul>`
+  },
+  { id:"vehicles", no:"12", title:"Vehicles", body:`
+    <ul>
+      <li>EMS imports must be <b>red or white only</b>; underglow/headlights limited to red, frost white, yellow, and gold (EMT+ only).</li>
+      <li><b>No ride-alongs.</b> Only EMS staff belong in EMS vehicles (interns may ride with a cleared solo or their FTO).</li>
+      <li>No more than <b>2 EMS at the hospital</b> at once, excluding management.</li>
+    </ul>`
+  },
+  { id:"etiquette", no:"13", title:"Hospital Etiquette & Time", body:`
+    <ul>
+      <li><b>10-7 (AFK)</b> is limited to 10 minutes, in the break room or locked wards. Longer than that, clock out.</li>
+      <li>You may adjust up to <b>60 minutes a day</b> with time corrections. Post adjustments in minutes in <b>#time-corrections</b>.</li>
+    </ul>`
+  },
+  { id:"hipaa", no:"14", title:"HIPAA", body:`
+    <ul>
+      <li>The surgery door stays locked. Only EMS bodycam may record — anyone else recording a surgery is a <b>HIPAA violation</b>.</li>
+    </ul>`
+  },
+  { id:"promotion", no:"15", title:"Promotion", body:`
+    <ul>
+      <li>Interns must be <b>cleared for solos within two weeks</b> of hire, or the offer of employment is rescinded.</li>
+    </ul>
+    <div class="callout"><b>Next step</b>Clear the Intern SOP Exam at 90%+, then run solos with your FTO to move toward EMT.</div>`
+  },
+];
+
+/* ============================ EXAM DATA ============================ */
+const INTERN_QUESTIONS = [
+  {cat:"Discipline",q:"How many strikes result in termination from EMS?",a:["1 strike","2 strikes","3 strikes","4 strikes"],correct:2,why:"Strike 3 means termination. Strike 2 brings a demotion + suspension (and an EMT with 2 strikes is terminated — no going back to Intern)."},
+  {cat:"Discipline",q:"How many warnings equal one strike?",a:["Two (2) warnings","Three (3) warnings","Four (4) warnings","Warnings never become strikes"],correct:0,why:"Two warnings = 1 strike. Warnings are guidance with less risk than a strike."},
+  {cat:"Discipline",q:"How long does a single strike last before it's removed?",a:["7 days","14 days","28 days","It never expires"],correct:1,why:"Strikes last 14 days. But if you get another strike within those 14 days, it takes 28 days to remove both."},
+  {cat:"Discipline",q:"You're arrested and charged with a crime (not murder). What happens?",a:["Immediate termination","Nothing, IC charges don't affect your job","3-day suspension — contact a lawyer and expunge your record to stay employed","A single warning"],correct:2,why:"Criminal charges = 3-day suspension. You must get a lawyer and expunge the record within those 3 days. Murder charges = immediate termination."},
+  {cat:"Job Abuse",q:"What is the minimum penalty for exploiting or job abuse?",a:["A warning","One strike","Two (2) strikes plus a suspension","A verbal reminder"],correct:2,why:"Any exploitation / job abuse is a minimum of TWO strikes and a suspension. It also violates Empire RP rules."},
+  {cat:"Job Abuse",q:"Which of these counts as job abuse / exploiting?",a:["Using or possessing medical equipment while off duty","Buckling up your patient","Responding to a panic button","Reading the SOPs off duty"],correct:0,why:"Using/possessing medical equipment off duty, or staying clocked in when you aren't actively working EMS, is job abuse."},
+  {cat:"Job Abuse",q:"Staying clocked into the F4 just to avoid being robbed is…",a:["Allowed if it's a boost","Job abuse — minimum two strikes and a suspension","Encouraged for safety","Only a warning"],correct:1,why:"Clocking in to dodge stress/robbery, or to join EMS radio while not on duty, is job abuse. Minimum two strikes + suspension."},
+  {cat:"Bodycam",q:"Your third-party clipping software isn't working. What do you do?",a:["Clock in anyway and hope it fixes itself","Do not clock in until it's fixed","Use in-game bodycam only and clock in","Ask a friend to record you"],correct:1,why:"If your clipping software isn't working, you are NOT to clock in until it is remedied. Clips must be on at all times on duty."},
+  {cat:"Bodycam",q:"What is the minimum length your OOC bodycam must be able to clip?",a:["30 seconds","1 minute","3 minutes","10 minutes"],correct:2,why:"Your OOC bodycam must clip at LEAST three minutes, with audio, for it to be usable evidence."},
+  {cat:"Conduct",q:"A patient makes racist/sexual remarks toward you OOC. What's the correct response?",a:["Fight back and defend yourself","Discontinue treatment, move to a safe location, report their ID via ticket with recording","Blacklist the whole location","Log off immediately"],correct:1,why:"Discontinue treatment (walk to a safe spot), report the individual's ID via ticketing, and provide the video/audio. Clip it and ship it."},
+  {cat:"Conduct",q:"What is the penalty for harassment or hazing between employees?",a:["One warning","Two strikes","Termination plus being blacklisted from EMS rehire","A 2-day suspension"],correct:2,why:"Zero tolerance: you're terminated AND blacklisted from being hired as Empire EMS, requiring an appeal to even be considered for rehire."},
+  {cat:"Ranks",q:"What is the correct callsign prefix for an Intern?",a:["E-#","I-#","N-#","P-#"],correct:1,why:"Intern = I-#, EMT = E-#, Paramedic = P-#, Nurse = N-#. Set it in your dispatch (Large UI) menu."},
+  {cat:"Ranks",q:"Who has final say on everything within the EMS department?",a:["The Hospital Manager","The Chief","The Head Doctor","Any FTO"],correct:1,why:"The Chief is head of the department and has final say on EVERYTHING, with the right to make changes as they see fit."},
+  {cat:"Ranks",q:"Which is the FIRST rank that can hire and fire people?",a:["Head Doctor","FTO","Hospital Manager","Resident Doctor"],correct:2,why:"Hospital Managers are the first 'Management' rank — the first that can hire and fire, and they oversee FTOs."},
+  {cat:"Triage",q:"In triage, who receives medical attention FIRST?",a:["Patients on their backs","PD personnel","EMS personnel","Patients on their sides"],correct:2,why:"Order of care: EMS first, then PD, then civilians on their sides, then patients on their backs (Code Blue) last."},
+  {cat:"Triage",q:"A patient lying on their BACK is…",a:["A minor injury, treat last","A Code Blue with neurological damage — treated last","The highest priority","Faking it"],correct:1,why:"On their back = Code Blue. They've suffered neurological damage and their memories are gone, so they're last to receive care."},
+  {cat:"Triage",q:"Before you provide any treatment, you must ensure…",a:["The patient has ID","You and the patient are in a safe location — never in the roadway","PD is present","The patient pays first"],correct:1,why:"Always move to a safe location (sidewalk, grass, inside a building). Never give care in a dangerous area or the roadway."},
+  {cat:"Code Blue",q:"You find a Code Blue and NO Nurse (or higher) is on duty. What do you do?",a:["Leave them for surgery later","Diagnose, get every region to 100%, then administer CPR in the field","Wait for a Nurse regardless","Revive without diagnosing"],correct:1,why:"With no surgery-capable rank on duty, you're clear to treat in field: diagnose, bring all regions to 100%, then CPR."},
+  {cat:"Code Blue",q:"A PD officer is Code Blue. How is it handled?",a:["Always taken to the hospital for surgery","Treated in the field regardless of who is on duty","Left until a Nurse arrives","Only revived if a doctor approves"],correct:1,why:"A PD Code Blue is treated in the field regardless of who is on duty — PD get fast field care."},
+  {cat:"Emergencies",q:"How many EMS personnel maximum should respond to a panic button?",a:["2","4","6","All available"],correct:1,why:"No more than 4 EMS respond to a panic — others stay available for the rest of the city. Remain two blocks out until Code 4."},
+  {cat:"Emergencies",q:"When may EMS engage in hostile / combative behavior?",a:["When a patient is rude","Never — EMS is never to engage in hostile behavior","During gang wars","If they have a taser"],correct:1,why:"EMS is NEVER to engage in hostile behavior. If your life is in danger with no other option, that's when you use /panic."},
+  {cat:"Emergencies",q:"You arrive at a Gang vs Gang scene with no PD and no sky-note. What do you do?",a:["Rush in to save lives","Wait until shooting has stopped for 2+ minutes; if robbing continues the scene is still active","Treat from your vehicle","Blacklist the gang"],correct:1,why:"Stay two blocks away until Code 4. With no PD/note, wait 2+ minutes after shooting ends — ongoing robbing means the scene is STILL active."},
+  {cat:"Blacklisting",q:"When may you blacklist a patient for repeated calls?",a:["After 2 calls in an hour","After returning to the same individual(s) 4+ times within 10 minutes","Any time you're busy","After one call you don't like"],correct:1,why:"Return to the same individual(s) 4+ times within 10 minutes → you may refuse their calls for 10 minutes. Inform them before you leave."},
+  {cat:"Blacklisting",q:"Can you blacklist an entire location?",a:["Yes, if it's dangerous","No — you can only blacklist individuals, never locations","Only during boosts","Yes, with management approval"],correct:1,why:"You are not able to blacklist locations as a whole — only the individual patient(s)."},
+  {cat:"Blacklisting",q:"Before blacklisting someone for SPAMMING dispatch, you must first…",a:["Nothing, just blacklist them","Tend to the patient, then inform them in person they're blacklisted","Report them to PD","Wait 10 minutes"],correct:1,why:"For spam you must still tend to the patient, then inform them IN PERSON they're blacklisted for 10 minutes before refusing calls."},
+  {cat:"Radio",q:"Which radio channel is the primary EMS channel?",a:["Channel 1","Channel 2","Channel 3","Channel 4"],correct:1,why:"EMS radio is Channel 2. Switch to Channel 1 only for clearer comms with PD on a scene involving them."},
+  {cat:"Radio",q:"Someone from PD enters EMS radio asking for a response. You should…",a:["Ignore them","Be respectful and ask them to send up a dispatch","Tell them to leave","Immediately drop everything"],correct:1,why:"Be respectful to PD on your radio. If they want a response, ask them to send up a dispatch. On PD radio, you're a guest."},
+  {cat:"Equipment",q:"What happens if you trade, sell, or gift EMS equipment?",a:["A warning","One strike","Immediate termination","Nothing if it's to another EMS"],correct:2,why:"Trading/selling/gifting ANY EMS equipment is strictly prohibited and results in immediate termination."},
+  {cat:"Equipment",q:"Bandaids are…",a:["Given freely to patients","Self-heals for EMS personnel ONLY, never off duty","Used to revive Code Blues","For friends only"],correct:1,why:"Bandaids are self-heals for EMS ONLY — not for patients or friends, and never off duty. Not to be used on turfs."},
+  {cat:"Equipment",q:"What is a First-Aid Kit used for?",a:["Treating individual body regions","Reviving an incapacitated or Code Blue patient","Cutting zipties","Healing yourself"],correct:1,why:"First-Aid Kits are for REVIVING only (incapacitated / Code Blue). Injections are what treat injuries to a body region."},
+  {cat:"Equipment",q:"May you carry a firearm while clocked in as EMS?",a:["Yes, for self defense","Yes, if you're Paramedic+","No firearms are permitted on your person when clocked in","Only during panics"],correct:2,why:"No firearms are permitted on your person when clocked in. All equipment must be stored off duty."},
+  {cat:"Vehicles",q:"What colors are EMS imports allowed to be?",a:["Any color","Red or white only","Black or red","Whatever matches your rank"],correct:1,why:"EMS imports must be red or white only, with underglow/headlights limited to red, frost white, yellow, and gold. EMT+ only."},
+  {cat:"Vehicles",q:"Are ride-alongs allowed in EMS vehicles?",a:["Yes, for civilians","No — only EMS staff in EMS vehicles","Only during events","Only for PD"],correct:1,why:"Ride-alongs are not allowed. Only EMS staff belong in EMS vehicles (interns may ride with a cleared solo or their FTO)."},
+  {cat:"Vehicles",q:"How many EMS personnel maximum should be at the hospital at once (excluding management)?",a:["Two (2)","Four (4)","Six (6)","No limit"],correct:0,why:"No more than 2 EMS at the hospital at one time (excluding management). If you're off duty, don't hang out at Pillbox."},
+  {cat:"Etiquette",q:"You need to go AFK (10-7). What's the limit before you must clock out?",a:["5 minutes","10 minutes maximum","30 minutes","1 hour"],correct:1,why:"10-7 is limited to 10 minutes at most. Return to Pillbox's break room / locked wards. Longer than that, you must clock out."},
+  {cat:"Etiquette",q:"How much can you adjust your time per day with time corrections?",a:["Up to 30 minutes","Up to 60 minutes","Up to 2 hours","Unlimited"],correct:1,why:"You may adjust up to 60 minutes a day. Post adjustments in minutes (not hours) in #time-corrections. Try to clock in/out properly."},
+  {cat:"HIPAA",q:"During a surgery, who is allowed to record it?",a:["Anyone in the room","Only EMS personnel's bodycam — anyone else recording is a HIPAA violation","The patient's friends","Nobody, ever"],correct:1,why:"The surgery door stays locked; only EMS bodycam may record. Anyone else recording a surgery is a HIPAA violation."},
+  {cat:"Promotion",q:"By when must an intern be cleared for solos?",a:["Within 1 week or you're demoted","Within two weeks of hire, or the job offer is rescinded","Within 30 days","There's no deadline"],correct:1,why:"Interns MUST be cleared for solos within two weeks of being hired, or the offer of employment is rescinded."},
+];
+const EXAMS = [
+  { id:"intern", tag:"Certification", title:"Intern SOP Exam", desc:"Every incoming Pillbox intern clears this before running solos. Drawn straight from the SOPs.", pass:90, questions:INTERN_QUESTIONS, locked:false },
+  { id:"emt",    tag:"Advancement", title:"EMT Exam", desc:"Field operations, treatment flow, and vehicle SOPs for the jump from Intern to EMT.", pass:90, questions:[], locked:true },
+  { id:"para",   tag:"Advancement", title:"Paramedic Exam", desc:"Advanced care, scene command, and Code Blue leadership.", pass:90, questions:[], locked:true },
+];
+
+/* ============================ HELPERS ============================ */
+const $ = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
+const LETTERS=['A','B','C','D','E'];
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function initials(n){return (n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+
+/* live clock */
+setInterval(()=>{const el=$('#clock');if(el){el.textContent=new Date().toTimeString().slice(0,8);}},1000);
+
+/* ============================ SESSION ============================ */
+let USER = null; // {name, role, avatar, guest}
+
+function loadSession(){
+  const raw = store.get('ems_user');
+  if(raw){ try{ USER = JSON.parse(raw); }catch(e){ USER=null; } }
+}
+function saveSession(){ if(USER) store.set('ems_user', JSON.stringify(USER)); }
+function logout(){ store.del('ems_user'); store.del('ems_token'); USER=null; showGate(); }
+
+/* ============================ DISCORD OAUTH ============================ */
+function discordConfigured(){ return DISCORD.clientId && DISCORD.redirectUri; }
+
+function startDiscord(){
+  if(!discordConfigured()){
+    $('#cfgWarn').style.display='block';
+    $('#cfgWarn').innerHTML = "Discord sign-in isn't set up on this deployment yet. Open the page source and fill in <code>DISCORD.clientId</code> and <code>DISCORD.redirectUri</code>, then reload. For now, use guest access below.";
+    return;
+  }
+  const u = new URL('https://discord.com/oauth2/authorize');
+  u.searchParams.set('client_id', DISCORD.clientId);
+  u.searchParams.set('redirect_uri', DISCORD.redirectUri);
+  u.searchParams.set('response_type','token');
+  u.searchParams.set('scope', DISCORD.scope);
+  location.href = u.toString();
+}
+
+async function handleDiscordRedirect(){
+  if(!location.hash || location.hash.indexOf('access_token')===-1) return false;
+  const p = new URLSearchParams(location.hash.slice(1));
+  const token = p.get('access_token');
+  history.replaceState(null,'',location.pathname + location.search);
+  if(!token) return false;
+  try{
+    const r = await fetch('https://discord.com/api/users/@me',{headers:{Authorization:'Bearer '+token}});
+    if(!r.ok) throw new Error('lookup failed');
+    const d = await r.json();
+    const name = d.global_name || d.username || 'Employee';
+    const avatar = d.avatar ? `https://cdn.discordapp.com/avatars/${d.id}/${d.avatar}.png?size=64` : '';
+    USER = { name, role:'Employee · Discord verified', avatar, guest:false, id:d.id };
+    store.set('ems_token', token);
+    saveSession();
+    return true;
+  }catch(e){
+    alert('Discord sign-in failed. Please try again.');
+    return false;
+  }
+}
+
+/* ============================ GATE / BOOT ============================ */
+function showGate(){
+  $('#app').classList.remove('on');
+  $('#gate').style.display='grid';
+  if(!discordConfigured()){
+    $('#cfgHint').textContent = 'Discord sign-in activates once an admin adds the app credentials.';
+  }
+}
+function enterApp(){
+  $('#gate').style.display='none';
+  $('#app').classList.add('on');
+  paintWho();
+  setView('dash');
+}
+function paintWho(){
+  $('#whoName').textContent = USER.name;
+  $('#whoRole').textContent = USER.guest ? 'Guest · read only' : (USER.role||'Employee');
+  const av=$('#whoAv');
+  if(USER.avatar){ av.innerHTML=`<img src="${USER.avatar}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`; }
+  else { av.textContent = initials(USER.name); }
+}
+
+/* ============================ ROUTER ============================ */
+const TITLES = {dash:'Dashboard', roster:'Roster', sops:'Standard Operating Procedures', exams:'Exams'};
+function setView(v){
+  $$('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
+  $('#viewTitle').textContent = TITLES[v]||'';
+  closeSide();
+  if(v==='dash') renderDash();
+  else if(v==='roster') renderRoster();
+  else if(v==='sops') renderSops();
+  else if(v==='exams') renderExamsHome();
+  window.scrollTo({top:0});
+}
+
+/* ============================ DASHBOARD ============================ */
+function rosterStats(){
+  let filled=0,total=0,active=0,loa=0;
+  DIVISIONS.forEach(d=>d.members.forEach(m=>{ total++; if(m.nm){filled++; if(m.st==='active')active++; if(m.st==='loa')loa++;} }));
+  return {filled,total,active,loa};
+}
+function renderDash(){
+  const s = rosterStats();
+  const first = (USER.name||'').split(/\s|—/)[0];
+  const byRank = DIVISIONS.map(d=>({name:d.name.split(/[—&]/)[0].trim(), n:d.members.filter(m=>m.nm).length}));
+  const max = Math.max(...byRank.map(r=>r.n),1);
+  $('#view').innerHTML = `
+    <div class="hello"><span class="hi">On shift,</span> ${esc(first)}.</div>
+    <div class="subline">${USER.guest?'Guest access — full read of the roster, SOPs, and exams.':'You\'re signed in as a verified employee.'} Empire RP · Pillbox Medical.</div>
+    <div class="stat-grid">
+      <div class="stat accent"><div class="k">Active on roster</div><div class="v">${s.active}</div></div>
+      <div class="stat"><div class="k">Filled callsigns</div><div class="v">${s.filled}<small>/${s.total}</small></div></div>
+      <div class="stat"><div class="k">On LOA</div><div class="v">${s.loa}</div></div>
+      <div class="stat"><div class="k">Divisions</div><div class="v">${DIVISIONS.length}</div></div>
+    </div>
+    <div class="grid2">
+      <div class="block">
+        <h3>Jump in</h3>
+        <div class="inner"><div class="quick">
+          <button class="qlink" data-go="roster">View the roster<span class="ar">→</span></button>
+          <button class="qlink" data-go="sops">Read the SOPs<span class="ar">→</span></button>
+          <button class="qlink" data-go="exams">Take the Intern exam<span class="ar">→</span></button>
+        </div></div>
+      </div>
+      <div class="block">
+        <h3>Headcount by rank</h3>
+        <div class="inner"><div class="rankbar">
+          ${byRank.map(r=>`<div class="rb"><span class="lab">${esc(r.name)}</span><span class="tk"><i style="width:${Math.round(r.n/max*100)}%"></i></span><span class="n">${r.n}</span></div>`).join('')}
+        </div></div>
+      </div>
+    </div>`;
+  $$('#view .qlink').forEach(b=>b.onclick=()=>setView(b.dataset.go));
+}
+
+/* ============================ ROSTER ============================ */
+let rosterFilter='all', rosterSearch='';
+function renderRoster(){
+  const filters=[['all','All'],['command','Command'],['mgmt','Mgmt'],['head','Head Staff'],['para','Para'],['aemt','A-EMT'],['emt','EMT'],['intern','Interns']];
+  $('#view').innerHTML = `
+    <div class="toolbar">
+      <div class="search"><input id="rSearch" placeholder="Search name or callsign…" value="${esc(rosterSearch)}" autocomplete="off"></div>
+      <div class="chips" id="rChips">${filters.map(([k,l])=>`<button class="chip ${rosterFilter===k?'on':''}" data-f="${k}">${l}</button>`).join('')}</div>
+    </div>
+    <div id="rosterBody"></div>`;
+  $('#rSearch').addEventListener('input',e=>{rosterSearch=e.target.value;paintRoster();});
+  $$('#rChips .chip').forEach(c=>c.onclick=()=>{rosterFilter=c.dataset.f;$$('#rChips .chip').forEach(x=>x.classList.toggle('on',x===c));paintRoster();});
+  paintRoster();
+}
+function paintRoster(){
+  const q = rosterSearch.trim().toLowerCase();
+  let html='', any=false;
+  DIVISIONS.forEach(d=>{
+    if(rosterFilter!=='all' && rosterFilter!==d.key) return;
+    const rows = d.members.filter(m=>{
+      if(!q) return true;
+      return (m.nm||'').toLowerCase().includes(q) || m.cs.toLowerCase().includes(q) || (m.role||'').toLowerCase().includes(q);
+    });
+    if(!rows.length) return;
+    any=true;
+    const filled = d.members.filter(m=>m.nm).length;
+    html += `<div class="div-h"><span class="t">${esc(d.name)}</span><span class="ct">${filled} assigned</span><span class="pay">${esc(d.pay)}</span><span class="rule"></span></div>`;
+    html += `<div class="rtable">`;
+    rows.forEach(m=>{
+      const stcls = m.st==='active'?'active':m.st==='loa'?'loa':'vac';
+      const stlabel = m.st==='active'?'Active':m.st==='loa'?'LOA':'Vacant';
+      const nm = m.nm ? `<span class="nm">${esc(m.nm)}</span>` : `<span class="nm vac">Vacant</span>`;
+      const hire = m.loa ? `LOA ${esc(m.loa)}` : (m.hire?`Hired ${esc(m.hire)}`:'—');
+      html += `<div class="rrow"><span class="cs">${esc(m.cs)}</span>${nm}<span class="hire">${hire}</span><span class="st"><span class="badge ${stcls}"><span class="d"></span>${stlabel}</span></span></div>`;
+    });
+    html += `</div>`;
+  });
+  $('#rosterBody').innerHTML = any ? html : `<div class="empty">No personnel match “${esc(rosterSearch)}”.</div>`;
+}
+
+/* ============================ SOPS ============================ */
+function renderSops(){
+  $('#view').innerHTML = `
+    <div class="sop-wrap">
+      <nav class="sop-nav" id="sopNav">
+        ${SOPS.map((s,i)=>`<a data-t="${s.id}" class="${i===0?'on':''}">${s.no} · ${esc(s.title)}</a>`).join('')}
+      </nav>
+      <div class="sop-body" id="sopBody">
+        ${SOPS.map(s=>`<section class="sop-sec" id="sop-${s.id}"><h2><span class="no">${s.no}</span>${esc(s.title)}</h2><div class="rule"></div>${s.body}</section>`).join('')}
+      </div>
+    </div>`;
+  const links=$$('#sopNav a');
+  links.forEach(a=>a.onclick=()=>{ document.getElementById('sop-'+a.dataset.t).scrollIntoView({behavior:'smooth',block:'start'}); });
+  const secs=SOPS.map(s=>document.getElementById('sop-'+s.id));
+  const spy=()=>{ let cur=secs[0].id; for(const el of secs){ if(el.getBoundingClientRect().top<=140) cur=el.id; }
+    links.forEach(a=>a.classList.toggle('on','sop-'+a.dataset.t===cur)); };
+  window.removeEventListener('scroll', window.__sopspy||(()=>{}));
+  window.__sopspy=spy; window.addEventListener('scroll',spy,{passive:true}); spy();
+}
+
+/* ============================ EXAMS ============================ */
+function renderExamsHome(){
+  window.removeEventListener('scroll', window.__sopspy||(()=>{}));
+  $('#view').innerHTML = `
+    <div class="subline" style="margin-bottom:20px">Certification and advancement exams. You need the listed score to pass. Nothing is submitted automatically — screenshot your result for your FTO.</div>
+    <div class="exam-grid">
+      ${EXAMS.map(e=>`
+        <div class="exam-card ${e.locked?'locked':''}">
+          ${e.locked?'<span class="lock">🔒</span>':''}
+          <span class="tag">${esc(e.tag)}</span>
+          <h3>${esc(e.title)}</h3>
+          <p>${esc(e.desc)}</p>
+          <div class="meta">${e.locked?'Coming soon':`${e.questions.length} questions · pass ${e.pass}%`}</div>
+          <button class="btn ${e.locked?'':'wide'}" data-exam="${e.id}" ${e.locked?'disabled':''}>${e.locked?'Locked':'Begin exam ▸'}</button>
+        </div>`).join('')}
+    </div>`;
+  $$('#view [data-exam]').forEach(b=>{ if(!b.disabled) b.onclick=()=>startExam(b.dataset.exam); });
+}
+
+/* exam runner state */
+let EX=null, exOrder=[], exIdx=0, exAns=[];
+function startExam(id){
+  EX = EXAMS.find(e=>e.id===id);
+  exOrder = shuffle([...Array(EX.questions.length).keys()]);
+  exAns = new Array(EX.questions.length).fill(null);
+  exIdx = 0;
+  renderQ();
+}
+function examShell(inner){ $('#view').innerHTML = `<div style="max-width:680px">${inner}</div>`; }
+function renderQ(){
+  const qi=exOrder[exIdx], Q=EX.questions[qi];
+  const pct=Math.round(exIdx/EX.questions.length*100);
+  examShell(`
+    <button class="chip" id="exExit" style="margin-bottom:18px">← All exams</button>
+    <div class="prog-head"><span class="cat">${esc(Q.cat)}</span><span class="count">Q${exIdx+1} / ${EX.questions.length}</span></div>
+    <div class="track"><i style="width:${pct}%"></i></div>
+    <div class="qnum">QUESTION ${String(exIdx+1).padStart(2,'0')}</div>
+    <div class="qtext">${esc(Q.q)}</div>
+    <div class="opts" id="opts">${Q.a.map((o,i)=>`<button class="opt" data-i="${i}"><span class="key">${LETTERS[i]}</span>${esc(o)}</button>`).join('')}</div>
+    <div id="feedback"></div><div class="nav" id="nav"></div>`);
+  $('#exExit').onclick=renderExamsHome;
+  const opts=$$('#opts .opt');
+  opts.forEach(b=>b.onclick=()=>{ if(exAns[qi]!==null)return; exAns[qi]=+b.dataset.i; lockReveal(qi,+b.dataset.i,opts,Q); });
+}
+function lockReveal(qi,chosen,opts,Q){
+  opts.forEach(b=>{const i=+b.dataset.i;b.classList.add('locked');if(i===Q.correct)b.classList.add('correct');else if(i===chosen)b.classList.add('wrong');else b.classList.add('dim');});
+  const right=chosen===Q.correct;
+  $('#feedback').innerHTML=`<div class="explain"><b>${right?'✓ Correct — SOP':'✗ Review this — SOP'}</b>${esc(Q.why)}</div>`;
+  const last=exIdx===EX.questions.length-1;
+  $('#nav').innerHTML=`<button class="btn wide" id="next">${last?'View results ▸':'Next question ▸'}</button>`;
+  $('#next').focus();
+  $('#next').onclick=()=>{ if(last)renderResults(); else {exIdx++;renderQ();} };
+}
+function renderResults(){
+  const total=EX.questions.length; let correct=0; const byCat={};
+  exOrder.forEach(qi=>{const Q=EX.questions[qi];const ok=exAns[qi]===Q.correct;if(ok)correct++;byCat[Q.cat]=byCat[Q.cat]||{c:0,t:0};byCat[Q.cat].t++;if(ok)byCat[Q.cat].c++;});
+  const pct=Math.round(correct/total*100), passed=pct>=EX.pass;
+  const rows=Object.entries(byCat).sort((a,b)=>a[0].localeCompare(b[0])).map(([n,{c,t}])=>{const p=c/t,low=p<0.6;return `<div class="brow"><span class="name">${esc(n)}</span><span class="bt ${low?'low':''}"><i style="width:${Math.round(p*100)}%"></i></span><span class="frac">${c}/${t}</span></div>`;}).join('');
+  examShell(`
+    <div class="score-hero">
+      <div class="verdict ${passed?'pass':'fail'}">${passed?'▲ Cleared — Passing Score':'▼ Not Yet — Review Required'}</div>
+      <div class="bignum">${pct}<small>%</small></div>
+      <div class="score-sub">${correct} / ${total} correct · ${esc(USER.name)} · pass mark ${EX.pass}%</div>
+    </div>
+    <div class="breakdown">${rows}</div>
+    <p class="missed-note">${passed?'Screenshot this breakdown and send it to your FTO in your ticket.':`${total-correct} to review. Retake once you're solid on the weak sections — retakes reshuffle.`}</p>
+    <div class="btn-row"><button class="btn ghost" id="review">Review answers</button><button class="btn" id="retake">Retake exam</button></div>
+    <div style="text-align:center;margin-top:16px"><button class="chip" id="done">← Back to all exams</button></div>`);
+  $('#retake').onclick=()=>startExam(EX.id);
+  $('#review').onclick=renderReview;
+  $('#done').onclick=renderExamsHome;
+}
+function renderReview(){
+  const items=exOrder.map((qi,pos)=>{const Q=EX.questions[qi],chosen=exAns[qi],ok=chosen===Q.correct;
+    return `<div class="qnum" style="margin-top:${pos?'22px':'0'}">Q${pos+1} · ${esc(Q.cat)} · ${ok?'<span style="color:var(--teal)">CORRECT</span>':'<span style="color:var(--red)">MISSED</span>'}</div>
+      <div class="qtext" style="font-size:18px;margin-bottom:12px">${esc(Q.q)}</div>
+      <div class="opts">${Q.a.map((o,i)=>{let c='opt locked';if(i===Q.correct)c+=' correct';else if(i===chosen)c+=' wrong';else c+=' dim';return `<button class="${c}"><span class="key">${LETTERS[i]}</span>${esc(o)}</button>`;}).join('')}</div>
+      <div class="explain" style="margin-top:12px"><b>SOP</b>${esc(Q.why)}</div>`;}).join('');
+  examShell(`<div class="prog-head"><span class="cat">Answer Review</span><span class="count">${EX.questions.length} questions</span></div><div class="track" style="margin-bottom:20px"><i style="width:100%"></i></div>${items}<div class="nav"><button class="btn wide" id="back">▸ Back to results</button></div>`);
+  $('#back').onclick=renderResults; window.scrollTo({top:0});
+}
+
+/* ============================ SIDEBAR (mobile) ============================ */
+function openSide(){$('#side').classList.add('open');$('#scrim').classList.add('on');}
+function closeSide(){$('#side').classList.remove('open');$('#scrim').classList.remove('on');}
+
+/* ============================ WIRE UP ============================ */
+$('#discordBtn').onclick=startDiscord;
+$('#guestBtn').onclick=()=>{ const n=$('#guestName').value.trim()||'Guest'; USER={name:n,role:'Guest',guest:true}; saveSession(); enterApp(); };
+$('#guestName').addEventListener('keydown',e=>{if(e.key==='Enter')$('#guestBtn').click();});
+$('#logoutBtn').onclick=logout;
+$('#menuBtn').onclick=openSide;
+$('#scrim').onclick=closeSide;
+$$('#tabs .tab').forEach(t=>t.onclick=()=>setView(t.dataset.view));
+
+/* ============================ INIT ============================ */
+(async function init(){
+  if(!discordConfigured()){
+    $('#cfgHint').textContent='Discord sign-in activates once an admin adds the app credentials.';
+  }
+  const came = await handleDiscordRedirect();
+  if(!came) loadSession();
+  if(USER) enterApp(); else showGate();
+})();
+</script>
+</body>
+</html>
