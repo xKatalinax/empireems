@@ -302,8 +302,8 @@
   .pt.big .v{color:var(--teal)}
 
   .ptable{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--panel);margin-bottom:6px}
-  .phead,.prow{display:grid;grid-template-columns:70px 1fr 74px 66px 78px 74px 116px;gap:10px;align-items:center;padding:10px 15px}
-  .phead{background:var(--panel-2);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .phead,.prow{display:grid;grid-template-columns:80px minmax(120px,1fr) 88px 96px 108px 132px;gap:16px;align-items:center;padding:11px 18px}
+  .phead{background:var(--panel-2);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .phead .r,.prow .r{text-align:right}
   .prow{border-bottom:1px solid var(--line-soft);font-size:13.5px}
   .prow:last-child{border-bottom:none}
@@ -311,12 +311,12 @@
   .prow .cs{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);font-weight:700}
   .prow .nm{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .prow .nm .role{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);letter-spacing:.04em;display:block}
-  .prow .rate{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);text-align:right}
-  .prow .pay{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal);font-weight:700;text-align:right}
+  .prow .rate{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+  .prow .pay{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
   .prow .pay.zero{color:var(--faint)}
-  .pcell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink)}
+  .pcell{display:block;text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums}
   .pcell.fine{color:var(--red)}
-  .pinp{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:7px 8px;font-family:'JetBrains Mono',monospace;font-size:12.5px;text-align:right}
+  .pinp{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:7px 8px;font-family:'JetBrains Mono',monospace;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
   .pinp:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(230,57,70,.18)}
   .pinp.fine{color:#f5a3ab}
   .pinp.bonus{color:#8fe3cd}
@@ -478,6 +478,119 @@
   .gate-foot .on i{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 7px var(--teal);animation:pulse 1.6s ease-in-out infinite}
   .card .bar .cross{animation:pulse 2.4s ease-in-out infinite}
 
+  .pay-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:0}
+  .ot-tag{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.05em;color:var(--amber);background:rgba(242,177,52,.1);border:1px solid rgba(242,177,52,.35);border-radius:5px;padding:1px 5px;white-space:nowrap}
+
+  /* ===================== COMMAND CENTER ===================== */
+  .act-item{display:flex;align-items:center;gap:13px;padding:13px 16px;border:1px solid var(--line);border-radius:11px;background:var(--panel);margin-bottom:10px;cursor:pointer;transition:border-color .12s,transform .12s}
+  .act-item:hover{border-color:var(--red);transform:translateX(3px)}
+  .act-item .n{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;flex:0 0 auto}
+  .act-item .n.amber{background:rgba(242,177,52,.14);color:var(--amber)}
+  .act-item .n.blurple{background:rgba(88,101,242,.16);color:#aab4ff}
+  .act-item .n.red{background:rgba(230,57,70,.14);color:var(--red)}
+  .act-item .tx{flex:1;min-width:0}
+  .act-item .tx b{display:block;font-size:14.5px;color:var(--ink);font-weight:600}
+  .act-item .tx .s{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+  .act-item .ar{color:var(--faint);font-size:18px}
+  .feed{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);margin-bottom:8px}
+  .feed-row{display:flex;gap:11px;align-items:center;padding:10px 15px;border-bottom:1px solid var(--line-soft);font-size:13px}
+  .feed-row:last-child{border-bottom:none}
+  .feed-row .ic{width:22px;text-align:center;flex:0 0 auto}
+  .feed-row .tx{flex:1;min-width:0;color:#c8d5e2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .feed-row .tx b{color:var(--ink);font-weight:600}
+  .feed-row .who{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);white-space:nowrap;flex:0 0 auto}
+  .feed-del{background:transparent;border:1px solid var(--line);color:var(--faint);border-radius:6px;width:24px;height:24px;cursor:pointer;flex:0 0 auto;font-size:11px}
+  .feed-del:hover{border-color:var(--red);color:var(--red)}
+  .app-badge.good{color:var(--teal);border-color:rgba(55,201,163,.4);background:rgba(55,201,163,.08)}
+  .app-badge.warn{color:var(--amber);border-color:rgba(242,177,52,.4);background:rgba(242,177,52,.08)}
+  .app-badge.strike{color:var(--red);border-color:rgba(230,57,70,.4);background:rgba(230,57,70,.08)}
+  .app-badge.term{color:#ff8a95;border-color:rgba(230,57,70,.55);background:rgba(230,57,70,.16)}
+
+  /* ===================== PROFILE DRAWER ===================== */
+  .drawer-scrim{position:fixed;inset:0;background:rgba(3,7,12,.62);opacity:0;pointer-events:none;transition:opacity .2s;z-index:70}
+  .drawer-scrim.on{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100vh;width:420px;max-width:92vw;background:linear-gradient(180deg,var(--panel-2),var(--panel));border-left:1px solid var(--line);box-shadow:-20px 0 50px -20px #000;transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.25,1);z-index:71;display:flex;flex-direction:column;overflow:hidden}
+  .drawer.open{transform:none}
+  .dr-head{display:flex;align-items:center;gap:14px;padding:20px 22px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+  .dr-av{width:46px;height:46px;border-radius:12px;background:linear-gradient(180deg,var(--red),var(--red-deep));color:#fff;display:grid;place-items:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;flex:0 0 auto}
+  .dr-id{flex:1;min-width:0}
+  .dr-id h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;letter-spacing:.02em}
+  .dr-id .sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+  .dr-x{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:14px;flex:0 0 auto}
+  .dr-x:hover{border-color:var(--red);color:var(--ink)}
+  .dr-body{padding:20px 22px;overflow-y:auto;flex:1}
+  .dr-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .dr-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .ds{border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:var(--panel)}
+  .ds .k{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .ds .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px}
+  .dr-loa{border:1px solid rgba(88,101,242,.35);background:rgba(88,101,242,.08);border-radius:9px;padding:9px 12px;font-size:12.5px;color:#c3c9f7;margin-bottom:16px}
+  .dr-sec{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:18px 0 9px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .dr-list{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .dr-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line-soft);font-size:12.5px;color:#c8d5e2}
+  .dr-row:last-child{border-bottom:none}
+  .dr-row .mono{font-family:'JetBrains Mono',monospace;font-size:11.5px;white-space:nowrap}
+  .dr-row .mono.ok{color:var(--teal)} .dr-row .mono.no{color:var(--red)}
+  .dr-empty{font-size:12.5px;color:var(--faint);font-style:italic;padding:2px 0}
+  .dr-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;border-top:1px solid var(--line-soft);padding-top:16px}
+  .rrow.clickable{cursor:pointer}
+  .rrow.clickable:hover{background:var(--panel-2)}
+
+  /* ===================== ANNOUNCEMENTS ===================== */
+  .ann-banner{border:1px solid rgba(230,57,70,.3);background:linear-gradient(180deg,rgba(230,57,70,.07),var(--panel));border-radius:12px;margin-bottom:22px;overflow:hidden}
+  .ann-row{display:flex;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line-soft)}
+  .ann-row:last-child{border-bottom:none}
+  .ann-row .ic{font-size:15px;flex:0 0 auto}
+  .ann-row .c{min-width:0}
+  .ann-row b{display:block;font-size:14px;color:var(--ink);margin-bottom:2px}
+  .ann-row .ann-b{font-size:12.5px;color:#c8d5e2;line-height:1.5;white-space:pre-wrap}
+  .ann-row .ann-m{display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint);margin-top:4px}
+  .ann-card{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:12px 15px;margin-bottom:10px}
+  .ann-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .ann-top b{font-size:14.5px;color:var(--ink)}
+  .ann-body{font-size:13px;color:#c8d5e2;line-height:1.5;margin:6px 0;white-space:pre-wrap}
+  .ann-meta{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint)}
+
+  /* ===================== COMMAND PALETTE ===================== */
+  .topbar .ttl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .kbtn{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 11px;color:var(--muted);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11.5px;transition:.12s;flex:0 0 auto}
+  .kbtn:hover{border-color:var(--red);color:var(--ink)}
+  .kbtn .ki{font-size:15px;line-height:1}
+  .kbtn kbd{font-family:'JetBrains Mono',monospace;font-size:9.5px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:2px 5px;color:var(--faint)}
+  .cmdk{position:fixed;inset:0;background:rgba(3,7,12,.62);display:none;z-index:80;padding:12vh 16px 16px;justify-content:center;align-items:flex-start}
+  .cmdk.on{display:flex}
+  .cmdk-box{width:560px;max-width:94vw;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px -20px #000;animation:cardIn .18s ease both}
+  .cmdk-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .cmdk-mag{color:var(--muted);font-size:16px}
+  .cmdk-in input{flex:1;background:transparent;border:none;outline:none;color:var(--ink);font-size:15.5px;font-family:'Inter',sans-serif}
+  .cmdk-list{max-height:52vh;overflow-y:auto;padding:6px}
+  .cmdk-item{display:flex;align-items:center;gap:12px;padding:9px 11px;border-radius:8px;cursor:pointer}
+  .cmdk-item.sel{background:var(--panel)}
+  .cmdk-item .ci{width:22px;text-align:center;color:var(--muted);flex:0 0 auto}
+  .cmdk-item .cl{flex:1;min-width:0;font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cmdk-item .cl .cs2{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);margin-left:6px}
+  .cmdk-item .ck{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);flex:0 0 auto}
+  .cmdk-item.sel .ck{color:var(--muted)}
+  .cmdk-empty{padding:22px;text-align:center;color:var(--faint);font-size:13px}
+  .cmdk-foot{display:flex;gap:16px;padding:9px 16px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint)}
+  .cmdk-foot kbd{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;margin-right:3px}
+
+  /* ===================== PAYOUTS / PAYSTUB ===================== */
+  .pay-wrap .paybtn{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.04em;padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;transition:.12s;white-space:nowrap;margin-top:2px}
+  .pay-wrap .paybtn:hover{border-color:var(--teal);color:var(--teal)}
+  .pay-wrap .paybtn.on{background:rgba(55,201,163,.12);border-color:rgba(55,201,163,.5);color:var(--teal)}
+  .paid-pill{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:6px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .paid-pill.on{color:var(--teal);border-color:rgba(55,201,163,.45);background:rgba(55,201,163,.08)}
+  .stub-card{display:flex;align-items:center;gap:18px;justify-content:space-between;border:1px solid var(--line);border-radius:13px;padding:16px 20px;margin-bottom:22px;background:linear-gradient(180deg,var(--panel-2),var(--panel));flex-wrap:wrap}
+  .stub-card.paid{border-color:rgba(55,201,163,.4)}
+  .stub-card.pending{border-color:rgba(242,177,52,.35)}
+  .stub-l .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .stub-l .amt{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:34px;line-height:.9;color:var(--teal)}
+  .stub-l .brk{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:7px}
+  .stub-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+  .stub-r .paid-pill{font-size:11px;padding:5px 12px}
+  .stub-r .stub-when{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint)}
+
   /* ===================== RESPONSIVE ===================== */
   .menu-btn{display:none}
   @media (max-width:860px){
@@ -494,8 +607,8 @@
     .rrow .hire{display:none}
     .view{padding:20px 16px 80px}
     .pay-tools{margin-left:0;width:100%}
-    .phead,.prow{grid-template-columns:56px 1fr 62px 70px 104px;gap:8px}
-    .phead .rate-c,.prow .rate,.phead .bonus-c,.prow .bonus-c{display:none}
+    .phead,.prow{grid-template-columns:58px 1fr 78px 116px;gap:10px}
+    .phead .rate-c,.prow .rate-c,.phead .bonus-c,.prow .bonus-c{display:none}
     .af-row{grid-template-columns:1fr}
     .sc-head,.sc-row{grid-template-columns:1fr 96px 74px}
     .sc-head .exam-c,.sc-row .exam,.sc-head .when-c,.sc-when{display:none}
@@ -504,10 +617,13 @@
     .qtext{font-size:21px}.bignum{font-size:60px}.btn-row{flex-direction:column}
     .rrow{grid-template-columns:60px 1fr;gap:8px}
     .rrow .st{display:none}
-    .phead,.prow{grid-template-columns:50px 1fr 64px 96px;gap:7px}
-    .phead .fine-c,.prow .fine-c{display:none}
+    .phead,.prow{grid-template-columns:52px 1fr 108px;gap:9px}
+    .phead .hours-c,.prow .hours-c{display:none}
     .re-head,.re-row{grid-template-columns:70px 1fr 96px 34px}
     .re-head span:nth-child(3),.re-row .pinp[data-k="role"]{display:none}
+    .drawer{width:100vw;max-width:100vw}
+    .kbtn .kt,.kbtn kbd{display:none}
+    .kbtn{padding:8px 10px}
   }
 </style>
 </head>
@@ -556,6 +672,7 @@
       <div><h1>Empire EMS</h1><div class="sub">DISPATCH PORTAL</div></div>
     </div>
     <nav class="tabs" id="tabs">
+      <button class="tab" data-view="command" id="cmdTabBtn" style="display:none"><span class="ic">★</span>Command<span class="cs" id="cmdTag"></span></button>
       <button class="tab active" data-view="dash"><span class="ic">◧</span>Dashboard</button>
       <button class="tab" data-view="roster"><span class="ic">☰</span>Roster<span class="cs" id="rosterCount"></span></button>
       <button class="tab" data-view="clock"><span class="ic">◷</span>Time Clock<span class="cs" id="clockTag"></span></button>
@@ -578,12 +695,22 @@
     <div class="topbar">
       <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
       <div class="ttl" id="viewTitle">Dashboard</div>
+      <button class="kbtn" id="kbtn" title="Search (Ctrl+K)"><span class="ki">⌕</span><span class="kt">Search</span><kbd>⌘K</kbd></button>
       <div class="status"><span class="dot"></span>TERMINAL ONLINE<br><span class="mono" id="clock">--:--:--</span></div>
     </div>
     <div class="view" id="view"><!-- rendered by JS --></div>
     <div class="foot">EMPIRE RP · PILLBOX MEDICAL · UNOFFICIAL DEPARTMENT PORTAL</div>
   </main>
   <div class="saved-pill" id="savedPill">✓ Saved</div>
+  <div class="drawer-scrim" id="drawerScrim"></div>
+  <aside class="drawer" id="drawer"></aside>
+  <div class="cmdk" id="cmdk">
+    <div class="cmdk-box">
+      <div class="cmdk-in"><span class="cmdk-mag">⌕</span><input id="cmdkInput" placeholder="Jump to a tab or search members…" autocomplete="off" spellcheck="false"></div>
+      <div class="cmdk-list" id="cmdkList"></div>
+      <div class="cmdk-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -595,9 +722,9 @@
       (e.g. https://empire-ems.netlify.app/ ) and paste the same URL below.
    Leave clientId "" to run in guest-only demo mode.
    ===================================================================== */
-  const DISCORD = {
-  clientId:   "1530868140920279151",   // <-- paste your Discord Client ID here
-  redirectUri:"https://empireems.com/",   // <-- paste the hosted URL here (must match Discord portal)
+const DISCORD = {
+  clientId:   "",   // <-- paste your Discord Client ID here
+  redirectUri:"",   // <-- paste the hosted URL here (must match Discord portal)
   scope:      "identify"
 };
 
@@ -640,6 +767,16 @@ const WEBHOOK = {
   url: "",
   notifyDecisions: true,
 };
+
+/* =====================================================================
+   AUTO-ENROLL — when someone signs in with Discord and isn't already on
+   the roster, add them automatically as an Intern (next open I-# callsign).
+   Because the payroll sheet is built from the roster, they appear on the
+   paysheet at the Intern rate the moment they're added. Set to false to
+   require management to add members by hand instead. Listed managers
+   (in MANAGERS above) and guests are never auto-enrolled.
+   ===================================================================== */
+const AUTO_ENROLL = true;
 
 /* ============================ SAFE STORAGE ============================
    sessionStorage is used when available (keeps you logged in across
@@ -777,6 +914,31 @@ function saveRoster(silent){ try{ pstore.set('ems_roster', JSON.stringify(ROSTER
 function divs(){ return (ROSTER && ROSTER.length) ? ROSTER : DIVISIONS; }
 function resetRoster(){ ROSTER=JSON.parse(JSON.stringify(DIVISIONS)); saveRoster(false); }
 function updateRosterCount(){ const el=$('#rosterCount'); if(!el) return; let n=0; divs().forEach(d=>d.members.forEach(m=>{ if(m.nm) n++; })); el.textContent=n?String(n):''; }
+function isListedManager(){ if(!USER||USER.guest) return false; const ids=(MANAGERS.managerIds||[]).map(String); const names=(MANAGERS.managerNames||[]).map(s=>String(s).toLowerCase());
+  return (USER.id && ids.includes(String(USER.id))) || names.includes((USER.name||'').toLowerCase()); }
+/* Auto-add a Discord member to the roster (and therefore the paysheet) on sign-in. */
+function autoEnroll(){
+  if(!AUTO_ENROLL || !USER || USER.guest) return;
+  if(isListedManager()) return;               // command staff place themselves
+  if(!ROSTER) loadRoster();
+  const nm=(USER.name||'').toLowerCase(), did=USER.id||'';
+  const match = m => (did && m.did===did) || (m.nm||'').toLowerCase()===nm;
+  const already = divs().some(d=>d.members.some(match));
+  if(already){ // backfill their Discord id for reliable future matching
+    if(did){ let changed=false; divs().forEach(d=>d.members.forEach(m=>{ if(!m.did && (m.nm||'').toLowerCase()===nm){ m.did=did; changed=true; } })); if(changed) saveRoster(true); }
+    return;
+  }
+  const intern = divs().find(d=>d.key==='intern') || divs()[divs().length-1];
+  const hire = new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+  let slot = intern.members.find(m=>!m.nm && m.cs);   // reuse a vacant intern slot if one exists
+  let cs;
+  if(slot){ slot.nm=USER.name; slot.role='Intern'; slot.st='active'; slot.hire=hire; slot.did=did; cs=slot.cs; }
+  else { let max=0; divs().forEach(d=>d.members.forEach(m=>{ const mm=/^I-(\d+)/.exec(m.cs||''); if(mm) max=Math.max(max,+mm[1]); }));
+    cs='I-'+(max+1); intern.members.push({cs, nm:USER.name, role:'Intern', st:'active', hire, did}); }
+  saveRoster(true); updateRosterCount();
+  if(WEBHOOK.url) postWebhook({username:'Empire EMS', embeds:[{title:'🚑 New member auto-enrolled', color:0x37c9a3,
+    fields:[{name:'Member',value:trunc(USER.name,256)||'—',inline:true},{name:'Callsign',value:cs,inline:true},{name:'Rank',value:'Intern',inline:true}], timestamp:new Date().toISOString()}]});
+}
 
 /* ============================ PAYROLL ENGINE ============================
    Reuses the roster above as the single source of truth for who exists.
@@ -829,7 +991,12 @@ function savePayrollDebounced(){ clearTimeout(payDebounce); payDebounce=setTimeo
 function flashSaved(){ const p=$('#savedPill'); if(!p) return; p.classList.add('on'); clearTimeout(saveTimer); saveTimer=setTimeout(()=>p.classList.remove('on'),1400); }
 function curWeek(){ return PAYROLL.weeks[PAYROLL.activeWeek]; }
 function entryFor(cs){ const w=curWeek(); if(!w.entries[cs]) w.entries[cs]={h:0,b:0,f:0}; return w.entries[cs]; }
-function payFor(p){ const e=curWeek().entries[p.cs]||{h:0,b:0,f:0}; return Math.max(0, p.rate*(+e.h||0) + (+e.b||0) - (+e.f||0)); }
+const OT_THRESHOLD=25, OT_MULT=1.30;   // hours over 25/week pay at 1.30× rate
+function payParts(p){ const e=curWeek().entries[p.cs]||{h:0,b:0}; const h=+e.h||0,b=+e.b||0;
+  const reg=Math.min(h,OT_THRESHOLD), ot=Math.max(0,h-OT_THRESHOLD);
+  const base=p.rate*reg, otPay=p.rate*OT_MULT*ot;
+  return {h,b,reg,ot,base,otPay, pay:Math.max(0, base+otPay+b)}; }
+function payFor(p){ return payParts(p).pay; }
 
 function canEditPayroll(){
   if(!USER || USER.guest) return false;
@@ -853,7 +1020,7 @@ function renderPayroll(){
   const weeks=Object.keys(PAYROLL.weeks).sort().reverse();
   $('#view').innerHTML = `
     <div class="subline" style="margin-bottom:16px">
-      Weekly hours &amp; pay for every filled callsign. Pay auto-calculates as <b>hourly × hours + bonuses − fines</b>.
+      Weekly hours &amp; pay for every filled callsign. Pay auto-calculates as <b>hourly × hours + bonuses</b>, with hours over <b>25/week</b> paid at <b style="color:var(--amber)">1.3× overtime</b>.
       ${editable?' You have <b style="color:var(--teal)">edit access</b> — changes save automatically to this browser.':' You have <b>read-only</b> access.'}
     </div>
     <div class="pay-bar">
@@ -863,6 +1030,7 @@ function renderPayroll(){
       </div>
       ${editable?'<button class="tbtn" id="newWk">＋ New week</button>':''}
       ${editable?'<button class="tbtn go" id="pullClock" title="Fill hours from clocked time this week">⟲ Pull from Time Clock</button>':''}
+      ${editable?'<button class="tbtn" id="payAll" title="Mark everyone with pay as paid out for this period">✓ Mark all paid</button>':''}
       <span class="mode-tag ${editable?'edit':'ro'}"><span class="d"></span>${editable?'Editing':'Read-only'}</span>
       <div class="pay-tools">
         <div class="search" style="flex:0 1 200px;min-width:150px"><input id="paySearch" placeholder="Search name / callsign…" value="${esc(paySearch)}" autocomplete="off"></div>
@@ -882,6 +1050,7 @@ function renderPayroll(){
   if(editable){
     $('#newWk').onclick=newWeek;
     $('#pullClock').onclick=pullClockHours;
+    $('#payAll').onclick=markAllPaid;
     $('#impJson').onclick=()=>$('#impFile').click();
     $('#impFile').onchange=importJson;
   }
@@ -901,7 +1070,7 @@ function minsForNameInRange(name,start,end){ if(!CLOCK) return 0; const nm=(name
 function pullClockHours(){
   if(!CLOCK||(!CLOCK.shifts.length && !Object.keys(CLOCK.open||{}).length)){ alert('No clocked time yet. Members need to clock in on the Time Clock tab first.'); return; }
   const wk=curWeek();
-  if(!confirm(`Fill "${wk.label||weekLabel(PAYROLL.activeWeek)}" hours from the Time Clock? This overwrites hours for anyone with tracked time that week (bonuses and fines are untouched). Matches are by name.`)) return;
+  if(!confirm(`Fill "${wk.label||weekLabel(PAYROLL.activeWeek)}" hours from the Time Clock? This overwrites hours for anyone with tracked time that week (bonuses are untouched). Matches are by name.`)) return;
   const [s,e]=weekRange(PAYROLL.activeWeek);
   let filled=0;
   payablePeople().forEach(p=>{ const mins=minsForNameInRange(p.nm,s,e); if(mins>0){ entryFor(p.cs).h=Math.round(mins/60*4)/4; filled++; } });
@@ -912,27 +1081,28 @@ function paintPayroll(){
   const editable=canEditPayroll();
   const q=paySearch.trim().toLowerCase();
   const people=payablePeople();
-  let html='', gross=0,totH=0,totB=0,totF=0,paid=0;
+  let html='', gross=0,totH=0,totB=0,paid=0,totOt=0,paidOut=0;
   divs().forEach(d=>{
     const rows=people.filter(p=>p.key===d.key).filter(p=> !q || p.nm.toLowerCase().includes(q)||p.cs.toLowerCase().includes(q)||(p.role||'').toLowerCase().includes(q));
     if(!rows.length) return;
     html+=`<div class="div-h"><span class="t">${esc(d.name)}</span><span class="ct">${rows.length}</span><span class="pay">${esc(d.pay)}</span><span class="rule"></span></div>`;
-    html+=`<div class="ptable"><div class="phead"><span>Callsign</span><span>Name</span><span class="r rate-c">Rate</span><span class="r">Hours</span><span class="r bonus-c">Bonus</span><span class="r fine-c">Fine</span><span class="r">Pay</span></div>`;
+    html+=`<div class="ptable"><div class="phead"><span>Callsign</span><span>Name</span><span class="r rate-c">Rate</span><span class="r hours-c">Hours</span><span class="r bonus-c">Bonus</span><span class="r">Pay</span></div>`;
     let sub=0;
     rows.forEach(p=>{
-      const e=curWeek().entries[p.cs]||{h:0,b:0,f:0};
-      const pay=payFor(p); gross+=pay; sub+=pay; totH+=(+e.h||0); totB+=(+e.b||0); totF+=(+e.f||0); if((+e.h||0)>0||(+e.b||0)>0) paid++;
+      const e=curWeek().entries[p.cs]||{h:0,b:0};
+      const pp=payParts(p), pay=pp.pay; gross+=pay; sub+=pay; totH+=pp.h; totB+=pp.b; totOt+=pp.otPay; if(pp.h>0||pp.b>0) paid++; if(e.paid) paidOut+=pay;
       const hCell = editable? `<input class="pinp" data-cs="${esc(p.cs)}" data-k="h" type="number" min="0" step="0.25" value="${e.h||0}">` : `<span class="pcell">${e.h||0}</span>`;
       const bCell = editable? `<input class="pinp bonus" data-cs="${esc(p.cs)}" data-k="b" type="number" min="0" step="500" value="${e.b||0}">` : `<span class="pcell">${money(e.b||0)}</span>`;
-      const fCell = editable? `<input class="pinp fine" data-cs="${esc(p.cs)}" data-k="f" type="number" min="0" step="500" value="${e.f||0}">` : `<span class="pcell fine">${(e.f||0)?('-'+money(e.f)):money(0)}</span>`;
+      const paidCtrl = editable
+        ? `<button class="paybtn${e.paid?' on':''}" id="pd-${cssid(p.cs)}" data-pay="${esc(p.cs)}"${pay>0?'':' style="display:none"'}${e.paid?` title="Paid ${new Date(e.paid).toLocaleString()}${e.paidBy?' by '+esc(e.paidBy):''}"`:''}>${e.paid?'✓ Paid':'Mark paid'}</button>`
+        : (pay>0 ? `<span class="paid-pill${e.paid?' on':''}">${e.paid?'✓ Paid':'Pending'}</span>` : '');
       html+=`<div class="prow">
         <span class="cs">${esc(p.cs)}</span>
         <span class="nm">${esc(p.nm)}<span class="role">${esc(p.role||'')}</span></span>
-        <span class="rate rate-c">$${p.rate/1000}k</span>
-        <span>${hCell}</span>
-        <span class="bonus-c">${bCell}</span>
-        <span class="fine-c">${fCell}</span>
-        <span class="pay ${pay?'':'zero'}" id="pay-${cssid(p.cs)}">${money(pay)}</span>
+        <span class="rate r rate-c">$${p.rate/1000}k</span>
+        <span class="r hours-c">${hCell}</span>
+        <span class="r bonus-c">${bCell}</span>
+        <span class="pay-wrap"><span class="ot-tag" id="ot-${cssid(p.cs)}"${pp.ot>0?'':' style="display:none"'}>OT ${round2(pp.ot)}h ×1.3</span><span class="pay ${pay?'':'zero'}" id="pay-${cssid(p.cs)}">${money(pay)}</span>${paidCtrl}</span>
       </div>`;
     });
     html+=`<div class="pfoot">Division subtotal <b id="sub-${d.key}">${money(sub)}</b></div></div>`;
@@ -940,30 +1110,67 @@ function paintPayroll(){
   $('#payrollBody').innerHTML = html || `<div class="empty">No one matches “${esc(paySearch)}”.</div>`;
   $('#payTotals').innerHTML = `
     <div class="pt big"><div class="k">Gross payroll</div><div class="v" id="tGross">${money(gross)}</div></div>
-    <div class="pt"><div class="k">Employees paid</div><div class="v" id="tPaid">${paid}</div></div>
+    <div class="pt"><div class="k">Paid out</div><div class="v" id="tPaidOut" style="color:var(--teal)">${money(paidOut)}</div></div>
     <div class="pt"><div class="k">Total hours</div><div class="v" id="tHours">${round2(totH)}</div></div>
-    <div class="pt"><div class="k">Bonuses</div><div class="v" id="tBonus">${money(totB)}</div></div>
-    <div class="pt"><div class="k">Fines</div><div class="v" id="tFine">${money(totF)}</div></div>`;
+    <div class="pt"><div class="k">Overtime pay</div><div class="v" id="tOt"${totOt>0?' style="color:var(--amber)"':''}>${money(totOt)}</div></div>
+    <div class="pt"><div class="k">Employees paid</div><div class="v" id="tPaid">${paid}</div></div>
+    <div class="pt"><div class="k">Bonuses</div><div class="v" id="tBonus">${money(totB)}</div></div>`;
   if(editable){
     $$('#payrollBody .pinp').forEach(inp=>inp.addEventListener('input',()=>{
       const e=entryFor(inp.dataset.cs); e[inp.dataset.k]= inp.value===''?0:Math.max(0,+inp.value||0);
       recalc(); savePayrollDebounced();
     }));
+    $$('#payrollBody .paybtn').forEach(b=>b.onclick=()=>markPaid(b.dataset.pay));
   }
 }
 function recalc(){
-  let gross=0,totH=0,totB=0,totF=0,paid=0; const subs={};
+  let gross=0,totH=0,totB=0,paid=0,totOt=0,paidOut=0; const subs={};
   payablePeople().forEach(p=>{
-    const e=curWeek().entries[p.cs]||{h:0,b:0,f:0}; const pay=payFor(p);
+    const pp=payParts(p), pay=pp.pay; const e=curWeek().entries[p.cs]||{};
     const el=document.getElementById('pay-'+cssid(p.cs));
     if(el){ el.textContent=money(pay); el.classList.toggle('zero', !pay); }
-    gross+=pay; totH+=(+e.h||0); totB+=(+e.b||0); totF+=(+e.f||0); if((+e.h||0)>0||(+e.b||0)>0) paid++;
+    const ot=document.getElementById('ot-'+cssid(p.cs));
+    if(ot){ if(pp.ot>0){ ot.style.display=''; ot.textContent='OT '+round2(pp.ot)+'h ×1.3'; } else ot.style.display='none'; }
+    const pd=document.getElementById('pd-'+cssid(p.cs)); if(pd) pd.style.display = pay>0?'':'none';
+    gross+=pay; totH+=pp.h; totB+=pp.b; totOt+=pp.otPay; if(pp.h>0||pp.b>0) paid++; if(e.paid) paidOut+=pay;
     subs[p.key]=(subs[p.key]||0)+pay;
   });
   const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
-  set('tGross',money(gross)); set('tPaid',paid); set('tHours',round2(totH)); set('tBonus',money(totB)); set('tFine',money(totF));
+  set('tGross',money(gross)); set('tPaid',paid); set('tHours',round2(totH)); set('tOt',money(totOt)); set('tBonus',money(totB)); set('tPaidOut',money(paidOut));
+  const otEl=document.getElementById('tOt'); if(otEl) otEl.style.color = totOt>0? 'var(--amber)' : '';
   Object.keys(subs).forEach(k=>set('sub-'+k, money(subs[k])));
 }
+/* ---- Payout tracking (RP): management marks who's been paid ---- */
+function markPaid(cs){
+  const e=entryFor(cs); const p=payablePeople().find(x=>x.cs===cs); const pp=p?payParts(p):null;
+  if(e.paid){ if(!confirm('Mark this employee as UNPAID again for this period?')) return; delete e.paid; delete e.paidBy; }
+  else { e.paid=new Date().toISOString(); e.paidBy=(USER&&USER.name)||'Management'; if(WEBHOOK.url && p && pp) postWebhook(paystubPayload(p,pp)); }
+  savePayroll(false); paintPayroll();
+}
+function markAllPaid(){
+  const unpaid=payablePeople().filter(p=>payParts(p).pay>0 && !((curWeek().entries[p.cs]||{}).paid));
+  if(!unpaid.length){ alert('Everyone with pay is already marked paid for this period.'); return; }
+  if(!confirm(`Pay out all ${unpaid.length} unpaid employee${unpaid.length>1?'s':''} for "${curWeek().label||weekLabel(PAYROLL.activeWeek)}" and send their paystubs?`)) return;
+  let total=0; const now=new Date().toISOString(), by=(USER&&USER.name)||'Management';
+  unpaid.forEach(p=>{ const e=entryFor(p.cs); e.paid=now; e.paidBy=by; total+=payParts(p).pay; });
+  savePayroll(false);
+  if(WEBHOOK.url) postWebhook({username:'Empire EMS Payroll', embeds:[{title:'💵 Payroll paid out', color:0x37c9a3,
+    fields:[{name:'Pay period',value:curWeek().label||weekLabel(PAYROLL.activeWeek),inline:true},{name:'Employees paid',value:String(unpaid.length),inline:true},{name:'Total',value:money(total),inline:true}], timestamp:now, footer:{text:'Paid out by '+by}}]});
+  paintPayroll();
+}
+function paystubPayload(p,pp){ return { username:'Empire EMS Payroll', embeds:[{ title:'🧾 Paystub — '+(curWeek().label||weekLabel(PAYROLL.activeWeek)), color:0x37c9a3,
+  fields:[
+    {name:'Employee',value:(trunc(p.nm,200)||'—')+' · '+p.cs,inline:false},
+    {name:'Hours',value:round2(pp.h)+(pp.ot>0?` (${round2(pp.ot)} OT ×1.3)`:''),inline:true},
+    {name:'Rate',value:'$'+(p.rate/1000)+'k/hr',inline:true},
+    {name:'Bonus',value:money(pp.b),inline:true},
+    {name:'Net pay',value:money(pp.pay),inline:false},
+  ], timestamp:new Date().toISOString(), footer:{text:'PAID by '+((USER&&USER.name)||'Management')} }] }; }
+function myCallsign(){ if(!USER) return null; const nm=(USER.name||'').toLowerCase(), did=USER.id||''; let cs=null;
+  divs().forEach(d=>d.members.forEach(m=>{ if((did&&m.did===did)||(m.nm||'').toLowerCase()===nm) cs=m.cs; })); return cs; }
+function myStub(){ if(!USER||USER.guest||!PAYROLL||!curWeek()) return null; const cs=myCallsign(); if(!cs) return null;
+  const p=payablePeople().find(x=>x.cs===cs); if(!p) return null; const e=curWeek().entries[cs]||{};
+  return {p, pp:payParts(p), paid:e.paid||null, paidBy:e.paidBy||'', period:(curWeek().label||weekLabel(PAYROLL.activeWeek))}; }
 function newWeek(){
   const label=prompt('Name this pay week:', weekLabel(isoWeekId(new Date())));
   if(label===null) return;
@@ -974,8 +1181,8 @@ function newWeek(){
 }
 function dl(blob,name){ const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500); }
 function exportCsv(){
-  const w=curWeek(); const rows=[['Callsign','Name','Role','Division','Hourly','Hours','Bonus','Fine','Pay','Status']];
-  payablePeople().forEach(p=>{ const e=w.entries[p.cs]||{h:0,b:0,f:0}; rows.push([p.cs,p.nm,p.role,p.div,p.rate,e.h||0,e.b||0,e.f||0,Math.round(payFor(p)),p.st]); });
+  const w=curWeek(); const rows=[['Callsign','Name','Role','Division','Hourly','Hours','Reg Hours','OT Hours','OT Pay','Bonus','Pay','Status']];
+  payablePeople().forEach(p=>{ const pp=payParts(p); rows.push([p.cs,p.nm,p.role,p.div,p.rate,pp.h,pp.reg,pp.ot,Math.round(pp.otPay),pp.b,Math.round(pp.pay),p.st]); });
   const csv=rows.map(r=>r.map(c=>{const s=String(c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
   dl(new Blob([csv],{type:'text/csv'}), `empire-ems-payroll-${PAYROLL.activeWeek}.csv`);
 }
@@ -1053,11 +1260,23 @@ function decisionPayload(a){ const ok=a.status==='approved';
 function submitApp(a){ APPS.apps.unshift(a); saveApps(true); postWebhook(submitPayload(a)); }
 function decide(id,status){
   const a=APPS.apps.find(x=>x.id===id); if(!a) return;
-  if(status==='approved'){ if(!confirm(`Approve ${a.name || a.discord}? They can then be added to the roster.`)) return; }
+  if(status==='approved'){ if(!confirm(`Approve ${a.name || a.discord}?`)) return; }
   let note='';
   if(status==='denied'){ const r=prompt('Reason for denial (optional — shown to the applicant):',''); if(r===null) return; note=r.trim(); }
   a.status=status; a.review={by:(USER&&USER.name)||'Management', byId:(USER&&USER.id)||'', at:new Date().toISOString(), note};
-  saveApps(false); if(WEBHOOK.notifyDecisions) postWebhook(decisionPayload(a)); paintAppReview();
+  saveApps(false); if(WEBHOOK.notifyDecisions) postWebhook(decisionPayload(a)); 
+  if(status==='approved' && a.name){ addApprovedToRoster(a); }
+  paintAppReview();
+}
+function addApprovedToRoster(a){
+  if(!ROSTER) loadRoster();
+  const nm=(a.name||'').toLowerCase();
+  const exists = divs().some(d=>d.members.some(m=>(m.nm||'').toLowerCase()===nm));
+  if(exists) return;
+  if(!confirm(`Add ${a.name} to the roster as an Intern now? You can set their callsign in the roster editor.`)) return;
+  const intern = divs().find(d=>d.key==='intern') || divs()[divs().length-1];
+  intern.members.push({cs:'', nm:a.name, role:'Intern', st:'active', hire:new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'})});
+  saveRoster(true); updateRosterCount();
 }
 function reopenApp(id){ const a=APPS.apps.find(x=>x.id===id); if(!a) return; if(!confirm('Move this application back to Pending?')) return; a.status='pending'; delete a.review; saveApps(false); paintAppReview(); }
 function withdrawApp(id){ if(!confirm('Withdraw your application? This removes it from the queue.')) return; APPS.apps=APPS.apps.filter(x=>x.id!==id); saveApps(false); renderApps(); }
@@ -1177,9 +1396,10 @@ function renderAppReview(){
 }
 function paintAppReview(){
   updateAppsTag();
+  const list=$('#appList'); if(!list) return;
   const rows=APPS.apps.filter(a=>appFilter==='all'?true:a.status===appFilter);
-  if(!rows.length){ $('#appList').innerHTML=`<div class="empty">No ${appFilter==='all'?'':appFilter+' '}applications${appFilter==='pending'?' — the queue is clear.':'.'}</div>`; return; }
-  $('#appList').innerHTML = rows.map(a=>{
+  if(!rows.length){ list.innerHTML=`<div class="empty">No ${appFilter==='all'?'':appFilter+' '}applications${appFilter==='pending'?' — the queue is clear.':'.'}</div>`; return; }
+  list.innerHTML = rows.map(a=>{
     const facts=[['Timezone',a.tz],['Availability',a.hours?a.hours+' hrs/wk':''],['Clip software',a.clips?'Yes':'No'],['Read SOPs',a.sops?'Yes':'No']]
       .filter(f=>f[1]).map(f=>`<div class="f"><div class="k">${f[0]}</div><div class="v">${esc(f[1])}</div></div>`).join('');
     const qa=`${a.exp?`<div class="q">Experience</div><div class="a">${esc(a.exp)}</div>`:''}<div class="q">Why join</div><div class="a">${esc(a.why||'—')}</div>`;
@@ -1410,11 +1630,30 @@ function renderClock(){
           ${myAdj.length?`<div class="my-adj">${myAdj.map(a=>`<div class="ma-row"><span class="mono">${a.type==='add'?'+':'−'}${a.mins}m</span><span class="app-badge ${a.status==='pending'?'pending':a.status==='approved'?'approved':'denied'}"><span class="d"></span>${a.status}</span></div>`).join('')}</div>`:''}
         </div>
       </div>
-    </div>`;
+    </div>
+    <div class="block" style="margin-top:6px"><h3>Leave of absence</h3><div class="inner">
+      ${(myLoa()&&myLoa().status==='pending')?`<div class="app-status pending" style="margin-bottom:14px;padding:14px 16px"><div class="ico">🌙</div><div><h3>LOA pending</h3><p>${esc(myLoa().start||'')} → ${esc(myLoa().end||'')} — awaiting management review.</p></div></div>`:''}
+      <div class="af-row">
+        <div class="field"><label for="loaStart">Start date</label><input id="loaStart" type="date"></div>
+        <div class="field"><label for="loaEnd">End date</label><input id="loaEnd" type="date"></div>
+      </div>
+      <div class="field"><label for="loaReason">Reason</label><textarea id="loaReason" placeholder="Why you'll be away."></textarea></div>
+      <div class="field err" id="loaErr" style="display:none;color:#f5a3ab;font-size:12.5px;font-family:'JetBrains Mono',monospace"></div>
+      <button class="btn wide" id="loaSubmit">Request leave ▸</button>
+    </div></div>`;
   if(mgr) $('#clockBoardBtn').onclick=renderClockBoard;
   $('#clockBtn').onclick=()=> o? clockOut() : clockIn();
   $$('#adjSeg button').forEach(b=>b.onclick=()=>{ adjType=b.dataset.t; renderClock(); });
   paintAdjHint(remain);
+  $('#loaSubmit').onclick=()=>{
+    const start=$('#loaStart').value, end=$('#loaEnd').value, reason=$('#loaReason').value.trim();
+    const err=$('#loaErr'); const fail=m=>{ err.style.display='block'; err.textContent=m; };
+    if(!start||!end) return fail('Pick a start and end date.');
+    if(end<start) return fail('End date must be after the start date.');
+    if(!reason) return fail('Add a reason for your leave.');
+    submitLoa((USER&&USER.name)||'Unknown', start, end, reason);
+    renderClock();
+  };
   $('#adjSubmit').onclick=()=>{
     const mins=parseInt($('#adjMin').value,10);
     const reason=$('#adjReason').value.trim();
@@ -1493,6 +1732,260 @@ function exportClockCsv(){
   const csv=rows.map(r=>r.map(c=>{const s=String(c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
   dl(new Blob([csv],{type:'text/csv'}),'empire-ems-timeclock.csv');
 }
+
+/* ============================ DISCIPLINE ENGINE ============================
+   Warnings & strikes per the SOP: 2 active warnings auto-convert to 1 strike;
+   3 active strikes flags a member termination-eligible. Warnings/strikes
+   expire after 14 days. Managers log events with reasons; posts to Discord. */
+let DISC=null, discSel='';
+const DISC_EXPIRE_DAYS={warning:14, strike:14};
+function loadDisc(){ const raw=pstore.get('ems_discipline'); if(raw){ try{ DISC=JSON.parse(raw); }catch(e){ DISC=null; } } if(!DISC||!Array.isArray(DISC.records)) DISC={records:[]}; }
+function saveDisc(silent){ try{ pstore.set('ems_discipline', JSON.stringify(DISC)); }catch(e){} if(!silent) flashSaved(); updateCmdTag(); }
+function discActive(r){ return !r.expires || new Date(r.expires)>new Date(); }
+function discFor(name){ const nm=(name||'').toLowerCase(); const recs=DISC.records.filter(r=>(r.name||'').toLowerCase()===nm);
+  return { recs, warnings:recs.filter(r=>r.type==='warning'&&discActive(r)).length, strikes:recs.filter(r=>r.type==='strike'&&discActive(r)).length, terminated:recs.some(r=>r.type==='termination') }; }
+function discStanding(name){ const d=discFor(name);
+  if(d.terminated) return {label:'Terminated', cls:'term'};
+  if(d.strikes>=3) return {label:'Termination-eligible', cls:'term'};
+  if(d.strikes>0) return {label:d.strikes+' strike'+(d.strikes>1?'s':''), cls:'strike'};
+  if(d.warnings>0) return {label:d.warnings+' warning'+(d.warnings>1?'s':''), cls:'warn'};
+  return {label:'Good standing', cls:'good'}; }
+function logDiscipline(name,type,reason){
+  const now=new Date(); const rec={id:uid(), name, type, reason, by:(USER&&USER.name)||'Management', byId:(USER&&USER.id)||'', at:now.toISOString()};
+  if(DISC_EXPIRE_DAYS[type]){ const ex=new Date(now); ex.setDate(ex.getDate()+DISC_EXPIRE_DAYS[type]); rec.expires=ex.toISOString(); }
+  DISC.records.unshift(rec);
+  if(type==='warning'){ const d=discFor(name); if(d.warnings>=2){
+      DISC.records.forEach(r=>{ if((r.name||'').toLowerCase()===name.toLowerCase() && r.type==='warning' && discActive(r)) r.expires=now.toISOString(); });
+      const ex=new Date(now); ex.setDate(ex.getDate()+14);
+      DISC.records.unshift({id:uid(), name, type:'strike', reason:'Two warnings = one strike (auto)', by:'System', at:now.toISOString(), expires:ex.toISOString(), auto:true});
+      if(WEBHOOK.url) postWebhook(discPayload(DISC.records[0]));
+  }}
+  saveDisc(false); if(WEBHOOK.url) postWebhook(discPayload(rec));
+}
+function removeDiscipline(id){ DISC.records=DISC.records.filter(r=>r.id!==id); saveDisc(false); }
+function discPayload(r){ const color={warning:0xf2b134,strike:0xe63946,demotion:0xb31f2c,termination:0x7a1420,note:0x5865f2}[r.type]||0x888888;
+  return { username:'Empire EMS Discipline', embeds:[{ title:'⚠️ '+String(r.type).toUpperCase()+' logged', color,
+    fields:[{name:'Member',value:trunc(r.name,256)||'—',inline:true},{name:'Logged by',value:trunc(r.by,256)||'—',inline:true},{name:'Reason',value:trunc(r.reason,1024)||'—'}], timestamp:r.at }] }; }
+
+/* ============================ COMMAND CENTER (management) ============================ */
+let cmdView='overview';
+function updateCmdTag(){ const el=$('#cmdTag'); if(!el) return; if(!canEditPayroll()){ el.textContent=''; return; }
+  const n=pendingApps()+pendingAdjustments()+pendingLoa(); el.textContent=n?String(n):''; }
+function atRiskMembers(){ if(!DISC) loadDisc(); const seen={}, out=[]; divs().forEach(d=>d.members.forEach(m=>{ if(!m.nm||seen[m.nm.toLowerCase()])return; seen[m.nm.toLowerCase()]=1; const s=discFor(m.nm); if(s.strikes>0||s.terminated) out.push(m.nm); })); return out; }
+function activityFeed(limit){
+  const ev=[];
+  (APPS?APPS.apps:[]).forEach(a=>{ if(a.review) ev.push({t:a.review.at, ic:a.status==='approved'?'✅':'❌', tx:`Application ${a.status} — <b>${esc(a.name||'')}</b>`, by:a.review.by, go:'apps'}); });
+  (CLOCK?CLOCK.adjustments:[]).forEach(a=>{ if(a.review) ev.push({t:a.review.at, ic:'⏱️', tx:`Time ${a.status} (${a.type==='add'?'+':'−'}${a.mins}m) — <b>${esc(a.name||'')}</b>`, by:a.review.by, go:'clock'}); });
+  (SCORES?SCORES.results:[]).forEach(r=>{ ev.push({t:r.at, ic:r.passed?'🎓':'📕', tx:`${esc(r.examTitle||'Exam')} ${r.passed?'passed':'failed'} (${r.pct}%) — <b>${esc(r.name||'')}</b>`, by:'', go:'exams'}); });
+  (DISC?DISC.records:[]).forEach(r=>{ ev.push({t:r.at, ic:'⚠️', tx:`${esc(r.type)} — <b>${esc(r.name||'')}</b>`, by:r.by, go:'command'}); });
+  return ev.filter(e=>e.t).sort((a,b)=>b.t.localeCompare(a.t)).slice(0,limit||14);
+}
+function renderCommand(){
+  if(!canEditPayroll()){ setView('dash'); return; }
+  if(!DISC) loadDisc(); if(!ANN) loadAnn(); if(!LOA) loadLoa();
+  if(cmdView==='discipline'){ return renderDiscipline(); }
+  const s=rosterStats();
+  const gross=(PAYROLL&&curWeek())?payablePeople().reduce((a,p)=>a+payFor(p),0):0;
+  const otPay=(PAYROLL&&curWeek())?payablePeople().reduce((a,p)=>a+payParts(p).otPay,0):0;
+  const pApps=pendingApps(), pAdj=pendingAdjustments(), pLoa=pendingLoa(), risk=atRiskMembers();
+  const items=[];
+  if(pApps) items.push({go:'apps', n:pApps, cls:'blurple', t:`${pApps} application${pApps>1?'s':''} awaiting review`, s:'Approve or deny in Applications'});
+  if(pAdj) items.push({go:'clock', n:pAdj, cls:'amber', t:`${pAdj} time adjustment${pAdj>1?'s':''} pending`, s:'Review on the Time Clock board'});
+  if(pLoa) items.push({go:'command-loa', n:pLoa, cls:'blurple', t:`${pLoa} leave request${pLoa>1?'s':''} pending`, s:'Approve below'});
+  if(risk.length) items.push({go:'command-disc', n:risk.length, cls:'red', t:`${risk.length} member${risk.length>1?'s':''} with active strikes`, s:'Review in Discipline'});
+  const loaPend=LOA.requests.filter(r=>r.status==='pending');
+  $('#view').innerHTML=`
+    <div class="subline" style="margin-bottom:18px">Management command center — everything that needs your attention, in one place.</div>
+    <div class="pay-totals" style="margin-bottom:22px">
+      <div class="pt big"><div class="k">On duty now</div><div class="v"${onDutyCount()?' style="color:var(--teal)"':''}>${onDutyCount()}</div></div>
+      <div class="pt"><div class="k">Active roster</div><div class="v">${s.active}</div></div>
+      <div class="pt"><div class="k">This week payroll</div><div class="v" style="font-size:24px">${money(gross)}</div></div>
+      <div class="pt"><div class="k">Overtime pay</div><div class="v" style="font-size:24px${otPay>0?';color:var(--amber)':''}">${money(otPay)}</div></div>
+      <div class="pt"><div class="k">Pending apps</div><div class="v"${pApps?' style="color:var(--blurple)"':''}>${pApps}</div></div>
+      <div class="pt"><div class="k">Pending time / LOA</div><div class="v"${(pAdj+pLoa)?' style="color:var(--amber)"':''}>${pAdj+pLoa}</div></div>
+    </div>
+
+    <div class="div-h"><span class="t">Needs attention</span><span class="rule"></span></div>
+    <div style="margin-bottom:22px">${items.length? items.map(i=>`<div class="act-item" data-go="${i.go}"><span class="n ${i.cls}">${i.n}</span><span class="tx"><b>${i.t}</b><span class="s">${i.s}</span></span><span class="ar">→</span></div>`).join('') : '<div class="mini-empty">All clear — no pending applications, time adjustments, leave requests, or discipline flags.</div>'}</div>
+
+    <div class="div-h"><span class="t">Announcements</span><span class="ct">${ANN.posts.length}</span><span class="rule"></span></div>
+    <div class="block" style="margin-bottom:14px"><div class="inner">
+      <div class="field"><input id="annTitle" placeholder="Announcement title" autocomplete="off"></div>
+      <div class="field"><textarea id="annBody" placeholder="Message to the whole department… (shows on everyone's dashboard)"></textarea></div>
+      <button class="btn wide" id="annPost">📢 Post announcement</button>
+    </div></div>
+    <div style="margin-bottom:22px">${ANN.posts.slice(0,6).map(p=>`<div class="ann-card"><div class="ann-top"><b>${esc(p.title)}</b><button class="feed-del" data-anndel="${p.id}">✕</button></div><div class="ann-body">${esc(p.body)}</div><div class="ann-meta">${esc(p.by)} · ${timeAgo(p.at)}</div></div>`).join('') || '<div class="mini-empty">No announcements posted.</div>'}</div>
+
+    <div id="loaReview">${loaPend.length?`<div class="div-h"><span class="t">Leave requests</span><span class="ct">${loaPend.length}</span><span class="rule"></span></div><div style="margin-bottom:22px">${loaPend.map(r=>`<div class="app-card pending"><div class="ac-head"><span class="ac-name">${esc(r.name)}</span><span class="mono" style="color:#aab4ff">${esc(r.start)} → ${esc(r.end)}</span><span class="ac-when">${timeAgo(r.at)}</span></div><div class="ac-body"><div class="ac-qa"><div class="q">Reason</div><div class="a">${esc(r.reason||'—')}</div></div></div><div class="ac-actions"><button class="abtn ok" data-loaok="${r.id}">✓ Approve</button><button class="abtn no" data-loano="${r.id}">✕ Deny</button></div></div>`).join('')}</div>`:''}</div>
+
+    <div class="div-h"><span class="t">Department tools</span><span class="rule"></span></div>
+    <div class="quick" style="margin-bottom:14px">
+      <button class="qlink" data-go="command-disc">Discipline &amp; strikes${risk.length?` <span style="color:var(--red)">· ${risk.length} flagged</span>`:''}<span class="ar">→</span></button>
+      <button class="qlink" data-go="roster">Edit the roster<span class="ar">→</span></button>
+      <button class="qlink" data-go="payroll">Weekly payroll<span class="ar">→</span></button>
+      <button class="qlink" data-go="exams">Exam results<span class="ar">→</span></button>
+    </div>
+    <div class="pay-tools" style="margin-bottom:24px">
+      <button class="tbtn go" id="cmBackup">⤓ Back up everything</button>
+      <button class="tbtn" id="cmRestore">⤒ Restore backup</button><input type="file" id="cmRestoreFile" accept="application/json" style="display:none">
+    </div>
+
+    <div class="div-h"><span class="t">Recent activity</span><span class="rule"></span></div>
+    <div class="feed">${(()=>{ const f=activityFeed(14); return f.length? f.map(e=>`<div class="feed-row"><span class="ic">${e.ic}</span><span class="tx">${e.tx}</span><span class="who">${e.by?esc(e.by)+' · ':''}${timeAgo(e.t)}</span></div>`).join('') : '<div class="feed-row"><span class="tx" style="color:var(--faint)">No activity yet.</span></div>'; })()}</div>`;
+  $$('#view .act-item, #view .qlink').forEach(b=>b.onclick=()=>{ const g=b.dataset.go;
+    if(g==='command-disc'){ cmdView='discipline'; renderCommand(); }
+    else if(g==='command-loa'){ const el=$('#loaReview'); if(el) el.scrollIntoView({behavior:'smooth'}); }
+    else setView(g); });
+  $('#annPost').onclick=()=>{ const t=$('#annTitle').value.trim(), b=$('#annBody').value.trim(); if(!t&&!b) return; postAnnouncement(t||'Announcement', b); renderCommand(); };
+  $$('#view [data-anndel]').forEach(b=>b.onclick=()=>{ if(confirm('Delete this announcement?')){ removeAnnouncement(b.dataset.anndel); renderCommand(); } });
+  $$('#view [data-loaok]').forEach(b=>b.onclick=()=>decideLoa(b.dataset.loaok,'approved'));
+  $$('#view [data-loano]').forEach(b=>b.onclick=()=>decideLoa(b.dataset.loano,'denied'));
+  $('#cmBackup').onclick=backupAll;
+  $('#cmRestore').onclick=()=>$('#cmRestoreFile').click();
+  $('#cmRestoreFile').onchange=restoreAll;
+}
+function renderDiscipline(){
+  if(!DISC) loadDisc();
+  const names=[]; const seen={}; divs().forEach(d=>d.members.forEach(m=>{ if(m.nm&&!seen[m.nm.toLowerCase()]){ seen[m.nm.toLowerCase()]=1; names.push(m.nm); } }));
+  const flagged=names.map(n=>({n, d:discFor(n), st:discStanding(n)})).filter(x=>x.d.warnings||x.d.strikes||x.d.terminated).sort((a,b)=>(b.d.strikes*10+b.d.warnings)-(a.d.strikes*10+a.d.warnings));
+  const log=DISC.records.slice(0,25);
+  const typeOpts=[['warning','Warning'],['strike','Strike'],['demotion','Demotion'],['termination','Termination'],['note','Note']];
+  $('#view').innerHTML=`
+    <button class="chip" id="discBack" style="margin-bottom:16px">← Back to command center</button>
+    <div class="subline" style="margin-bottom:16px">Log warnings and strikes. Two active warnings auto-become one strike; three active strikes flags termination. Warnings and strikes expire after 14 days.${WEBHOOK.url?' Entries post to Discord.':''}</div>
+
+    <div class="block" style="margin-bottom:22px"><h3>Log an entry</h3><div class="inner">
+      <div class="af-row">
+        <div class="field"><label for="discName">Member</label><input id="discName" list="discNames" value="${esc(discSel)}" placeholder="Type or pick a name" autocomplete="off"><datalist id="discNames">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></div>
+        <div class="field"><label for="discType">Type</label><select id="discType" class="pinp" style="width:100%">${typeOpts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label for="discReason">Reason</label><textarea id="discReason" placeholder="What happened? Keep it factual — this is the record."></textarea></div>
+      <div class="field err" id="discErr" style="display:none;color:#f5a3ab;font-size:12.5px;font-family:'JetBrains Mono',monospace"></div>
+      <button class="btn wide" id="discSubmit">Log entry ▸</button>
+    </div></div>
+
+    <div class="div-h"><span class="t">Active discipline</span><span class="ct">${flagged.length}</span><span class="rule"></span></div>
+    ${flagged.length?`<div class="rtable" style="margin-bottom:22px">${flagged.map(x=>`<div class="rrow" style="grid-template-columns:1fr 70px 70px 150px"><span class="nm">${esc(x.n)}</span><span class="mono" style="color:var(--amber);text-align:center">${x.d.warnings}W</span><span class="mono" style="color:var(--red);text-align:center">${x.d.strikes}S</span><span class="st"><span class="app-badge ${x.st.cls}"><span class="d"></span>${x.st.label}</span></span></div>`).join('')}</div>`:'<div class="mini-empty" style="margin-bottom:22px">No members currently have active warnings or strikes.</div>'}
+
+    <div class="div-h"><span class="t">Recent log</span><span class="ct">${DISC.records.length}</span><span class="rule"></span></div>
+    ${log.length?`<div class="feed">${log.map(r=>`<div class="feed-row"><span class="app-badge ${r.type==='warning'?'warn':r.type==='strike'?'strike':r.type==='note'?'good':'term'}" style="min-width:0"><span class="d"></span>${esc(r.type)}</span><span class="tx"><b>${esc(r.name)}</b> — ${esc(r.reason||'')}${discActive(r)&&r.expires?'':' <span style="color:var(--faint)">(expired)</span>'}</span><span class="who">${esc(r.by||'')} · ${timeAgo(r.at)}</span><button class="feed-del" data-del="${r.id}" title="Remove">✕</button></div>`).join('')}</div>`:'<div class="mini-empty">No discipline logged yet.</div>'}`;
+  $('#discBack').onclick=()=>{ cmdView='overview'; renderCommand(); };
+  $('#discName').addEventListener('input',e=>discSel=e.target.value);
+  $('#discSubmit').onclick=()=>{
+    const name=$('#discName').value.trim(), type=$('#discType').value, reason=$('#discReason').value.trim();
+    const err=$('#discErr'); const fail=m=>{ err.style.display='block'; err.textContent=m; };
+    if(!name) return fail('Enter the member\'s name.');
+    if(!reason) return fail('Add a reason — it becomes the permanent record.');
+    if((type==='termination'||type==='demotion') && !confirm(`Log a ${type} for ${name}?`)) return;
+    logDiscipline(name,type,reason); discSel=''; renderDiscipline();
+  };
+  $$('#view .feed-del').forEach(b=>b.onclick=()=>{ if(confirm('Remove this discipline record?')){ removeDiscipline(b.dataset.del); renderDiscipline(); } });
+}
+
+/* ============================ ANNOUNCEMENTS ============================ */
+let ANN=null;
+function loadAnn(){ const raw=pstore.get('ems_ann'); if(raw){ try{ ANN=JSON.parse(raw); }catch(e){ ANN=null; } } if(!ANN||!Array.isArray(ANN.posts)) ANN={posts:[]}; }
+function saveAnn(silent){ try{ pstore.set('ems_ann', JSON.stringify(ANN)); }catch(e){} if(!silent) flashSaved(); }
+function postAnnouncement(title,body){ ANN.posts.unshift({id:uid(), title, body, by:(USER&&USER.name)||'Management', at:new Date().toISOString()}); saveAnn(false);
+  if(WEBHOOK.url) postWebhook({username:'Empire EMS', embeds:[{title:'📢 '+trunc(title,200), description:trunc(body,2000), color:0xe63946, timestamp:new Date().toISOString(), footer:{text:'Posted by '+((USER&&USER.name)||'Management')}}]}); }
+function removeAnnouncement(id){ ANN.posts=ANN.posts.filter(p=>p.id!==id); saveAnn(false); }
+
+/* ============================ LEAVE OF ABSENCE ============================ */
+let LOA=null;
+function loadLoa(){ const raw=pstore.get('ems_loa'); if(raw){ try{ LOA=JSON.parse(raw); }catch(e){ LOA=null; } } if(!LOA||!Array.isArray(LOA.requests)) LOA={requests:[]}; }
+function saveLoa(silent){ try{ pstore.set('ems_loa', JSON.stringify(LOA)); }catch(e){} if(!silent) flashSaved(); updateCmdTag(); }
+function pendingLoa(){ return LOA? LOA.requests.filter(r=>r.status==='pending').length : 0; }
+function myLoa(){ if(!LOA||!USER) return null; const nm=(USER.name||'').toLowerCase();
+  return LOA.requests.filter(r=>(r.name||'').toLowerCase()===nm).sort((a,b)=>b.at.localeCompare(a.at))[0]||null; }
+function submitLoa(name,start,end,reason){ const r={id:uid(), name, start, end, reason, at:new Date().toISOString(), status:'pending'};
+  LOA.requests.unshift(r); saveLoa(true);
+  if(WEBHOOK.url) postWebhook({username:'Empire EMS LOA', embeds:[{title:'🌙 Leave of absence requested', color:0x5865f2, fields:[{name:'Member',value:trunc(name,256)||'—',inline:true},{name:'Dates',value:(start||'?')+' → '+(end||'?'),inline:true},{name:'Reason',value:trunc(reason,1024)||'—'}], timestamp:r.at}]}); }
+function decideLoa(id,status){ const r=LOA.requests.find(x=>x.id===id); if(!r) return;
+  let note='';
+  if(status==='denied'){ const t=prompt('Reason for denying the LOA (optional):',''); if(t===null) return; note=t.trim(); }
+  else if(!confirm(`Approve ${r.name}'s LOA (${r.start} → ${r.end})? Their roster status will be set to LOA.`)) return;
+  r.status=status; r.review={by:(USER&&USER.name)||'Management', at:new Date().toISOString(), note};
+  if(status==='approved'){ if(!ROSTER) loadRoster(); const nm=(r.name||'').toLowerCase();
+    divs().forEach(d=>d.members.forEach(m=>{ if((m.nm||'').toLowerCase()===nm){ m.st='loa'; m.loa=`${r.start}–${r.end}`; } })); saveRoster(true); updateRosterCount(); }
+  saveLoa(false);
+  if(WEBHOOK.url) postWebhook({username:'Empire EMS LOA', embeds:[{title:status==='approved'?'✅ LOA approved':'❌ LOA denied', color:status==='approved'?0x37c9a3:0xb31f2c, fields:[{name:'Member',value:trunc(r.name,256)||'—',inline:true},{name:'Dates',value:(r.start||'?')+' → '+(r.end||'?'),inline:true}], timestamp:r.review.at}]});
+  if(cmdView==='overview' && $('#view')) renderCommand(); else renderClock();
+}
+
+/* ============================ MEMBER PROFILE ============================ */
+function findMember(name){ const nm=(name||'').toLowerCase(); let found=null;
+  divs().forEach(d=>d.members.forEach(m=>{ if((m.nm||'').toLowerCase()===nm) found={...m, div:d.name, key:d.key, rate:rateFor(m,d.key)}; })); return found; }
+function openProfile(name){
+  if(!name) return; const m=findMember(name);
+  const mgr=canEditPayroll();
+  const st=(typeof discStanding==='function')?discStanding(name):{label:'—',cls:'good'};
+  const d=(typeof discFor==='function')?discFor(name):{recs:[],warnings:0,strikes:0};
+  const wkMin=(typeof minsForNameInRange==='function' && CLOCK)? (()=>{ const [s,e]=weekRange((PAYROLL&&PAYROLL.activeWeek)||''); return minsForNameInRange(name,s,e); })():0;
+  const onDuty=CLOCK && Object.values(CLOCK.open||{}).some(o=>(o.name||'').toLowerCase()===name.toLowerCase());
+  const exams=(SCORES?SCORES.results:[]).filter(r=>(r.name||'').toLowerCase()===name.toLowerCase()).slice(0,6);
+  const loaRec=(LOA?LOA.requests:[]).filter(r=>(r.name||'').toLowerCase()===name.toLowerCase()).sort((a,b)=>b.at.localeCompare(a.at))[0];
+  const stcls = m? (m.st==='active'?'active':m.st==='loa'?'loa':'vac') : 'vac';
+  const stlabel = m? (m.st==='active'?'Active':m.st==='loa'?'LOA':'Vacant') : 'Not on roster';
+  $('#drawer').innerHTML=`
+    <div class="dr-head">
+      <div class="dr-av">${esc(initials(name))}</div>
+      <div class="dr-id"><h3>${esc(name)}</h3><div class="sub">${m?`${esc(m.cs||'—')} · ${esc(m.role||'')}`:'Not on the roster'}</div></div>
+      <button class="dr-x" id="drX">✕</button>
+    </div>
+    <div class="dr-body">
+      <div class="dr-badges">
+        <span class="badge ${stcls}"><span class="d"></span>${stlabel}</span>
+        ${onDuty?'<span class="app-badge approved"><span class="d"></span>On duty</span>':''}
+        <span class="app-badge ${st.cls}"><span class="d"></span>${esc(st.label)}</span>
+      </div>
+      <div class="dr-stats">
+        <div class="ds"><div class="k">Division</div><div class="v">${m?esc(m.div.split(/[—&]/)[0].trim()):'—'}</div></div>
+        <div class="ds"><div class="k">Hours this week</div><div class="v">${fmtHM(wkMin)}</div></div>
+        <div class="ds"><div class="k">Hired</div><div class="v">${m&&m.hire?esc(m.hire):'—'}</div></div>
+        <div class="ds"><div class="k">Rate</div><div class="v">${m?'$'+(m.rate/1000)+'k':'—'}</div></div>
+      </div>
+      ${(m&&m.st==='loa'&&m.loa)?`<div class="dr-loa">🌙 On leave: ${esc(m.loa)}</div>`:''}
+      ${(()=>{ if(!m||!PAYROLL||!curWeek()) return ''; const e=curWeek().entries[m.cs]||{}; const pp=payParts({cs:m.cs,rate:m.rate}); if(pp.pay<=0 && !e.paid) return ''; return `<div class="dr-loa" style="border-color:${e.paid?'rgba(55,201,163,.4)':'rgba(242,177,52,.35)'};color:${e.paid?'#8fe3cd':'#e8c98a'}">🧾 ${esc(curWeek().label||weekLabel(PAYROLL.activeWeek))}: ${money(pp.pay)} — ${e.paid?('Paid '+timeAgo(e.paid)+(e.paidBy?' by '+esc(e.paidBy):'')):'Pending payout'}</div>`; })()}
+      ${loaRec&&loaRec.status==='pending'?`<div class="dr-loa" style="border-color:rgba(88,101,242,.4);color:#c3c9f7">LOA requested (${esc(loaRec.start)} → ${esc(loaRec.end)}) — pending</div>`:''}
+
+      <div class="dr-sec">Exams</div>
+      ${exams.length? `<div class="dr-list">${exams.map(r=>`<div class="dr-row"><span>${esc(r.examTitle||r.exam)}</span><span class="mono ${r.passed?'ok':'no'}">${r.pct}% ${r.passed?'PASS':'FAIL'}</span></div>`).join('')}</div>` : '<div class="dr-empty">No exam attempts recorded.</div>'}
+
+      <div class="dr-sec">Discipline ${d.warnings||d.strikes?`<span class="mono" style="color:var(--muted)">${d.warnings}W · ${d.strikes}S active</span>`:''}</div>
+      ${d.recs.length? `<div class="dr-list">${d.recs.slice(0,5).map(r=>`<div class="dr-row"><span><b class="mono" style="color:${r.type==='warning'?'var(--amber)':r.type==='note'?'var(--muted)':'var(--red)'}">${esc(r.type)}</b> ${esc(r.reason||'')}</span><span class="mono" style="color:var(--faint)">${timeAgo(r.at)}</span></div>`).join('')}</div>` : '<div class="dr-empty">Clean record.</div>'}
+
+      ${mgr?`<div class="dr-actions">
+        <button class="tbtn" id="drDisc">⚠ Log discipline</button>
+        ${m?`<button class="tbtn" id="drLoa">🌙 Toggle LOA</button>`:''}
+        ${m?`<button class="tbtn" id="drPay">$ Payroll</button>`:''}
+      </div>`:''}
+    </div>`;
+  $('#drawer').classList.add('open'); $('#drawerScrim').classList.add('on');
+  const close=()=>{ $('#drawer').classList.remove('open'); $('#drawerScrim').classList.remove('on'); };
+  $('#drX').onclick=close; $('#drawerScrim').onclick=close;
+  if(mgr){
+    const dd=$('#drDisc'); if(dd) dd.onclick=()=>{ close(); discSel=name; cmdView='discipline'; setView('command'); };
+    const dl=$('#drLoa'); if(dl) dl.onclick=()=>{ if(!ROSTER) loadRoster(); divs().forEach(x=>x.members.forEach(mm=>{ if((mm.nm||'').toLowerCase()===name.toLowerCase()){ mm.st = mm.st==='loa'?'active':'loa'; if(mm.st==='active') delete mm.loa; } })); saveRoster(false); openProfile(name); if($('#rosterBody')) paintRoster(); };
+    const dp=$('#drPay'); if(dp) dp.onclick=()=>{ close(); setView('payroll'); };
+  }
+}
+
+/* ============================ FULL BACKUP / RESTORE ============================ */
+const BACKUP_KEYS=['ems_roster','ems_payroll','ems_apps','ems_exams','ems_clock','ems_discipline','ems_ann','ems_loa'];
+function backupAll(){ const bundle={_type:'empire-ems-backup', _at:new Date().toISOString(), data:{}};
+  BACKUP_KEYS.forEach(k=>{ const v=pstore.get(k); if(v!=null) bundle.data[k]=v; });
+  dl(new Blob([JSON.stringify(bundle,null,2)],{type:'application/json'}), `empire-ems-FULL-backup-${new Date().toISOString().slice(0,10)}.json`); }
+function restoreAll(ev){ const f=ev.target.files[0]; if(!f) return; const r=new FileReader();
+  r.onload=()=>{ try{ const b=JSON.parse(r.result); if(!b||b._type!=='empire-ems-backup'||!b.data) throw 0;
+      if(!confirm('Restore EVERYTHING from this backup? It replaces all portal data in this browser. A safety backup downloads first.')){ ev.target.value=''; return; }
+      backupAll();
+      Object.keys(b.data).forEach(k=>{ if(BACKUP_KEYS.includes(k)) pstore.set(k, b.data[k]); });
+      ROSTER=PAYROLL=APPS=SCORES=CLOCK=DISC=ANN=LOA=null;
+      loadRoster(); loadPayroll(); loadApps(); loadScores(); loadClock(); loadDisc(); loadAnn(); loadLoa();
+      updateRosterCount(); updatePayrollTag(); updateAppsTag(); updateExamsTag(); updateClockTag(); updateCmdTag();
+      alert('Restore complete.'); setView('command');
+    }catch(e){ alert('That isn\'t a valid Empire EMS full backup file.'); } ev.target.value=''; };
+  r.readAsText(f); }
 
 /* ============================ SOP DATA ============================ */
 const SOPS = [
@@ -1684,10 +2177,28 @@ const PARA_QUESTIONS = [
  {cat:"Operations",q:"With NO surgery-capable rank (Nurse or higher) on duty, a Code Blue is…",a:["Left until one logs on","Treated in the field: diagnose, bring all regions to 100%, then CPR","Ignored","Only transported, never treated"],correct:1,why:"Per SOP, with no surgery-capable rank on duty you treat in the field — diagnose, all regions to 100%, then CPR."},
  {cat:"Operations",q:"The correct callsign prefix for a Paramedic is…",a:["E-#","P-#","I-#","A-#"],correct:1,why:"Paramedic = P-#."},
 ];
+const FTO_QUESTIONS = [
+ {cat:"FTO Role",q:"The core job of a Field Training Officer is to…",a:["Run every call themselves so it's done right","Train, evaluate, and sign off new members to the department standard","Outrank paramedics on scene","Handle payroll for trainees"],correct:1,why:"An FTO develops trainees and certifies they meet the standard — not to do the work for them."},
+ {cat:"FTO Role",q:"When certifying a trainee, an FTO is really vouching that…",a:["The trainee is their friend","The trainee can safely and independently do the job to standard","The trainee showed up once","The trainee has the most hours"],correct:1,why:"Your sign-off is your name on their competence — only pass someone ready to run solo safely."},
+ {cat:"Training Method",q:"The most effective order for teaching a new skill is…",a:["Release them solo, then explain later","Explain/demonstrate, supervise them doing it, then release when consistent","Have them watch videos only","Let them figure it out unassisted"],correct:1,why:"Demonstrate → supervise → release: model it, let them practice under your eye, then step back once they're consistent."},
+ {cat:"Training Method",q:"During a live call with your trainee, you should generally…",a:["Take over the moment they hesitate","Let them lead and coach after, stepping in only for safety or patient risk","Stay silent no matter what happens","Grade them without ever intervening"],correct:1,why:"Let them run it so they learn; intervene for genuine safety or patient-harm risk, then debrief afterward."},
+ {cat:"Feedback",q:"The best feedback for a trainee is…",a:["Vague and delivered a week later","Specific, timely, and balanced — what went well and exactly what to fix","Only negative, so they toughen up","Public shaming on the radio"],correct:1,why:"Good feedback is specific and prompt, names concrete behaviors, and pairs strengths with clear fixes."},
+ {cat:"Feedback",q:"A trainee makes the same mistake for the third time. You should…",a:["Ignore it and sign them off anyway","Remediate: identify the gap, re-teach it, and document the issue","Immediately terminate them","Never let them touch a patient again"],correct:1,why:"Repeated errors call for structured remediation and documentation — re-teach the gap, don't just paper over it."},
+ {cat:"Evaluation",q:"A trainee is well-liked but still can't run a scene safely. You should…",a:["Sign them off — they're popular","Hold the standard: do not certify until they're competent","Let another FTO deal with it","Pass them with a warning"],correct:1,why:"Certification is about competence, not popularity. Never sign off an unsafe trainee."},
+ {cat:"Evaluation",q:"To be fair, an FTO must evaluate every trainee…",a:["By how much they like them","Against the same consistent standard","More harshly if they're new to RP","Based on their callsign number"],correct:1,why:"Consistency is fairness — the same standard applies to everyone regardless of who they are."},
+ {cat:"SOP Mastery",q:"An FTO teaching the strike system must know: two active warnings equal…",a:["Nothing","One strike","Immediate termination","A demotion"],correct:1,why:"Per SOP, two active warnings convert to one strike; three active strikes flags termination. You can't teach what you don't know."},
+ {cat:"SOP Mastery",q:"Which callsign prefixes are correct for Intern, EMT, and Paramedic?",a:["I-#, E-#, P-#","T-#, M-#, D-#","N-#, A-#, C-#","P-#, I-#, E-#"],correct:0,why:"Intern = I-#, EMT = E-#, Paramedic = P-#. FTOs assign and teach the structure."},
+ {cat:"SOP Mastery",q:"With no surgery-capable rank on duty, how should you teach a trainee to handle a Code Blue?",a:["Leave the patient until one logs on","Treat in the field: diagnose, all regions to 100%, then CPR","Only transport, never treat","Call it and move on"],correct:1,why:"Per SOP, with no surgery-capable rank on duty you treat in the field — diagnose, bring all regions to 100%, then CPR."},
+ {cat:"Professionalism",q:"The fastest way an FTO sets the standard is by…",a:["Telling trainees to do as they say, not as they do","Leading by example — modeling the conduct and SOPs they teach","Being the loudest on the radio","Skipping their own clip/bodycam requirement"],correct:1,why:"Trainees copy what you do. An FTO who cuts corners trains members who cut corners."},
+ {cat:"Professionalism",q:"A trainee tells you another member is breaking a serious SOP. You should…",a:["Ignore it to avoid drama","Look into it and escalate to command as appropriate","Confront them publicly on scene","Tell the trainee to keep quiet"],correct:1,why:"Take it seriously and route it through the chain of command; don't bury it or blow it up on scene."},
+ {cat:"Scene Leadership",q:"While supervising a trainee on a chaotic multi-patient scene, your first move is…",a:["Grab one patient and tunnel in","Establish command and triage, then guide the trainee through it","Send the trainee home","Wait for the trainee to sort it out alone"],correct:1,why:"Model scene command and triage first, then coach the trainee through the structured response."},
+ {cat:"Scene Leadership",q:"A trainee freezes on a call. The right response is to…",a:["Yell at them in front of the patient","Calmly step in, stabilize the situation, and debrief privately afterward","Fail them on the spot with no explanation","Post about it in the group chat"],correct:1,why:"Protect the patient and the trainee's dignity: step in calmly, then coach privately once it's over."},
+];
 const EXAMS = [
   { id:"intern", tag:"Certification", title:"Intern SOP Exam", desc:"Every incoming Pillbox intern clears this before running solos. Drawn straight from the SOPs.", pass:90, questions:INTERN_QUESTIONS, locked:false },
   { id:"emt",    tag:"Advancement", title:"EMT Exam", desc:"Field operations and patient care — scene safety, CPR/AED, bleeding control, and assessment for the jump from Intern to EMT.", pass:90, questions:EMT_QUESTIONS, locked:false },
   { id:"para",   tag:"Advancement", title:"Paramedic Exam", desc:"Advanced care, ALS pharmacology, cardiac rhythms, and Code Blue scene command.", pass:90, questions:PARA_QUESTIONS, locked:false },
+  { id:"fto",    tag:"Instructor", title:"FTO Certification Exam", desc:"Field Training Officer cert — how to train, evaluate, and sign off new members, plus the SOP mastery an FTO needs to teach the standard.", pass:90, questions:FTO_QUESTIONS, locked:false },
 ];
 
 /* ============================ HELPERS ============================ */
@@ -1767,12 +2278,18 @@ function enterApp(){
   loadScores();
   loadClock();
   loadRoster();
+  loadDisc();
+  loadAnn();
+  loadLoa();
+  autoEnroll();
   updatePayrollTag();
   updateAppsTag();
   updateExamsTag();
   updateClockTag();
   updateRosterCount();
-  appsView='auto';
+  updateCmdTag();
+  const ct=$('#cmdTabBtn'); if(ct) ct.style.display = canEditPayroll()? '' : 'none';
+  appsView='auto'; cmdView='overview';
   paintWho();
   setView('dash');
 }
@@ -1785,12 +2302,14 @@ function paintWho(){
 }
 
 /* ============================ ROUTER ============================ */
-const TITLES = {dash:'Dashboard', roster:'Roster', clock:'Time Clock', payroll:'Weekly Payroll', apps:'EMS Applications', sops:'Standard Operating Procedures', exams:'Exams'};
+const TITLES = {dash:'Dashboard', command:'Command Center', roster:'Roster', clock:'Time Clock', payroll:'Weekly Payroll', apps:'EMS Applications', sops:'Standard Operating Procedures', exams:'Exams'};
 function setView(v){
+  if(v==='command' && !canEditPayroll()) v='dash';
   $$('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
   $('#viewTitle').textContent = TITLES[v]||'';
   closeSide();
   if(v==='dash') renderDash();
+  else if(v==='command'){ cmdView='overview'; renderCommand(); }
   else if(v==='roster') renderRoster();
   else if(v==='clock') renderClock();
   else if(v==='payroll') renderPayroll();
@@ -1812,6 +2331,8 @@ function renderDash(){
   const grossNow = (PAYROLL && curWeek()) ? payablePeople().reduce((a,p)=>a+payFor(p),0) : 0;
   const mgr = canEditPayroll();
   const pend = pendingApps();
+  const pAdj = (typeof pendingAdjustments==='function' && CLOCK) ? pendingAdjustments() : 0;
+  const cmdLink = mgr ? `<button class="qlink" data-go="command">Command center${(pend+pAdj)?` <span style="color:var(--amber)">· ${pend+pAdj} to review</span>`:''}<span class="ar">→</span></button>` : '';
   const onDuty = CLOCK ? onDutyCount() : 0;
   const iAmOn = !!(CLOCK && myOpenShift());
   const clockLink = `<button class="qlink" data-go="clock">${iAmOn?'You\'re on duty — clock out':'Clock in for a shift'}${onDuty?` <span style="color:var(--teal)">· ${onDuty} on duty</span>`:''}<span class="ar">→</span></button>`;
@@ -1819,11 +2340,21 @@ function renderDash(){
     ? `<button class="qlink" data-go="apps">Review applications${pend?` <span style="color:var(--amber)">· ${pend} pending</span>`:''}<span class="ar">→</span></button>`
     : `<button class="qlink" data-go="apps">Apply to Empire EMS<span class="ar">→</span></button>`;
   const first = (USER.name||'').split(/\s|—/)[0];
+  const stub = myStub();
   const byRank = divs().map(d=>({name:d.name.split(/[—&]/)[0].trim(), n:d.members.filter(m=>m.nm).length}));
   const max = Math.max(...byRank.map(r=>r.n),1);
   $('#view').innerHTML = `
     <div class="hello"><span class="hi">On shift,</span> ${esc(first)}.</div>
     <div class="subline">${USER.guest?'Guest access — full read of the roster, SOPs, and exams.':'You\'re signed in as a verified employee.'} Empire RP · Pillbox Medical.</div>
+    ${(ANN&&ANN.posts.length)?`<div class="ann-banner">${ANN.posts.slice(0,3).map(p=>`<div class="ann-row"><span class="ic">📢</span><div class="c"><b>${esc(p.title)}</b><span class="ann-b">${esc(p.body)}</span><span class="ann-m">${esc(p.by)} · ${timeAgo(p.at)}</span></div></div>`).join('')}</div>`:''}
+    ${stub?`<div class="stub-card ${stub.paid?'paid':'pending'}">
+      <div class="stub-l">
+        <div class="k">🧾 My paystub · ${esc(stub.period)}</div>
+        <div class="amt">${money(stub.pp.pay)}</div>
+        <div class="brk">${esc(stub.p.cs)} · ${round2(stub.pp.h)}h${stub.pp.ot>0?` · <span style="color:var(--amber)">${round2(stub.pp.ot)}h OT</span>`:''}${stub.pp.b>0?` · ${money(stub.pp.b)} bonus`:''} · $${stub.p.rate/1000}k/hr</div>
+      </div>
+      <div class="stub-r">${stub.paid?`<span class="paid-pill on">✓ Paid</span><span class="stub-when">Paid ${timeAgo(stub.paid)}${stub.paidBy?' · '+esc(stub.paidBy):''}</span>`:`<span class="paid-pill">Pending payout</span><span class="stub-when">Awaiting management</span>`}</div>
+    </div>`:''}
     <div class="stat-grid">
       <div class="stat accent"><div class="k">Active on roster</div><div class="v">${s.active}</div></div>
       <div class="stat"><div class="k">On duty now</div><div class="v"${onDuty?' style="color:var(--teal)"':''}>${onDuty}</div></div>
@@ -1835,6 +2366,7 @@ function renderDash(){
       <div class="block">
         <h3>Jump in</h3>
         <div class="inner"><div class="quick">
+          ${cmdLink}
           ${clockLink}
           <button class="qlink" data-go="roster">View the roster<span class="ar">→</span></button>
           ${appsLink}
@@ -1890,11 +2422,12 @@ function paintRoster(){
       const stlabel = m.st==='active'?'Active':m.st==='loa'?'LOA':'Vacant';
       const nm = m.nm ? `<span class="nm">${esc(m.nm)}</span>` : `<span class="nm vac">Vacant</span>`;
       const hire = m.loa ? `LOA ${esc(m.loa)}` : (m.hire?`Hired ${esc(m.hire)}`:'—');
-      html += `<div class="rrow"><span class="cs">${esc(m.cs)}</span>${nm}<span class="hire">${hire}</span><span class="st"><span class="badge ${stcls}"><span class="d"></span>${stlabel}</span></span></div>`;
+      html += `<div class="rrow${m.nm?' clickable':''}"${m.nm?` data-profile="${esc(m.nm)}"`:''}><span class="cs">${esc(m.cs)}</span>${nm}<span class="hire">${hire}</span><span class="st"><span class="badge ${stcls}"><span class="d"></span>${stlabel}</span></span></div>`;
     });
     html += `</div>`;
   });
   $('#rosterBody').innerHTML = any ? html : `<div class="empty">No personnel match “${esc(rosterSearch)}”.</div>`;
+  $$('#rosterBody .rrow.clickable').forEach(r=>r.onclick=()=>openProfile(r.dataset.profile));
 }
 
 /* ---- Roster editor (management) ---- */
@@ -2072,6 +2605,32 @@ function renderReview(){
 function openSide(){$('#side').classList.add('open');$('#scrim').classList.add('on');}
 function closeSide(){$('#side').classList.remove('open');$('#scrim').classList.remove('on');}
 
+/* ============================ COMMAND PALETTE ============================ */
+let cmdkSel=0, cmdkResults=[];
+function paletteItems(){
+  const items=[];
+  const tabs=[['dash','Dashboard','◧',false],['command','Command Center','★',true],['roster','Roster','☰',false],['clock','Time Clock','◷',false],['payroll','Payroll','$',false],['apps','Applications','✚',false],['sops','SOPs','§',false],['exams','Exams','✎',false]];
+  tabs.forEach(([v,l,ic,mgr])=>{ if(mgr && !canEditPayroll()) return; items.push({ic, label:l, kind:'Go to', act:()=>setView(v)}); });
+  const seen={}; divs().forEach(d=>d.members.forEach(m=>{ if(m.nm && !seen[m.nm.toLowerCase()]){ seen[m.nm.toLowerCase()]=1; items.push({ic:'○', label:m.nm, sub:m.cs, kind:'Member', act:()=>openProfile(m.nm)}); } }));
+  const on=CLOCK&&myOpenShift();
+  items.push({ic:'◷', label: on?'Clock out':'Clock in', kind:'Action', act:()=> on?clockOut():clockIn()});
+  if(canEditPayroll()){ items.push({ic:'⤓', label:'Back up everything', kind:'Action', act:()=>backupAll()}); items.push({ic:'★', label:'Discipline & strikes', kind:'Action', act:()=>{ cmdView='discipline'; setView('command'); }}); }
+  return items;
+}
+function openPalette(){ if(!$('#app').classList.contains('on')) return; $('#cmdk').classList.add('on'); const i=$('#cmdkInput'); i.value=''; cmdkSel=0; renderPalette(''); setTimeout(()=>i.focus(),20); }
+function closePalette(){ $('#cmdk').classList.remove('on'); }
+function renderPalette(q){
+  q=(q||'').toLowerCase().trim();
+  cmdkResults=paletteItems().filter(it=> !q || it.label.toLowerCase().includes(q) || (it.sub||'').toLowerCase().includes(q) || it.kind.toLowerCase().includes(q)).slice(0,14);
+  if(cmdkSel>=cmdkResults.length) cmdkSel=0;
+  $('#cmdkList').innerHTML = cmdkResults.length
+    ? cmdkResults.map((it,i)=>`<div class="cmdk-item ${i===cmdkSel?'sel':''}" data-i="${i}"><span class="ci">${it.ic}</span><span class="cl">${esc(it.label)}${it.sub?` <span class="cs2">${esc(it.sub)}</span>`:''}</span><span class="ck">${it.kind}</span></div>`).join('')
+    : '<div class="cmdk-empty">No matches.</div>';
+  $$('#cmdkList .cmdk-item').forEach(el=>{ el.onmouseenter=()=>{ cmdkSel=+el.dataset.i; highlightPalette(); }; el.onclick=()=>activatePalette(); });
+}
+function highlightPalette(){ $$('#cmdkList .cmdk-item').forEach((el,i)=>{ el.classList.toggle('sel', i===cmdkSel); if(i===cmdkSel) el.scrollIntoView({block:'nearest'}); }); }
+function activatePalette(){ const it=cmdkResults[cmdkSel]; if(it){ closePalette(); it.act(); } }
+
 /* ============================ WIRE UP ============================ */
 $('#discordBtn').onclick=startDiscord;
 $('#guestBtn').onclick=()=>{ const n=$('#guestName').value.trim()||'Guest'; USER={name:n,role:'Guest',guest:true}; saveSession(); enterApp(); };
@@ -2079,6 +2638,17 @@ $('#guestName').addEventListener('keydown',e=>{if(e.key==='Enter')$('#guestBtn')
 $('#logoutBtn').onclick=logout;
 $('#menuBtn').onclick=openSide;
 $('#scrim').onclick=closeSide;
+$('#kbtn').onclick=openPalette;
+$('#cmdkInput').addEventListener('input',e=>{ cmdkSel=0; renderPalette(e.target.value); });
+$('#cmdk').addEventListener('click',e=>{ if(e.target.id==='cmdk') closePalette(); });
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey) && (e.key==='k'||e.key==='K')){ e.preventDefault(); openPalette(); return; }
+  if(!$('#cmdk').classList.contains('on')) return;
+  if(e.key==='Escape'){ closePalette(); }
+  else if(e.key==='ArrowDown'){ e.preventDefault(); cmdkSel=Math.min(cmdkSel+1,cmdkResults.length-1); highlightPalette(); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); cmdkSel=Math.max(cmdkSel-1,0); highlightPalette(); }
+  else if(e.key==='Enter'){ e.preventDefault(); activatePalette(); }
+});
 $$('#tabs .tab').forEach(t=>t.onclick=()=>setView(t.dataset.view));
 
 /* ============================ INIT ============================ */
