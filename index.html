@@ -591,6 +591,10 @@
   .stub-r .paid-pill{font-size:11px;padding:5px 12px}
   .stub-r .stub-when{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--faint)}
 
+  .bg-snap{margin-top:12px;border:1px solid var(--line);border-radius:9px;padding:10px 13px;font-size:12.5px;font-family:'JetBrains Mono',monospace;line-height:1.5}
+  .bg-snap.yes{border-color:rgba(55,201,163,.35);background:rgba(55,201,163,.06);color:#a7e6d4}
+  .bg-snap.no{border-color:var(--line);background:var(--panel);color:var(--muted)}
+
   /* ===================== RESPONSIVE ===================== */
   .menu-btn{display:none}
   @media (max-width:860px){
@@ -678,6 +682,7 @@
       <button class="tab" data-view="clock"><span class="ic">◷</span>Time Clock<span class="cs" id="clockTag"></span></button>
       <button class="tab" data-view="payroll"><span class="ic">$</span>Payroll<span class="cs" id="payrollTag"></span></button>
       <button class="tab" data-view="apps"><span class="ic">✚</span>Applications<span class="cs" id="appsTag"></span></button>
+      <button class="tab" data-view="bgcheck" id="bgTabBtn" style="display:none"><span class="ic">⚖</span>Background Checks<span class="cs" id="bgTag"></span></button>
       <button class="tab" data-view="sops"><span class="ic">§</span>SOPs</button>
       <button class="tab" data-view="exams"><span class="ic">✎</span>Exams<span class="cs" id="examsTag"></span></button>
     </nav>
@@ -746,6 +751,18 @@
 const MANAGERS = {
   managerIds:   [],
   managerNames: [],
+};
+
+/* =====================================================================
+   POLICE (PD) ACCESS — Discord IDs/usernames of PD personnel allowed to
+   submit EMS employment background-check requests. PD sign in with Discord
+   and get ONLY the Background Checks tab (they can't see the roster,
+   payroll, or anything else). Only EMS management sees and answers the
+   requests. Leave empty and no one has PD access.
+   ===================================================================== */
+const PD = {
+  pdIds:   [],
+  pdNames: [],
 };
 
 /* =====================================================================
@@ -920,7 +937,7 @@ function isListedManager(){ if(!USER||USER.guest) return false; const ids=(MANAG
 /* Auto-add a Discord member to the roster (and therefore the paysheet) on sign-in. */
 function autoEnroll(){
   if(!AUTO_ENROLL || !USER || USER.guest) return;
-  if(isListedManager()) return;               // command staff place themselves
+  if(isListedManager() || isPD()) return;     // command staff and PD aren't auto-enrolled as EMS
   if(!ROSTER) loadRoster();
   const nm=(USER.name||'').toLowerCase(), did=USER.id||'';
   const match = m => (did && m.did===did) || (m.nm||'').toLowerCase()===nm;
@@ -1003,9 +1020,10 @@ function canEditPayroll(){
   if(!USER || USER.guest) return false;
   const ids=(MANAGERS.managerIds||[]).map(String);
   const names=(MANAGERS.managerNames||[]).map(s=>String(s).toLowerCase());
+  const listed = (USER.id && ids.includes(String(USER.id))) || names.includes((USER.name||'').toLowerCase());
+  if(isPD() && !listed) return false;                 // PD are never management (even in open mode)
   if(ids.length===0 && names.length===0) return true; // open until configured
-  if(USER.id && ids.includes(String(USER.id))) return true;
-  return names.includes((USER.name||'').toLowerCase());
+  return listed;
 }
 function managersConfigured(){ return (MANAGERS.managerIds||[]).length>0 || (MANAGERS.managerNames||[]).length>0; }
 
@@ -1783,7 +1801,7 @@ function discPayload(r){ const color={warning:0xf2b134,strike:0xe63946,demotion:
 /* ============================ COMMAND CENTER (management) ============================ */
 let cmdView='overview';
 function updateCmdTag(){ const el=$('#cmdTag'); if(!el) return; if(!canEditPayroll()){ el.textContent=''; return; }
-  const n=pendingApps()+pendingAdjustments()+pendingLoa(); el.textContent=n?String(n):''; }
+  const n=pendingApps()+pendingAdjustments()+pendingLoa()+(typeof pendingBg==='function'?pendingBg():0); el.textContent=n?String(n):''; }
 function atRiskMembers(){ if(!DISC) loadDisc(); const seen={}, out=[]; divs().forEach(d=>d.members.forEach(m=>{ if(!m.nm||seen[m.nm.toLowerCase()])return; seen[m.nm.toLowerCase()]=1; const s=discFor(m.nm); if(s.strikes>0||s.terminated) out.push(m.nm); })); return out; }
 function activityFeed(limit){
   const ev=[];
@@ -1806,6 +1824,8 @@ function renderCommand(){
   if(pApps) items.push({go:'apps', n:pApps, cls:'blurple', t:`${pApps} application${pApps>1?'s':''} awaiting review`, s:'Approve or deny in Applications'});
   if(pAdj) items.push({go:'clock', n:pAdj, cls:'amber', t:`${pAdj} time adjustment${pAdj>1?'s':''} pending`, s:'Review on the Time Clock board'});
   if(pLoa) items.push({go:'command-loa', n:pLoa, cls:'blurple', t:`${pLoa} leave request${pLoa>1?'s':''} pending`, s:'Approve below'});
+  const pBg=(typeof pendingBg==='function')?pendingBg():0;
+  if(pBg) items.push({go:'bgcheck', n:pBg, cls:'blurple', t:`${pBg} PD background check${pBg>1?'s':''} to answer`, s:'Open Background Checks'});
   if(risk.length) items.push({go:'command-disc', n:risk.length, cls:'red', t:`${risk.length} member${risk.length>1?'s':''} with active strikes`, s:'Review in Discipline'});
   const loaPend=LOA.requests.filter(r=>r.status==='pending');
   $('#view').innerHTML=`
@@ -1988,7 +2008,7 @@ function openProfile(name){
 }
 
 /* ============================ FULL BACKUP / RESTORE ============================ */
-const BACKUP_KEYS=['ems_roster','ems_payroll','ems_apps','ems_exams','ems_clock','ems_discipline','ems_ann','ems_loa','ems_money'];
+const BACKUP_KEYS=['ems_roster','ems_payroll','ems_apps','ems_exams','ems_clock','ems_discipline','ems_ann','ems_loa','ems_money','ems_bgchecks'];
 function backupAll(){ const bundle={_type:'empire-ems-backup', _at:new Date().toISOString(), data:{}};
   BACKUP_KEYS.forEach(k=>{ const v=pstore.get(k); if(v!=null) bundle.data[k]=v; });
   dl(new Blob([JSON.stringify(bundle,null,2)],{type:'application/json'}), `empire-ems-FULL-backup-${new Date().toISOString().slice(0,10)}.json`); }
@@ -1997,8 +2017,8 @@ function restoreAll(ev){ const f=ev.target.files[0]; if(!f) return; const r=new 
       if(!confirm('Restore EVERYTHING from this backup? It replaces all portal data in this browser. A safety backup downloads first.')){ ev.target.value=''; return; }
       backupAll();
       Object.keys(b.data).forEach(k=>{ if(BACKUP_KEYS.includes(k)) pstore.set(k, b.data[k]); });
-      ROSTER=PAYROLL=APPS=SCORES=CLOCK=DISC=ANN=LOA=MONEY=null;
-      loadRoster(); loadPayroll(); loadApps(); loadScores(); loadClock(); loadDisc(); loadAnn(); loadLoa(); loadMoney();
+      ROSTER=PAYROLL=APPS=SCORES=CLOCK=DISC=ANN=LOA=MONEY=BG=null;
+      loadRoster(); loadPayroll(); loadApps(); loadScores(); loadClock(); loadDisc(); loadAnn(); loadLoa(); loadMoney(); loadBg();
       updateRosterCount(); updatePayrollTag(); updateAppsTag(); updateExamsTag(); updateClockTag(); updateCmdTag();
       alert('Restore complete.'); setView('command');
     }catch(e){ alert('That isn\'t a valid Empire EMS full backup file.'); } ev.target.value=''; };
@@ -2081,6 +2101,111 @@ function exportMoneyCsv(){ const rows=[['Date','Type','Recipient','Callsign','Am
   MONEY.log.forEach(e=>rows.push([e.at,e.type,e.name,e.cs,e.amount,(e.type==='deposit'?'in':'out'),e.note,e.by,e.period||'']));
   const csv=rows.map(r=>r.map(c=>{const s=String(c==null?'':c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
   dl(new Blob([csv],{type:'text/csv'}),'empire-ems-money-log.csv'); }
+
+/* ============================ EMS EMPLOYMENT BACKGROUND CHECKS ============================
+   PD submit requests to verify someone's EMS employment; only EMS management
+   sees and answers them. Management mediates what's shared back. */
+let BG=null, bgFilter='pending';
+function isPD(){ if(!USER||USER.guest) return false; const ids=(PD.pdIds||[]).map(String); const names=(PD.pdNames||[]).map(s=>String(s).toLowerCase());
+  if(!ids.length && !names.length) return false; return (USER.id && ids.includes(String(USER.id))) || names.includes((USER.name||'').toLowerCase()); }
+function loadBg(){ const raw=pstore.get('ems_bgchecks'); if(raw){ try{ BG=JSON.parse(raw); }catch(e){ BG=null; } } if(!BG||!Array.isArray(BG.requests)) BG={requests:[]}; }
+function saveBg(silent){ try{ pstore.set('ems_bgchecks', JSON.stringify(BG)); }catch(e){} if(!silent) flashSaved(); updateBgTag(); }
+function pendingBg(){ return BG? BG.requests.filter(r=>r.status==='pending').length : 0; }
+function updateBgTag(){ const el=$('#bgTag'); if(!el) return; if(!canEditPayroll()){ el.textContent=''; return; } const n=pendingBg(); el.textContent=n?String(n):''; }
+function myBgRequests(){ if(!BG||!USER) return []; const nm=(USER.name||'').toLowerCase();
+  return BG.requests.filter(r=>(USER.id&&r.byId&&r.byId===USER.id)||(r.by||'').toLowerCase()===nm); }
+function submitBgCheck(subject,reason){ const r={id:uid(), at:new Date().toISOString(), by:(USER&&USER.name)||'PD', byId:(USER&&USER.id)||'', subject, reason, status:'pending'};
+  BG.requests.unshift(r); saveBg(false);
+  if(WEBHOOK.url) postWebhook({username:'Empire EMS · Records', embeds:[{title:'🔎 Employment background check requested', color:0x5865f2,
+    fields:[{name:'Subject',value:trunc(subject,256)||'—',inline:true},{name:'Requested by (PD)',value:trunc(r.by,256)||'—',inline:true},{name:'Reason',value:trunc(reason,1024)||'—'}], timestamp:r.at, footer:{text:'EMS management review required'}}]}); }
+function respondBgCheck(id,outcome){
+  const r=BG.requests.find(x=>x.id===id); if(!r) return;
+  const note=(($('#bgnote-'+id)||{}).value||'').trim();
+  const m=(typeof findMember==='function')?findMember(r.subject):null;
+  const standing=(typeof discStanding==='function')?discStanding(r.subject).label:'';
+  r.status='completed'; r.outcome=outcome;
+  r.response={ by:(USER&&USER.name)||'Management', at:new Date().toISOString(), outcome,
+    employed: outcome==='none'?false:!!m, cs:m?(m.cs||''):'', rank:m?(m.role||''):'', memberStatus:m?(m.st||''):'', standing, note };
+  saveBg(false);
+  if(WEBHOOK.url) postWebhook({username:'Empire EMS · Records', embeds:[{title:'📋 Background check answered', color:outcome==='flagged'?0xe63946:(outcome==='none'?0x888888:0x37c9a3),
+    fields:[{name:'Subject',value:trunc(r.subject,256)||'—',inline:true},{name:'Result',value:({confirmed:'Employed ✅',none:'No EMS record',flagged:'Flagged ⚠️'})[outcome]||outcome,inline:true},{name:'For PD',value:trunc(r.by,256)||'—',inline:true}].concat(note?[{name:'Note',value:trunc(note,1024)}]:[]), timestamp:r.response.at}]});
+  renderBgReview();
+}
+function deleteBg(id){ BG.requests=BG.requests.filter(r=>r.id!==id); saveBg(false); }
+
+function renderBg(){
+  if(!BG) loadBg();
+  if(canEditPayroll()) return renderBgReview();
+  if(isPD()) return renderBgPd();
+  setView('dash');
+}
+function bgResultLine(r){ if(!r.response) return '';
+  const o=r.response;
+  if(o.outcome==='none') return '<span class="app-badge" style="color:var(--muted)"><span class="d"></span>No EMS employment record</span>';
+  if(o.outcome==='flagged') return `<span class="app-badge strike"><span class="d"></span>Flagged</span> ${o.employed?`— ${esc(o.rank||'')} ${esc(o.cs||'')}`:''}`;
+  return `<span class="app-badge good"><span class="d"></span>Employed</span> — ${esc(o.rank||'EMS')} ${esc(o.cs||'')}${o.memberStatus?' · '+esc(o.memberStatus):''}${o.standing?' · '+esc(o.standing):''}`;
+}
+function renderBgPd(){
+  const mine=myBgRequests().slice(0,20);
+  $('#view').innerHTML=`
+    <div class="app-wrap">
+      <div class="subline" style="margin-bottom:14px">Request verification of a person's <b style="color:var(--ink)">Empire EMS employment</b>. EMS management reviews every request and responds here.</div>
+      <div class="app-note">You're signed in as PD. You can only submit and view your own requests — the EMS roster and records aren't visible to you.</div>
+      <div class="field"><label for="bgSubject">Person to check</label><input id="bgSubject" placeholder="Full name of the individual" autocomplete="off"></div>
+      <div class="field"><label for="bgReason">Reason for the check</label><textarea id="bgReason" placeholder="e.g. background check for a firearms permit / active investigation ref #"></textarea></div>
+      <div class="field err" id="bgErr" style="display:none;color:#f5a3ab;font-size:12.5px;font-family:'JetBrains Mono',monospace"></div>
+      <button class="btn wide" id="bgSubmit">Submit request ▸</button>
+
+      <div class="div-h" style="margin-top:26px"><span class="t">My requests</span><span class="ct">${mine.length}</span><span class="rule"></span></div>
+      ${mine.length? mine.map(r=>`<div class="app-card ${r.status==='pending'?'pending':(r.outcome==='flagged'?'denied':'approved')}">
+        <div class="ac-head"><span class="ac-name">${esc(r.subject)}</span><span class="app-badge ${r.status==='pending'?'pending':(r.outcome==='flagged'?'strike':r.outcome==='none'?'':'good')}"><span class="d"></span>${r.status==='pending'?'Pending':'Answered'}</span><span class="ac-when">${timeAgo(r.at)}</span></div>
+        <div class="ac-body"><div class="ac-qa"><div class="q">Reason</div><div class="a">${esc(r.reason||'—')}</div>${r.response?`<div class="q">EMS response</div><div class="a">${bgResultLine(r)}${r.response.note?`<br><span style="color:#c8d5e2">“${esc(r.response.note)}”</span>`:''}</div>`:''}</div></div>
+      </div>`).join('') : '<div class="mini-empty">No requests yet.</div>'}
+    </div>`;
+  $('#bgSubmit').onclick=()=>{
+    const subject=$('#bgSubject').value.trim(), reason=$('#bgReason').value.trim();
+    const err=$('#bgErr'); const fail=m=>{ err.style.display='block'; err.textContent=m; };
+    if(!subject) return fail('Enter the person\'s name.');
+    if(!reason) return fail('Add a reason for the check.');
+    submitBgCheck(subject,reason); renderBgPd();
+  };
+}
+function renderBgReview(){
+  const total=BG.requests.length, pend=pendingBg();
+  const filters=[['pending',`Pending · ${pend}`],['completed',`Answered · ${BG.requests.filter(r=>r.status!=='pending').length}`],['all',`All · ${total}`]];
+  const rows=BG.requests.filter(r=>bgFilter==='all'?true:(bgFilter==='pending'?r.status==='pending':r.status!=='pending'));
+  $('#view').innerHTML=`
+    <div class="subline" style="margin-bottom:16px">EMS employment background-check requests from PD. Only management sees these. You control exactly what's shared back.</div>
+    <div class="rev-head"><div class="chips" id="bgChips">${filters.map(([k,l])=>`<button class="chip ${bgFilter===k?'on':''}" data-f="${k}">${l}</button>`).join('')}</div></div>
+    <div id="bgList"></div>`;
+  $$('#bgChips .chip').forEach(c=>c.onclick=()=>{ bgFilter=c.dataset.f; $$('#bgChips .chip').forEach(x=>x.classList.toggle('on',x===c)); renderBgReview(); });
+  const list=$('#bgList');
+  if(!rows.length){ list.innerHTML=`<div class="mini-empty">No ${bgFilter==='all'?'':bgFilter+' '}requests.</div>`; return; }
+  list.innerHTML=rows.map(r=>{
+    const m=(typeof findMember==='function')?findMember(r.subject):null;
+    const snap = m? `Employed — ${esc(m.role||'EMS')} ${esc(m.cs||'')} · ${m.st==='active'?'Active':m.st==='loa'?'On LOA':esc(m.st||'')}${(typeof discStanding==='function')?' · '+esc(discStanding(r.subject).label):''}` : 'No matching EMS employment record found';
+    if(r.status==='pending'){
+      return `<div class="app-card pending">
+        <div class="ac-head"><span class="ac-name">${esc(r.subject)}</span><span class="ac-disc">req by ${esc(r.by)}</span><span class="ac-when">${timeAgo(r.at)}</span></div>
+        <div class="ac-body">
+          <div class="ac-qa"><div class="q">Reason (PD)</div><div class="a">${esc(r.reason||'—')}</div></div>
+          <div class="bg-snap ${m?'yes':'no'}">EMS record: ${snap}</div>
+          <div class="field" style="margin:12px 0 0"><input id="bgnote-${r.id}" placeholder="Optional note to share with PD" autocomplete="off"></div>
+        </div>
+        <div class="ac-actions"><button class="abtn ok" data-bgc="${r.id}">✓ Confirm employed</button><button class="abtn" style="color:var(--muted);border-color:var(--line)" data-bgn="${r.id}">No record</button><button class="abtn no" data-bgf="${r.id}">⚑ Flag</button></div>
+      </div>`;
+    }
+    return `<div class="app-card ${r.outcome==='flagged'?'denied':'approved'}">
+      <div class="ac-head"><span class="ac-name">${esc(r.subject)}</span><span class="ac-disc">req by ${esc(r.by)}</span><span class="ac-when">${r.response?timeAgo(r.response.at):''}</span></div>
+      <div class="ac-body"><div class="ac-qa"><div class="q">Reason (PD)</div><div class="a">${esc(r.reason||'—')}</div><div class="q">Answer</div><div class="a">${bgResultLine(r)}${r.response&&r.response.note?`<br><span style="color:#c8d5e2">“${esc(r.response.note)}”</span>`:''} <span class="mono" style="color:var(--faint)">— ${esc(r.response?r.response.by:'')}</span></div></div></div>
+      <div class="ac-decided"><button class="undo" data-bgd="${r.id}">✕ Delete</button></div>
+    </div>`;
+  }).join('');
+  $$('#bgList [data-bgc]').forEach(b=>b.onclick=()=>respondBgCheck(b.dataset.bgc,'confirmed'));
+  $$('#bgList [data-bgn]').forEach(b=>b.onclick=()=>respondBgCheck(b.dataset.bgn,'none'));
+  $$('#bgList [data-bgf]').forEach(b=>b.onclick=()=>respondBgCheck(b.dataset.bgf,'flagged'));
+  $$('#bgList [data-bgd]').forEach(b=>b.onclick=()=>{ if(confirm('Delete this completed request?')){ deleteBg(b.dataset.bgd); renderBgReview(); } });
+}
 
 /* ============================ SOP DATA ============================ */
 const SOPS = [
@@ -2377,6 +2502,7 @@ function enterApp(){
   loadAnn();
   loadLoa();
   loadMoney();
+  loadBg();
   autoEnroll();
   updatePayrollTag();
   updateAppsTag();
@@ -2384,10 +2510,14 @@ function enterApp(){
   updateClockTag();
   updateRosterCount();
   updateCmdTag();
-  const ct=$('#cmdTabBtn'); if(ct) ct.style.display = canEditPayroll()? '' : 'none';
+  updateBgTag();
+  const mgr=canEditPayroll(), pd=isPD(), pdo=pd&&!mgr;
+  const ct=$('#cmdTabBtn'); if(ct) ct.style.display = mgr? '' : 'none';
+  const bt=$('#bgTabBtn'); if(bt) bt.style.display = (mgr||pd)? '' : 'none';
+  if(pdo){ $$('#tabs .tab').forEach(t=>{ if(t.dataset.view!=='bgcheck') t.style.display='none'; }); }
   appsView='auto'; cmdView='overview';
   paintWho();
-  setView('dash');
+  setView(pdo? 'bgcheck' : 'dash');
 }
 function paintWho(){
   $('#whoName').textContent = USER.name;
@@ -2398,9 +2528,12 @@ function paintWho(){
 }
 
 /* ============================ ROUTER ============================ */
-const TITLES = {dash:'Dashboard', command:'Command Center', roster:'Roster', clock:'Time Clock', payroll:'Weekly Payroll', apps:'EMS Applications', sops:'Standard Operating Procedures', exams:'Exams'};
+const TITLES = {dash:'Dashboard', command:'Command Center', roster:'Roster', clock:'Time Clock', payroll:'Weekly Payroll', apps:'EMS Applications', bgcheck:'Background Checks', sops:'Standard Operating Procedures', exams:'Exams'};
+function pdOnly(){ return isPD() && !canEditPayroll(); }
 function setView(v){
+  if(pdOnly() && v!=='bgcheck') v='bgcheck';
   if(v==='command' && !canEditPayroll()) v='dash';
+  if(v==='bgcheck' && !(canEditPayroll()||isPD())) v='dash';
   $$('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
   $('#viewTitle').textContent = TITLES[v]||'';
   closeSide();
@@ -2410,6 +2543,7 @@ function setView(v){
   else if(v==='clock') renderClock();
   else if(v==='payroll') renderPayroll();
   else if(v==='apps') renderApps();
+  else if(v==='bgcheck') renderBg();
   else if(v==='sops') renderSops();
   else if(v==='exams') renderExamsHome();
   const vw=$('#view'); if(vw){ vw.classList.remove('fade'); void vw.offsetWidth; vw.classList.add('fade'); }
@@ -2705,8 +2839,9 @@ function closeSide(){$('#side').classList.remove('open');$('#scrim').classList.r
 let cmdkSel=0, cmdkResults=[];
 function paletteItems(){
   const items=[];
-  const tabs=[['dash','Dashboard','◧',false],['command','Command Center','★',true],['roster','Roster','☰',false],['clock','Time Clock','◷',false],['payroll','Payroll','$',false],['apps','Applications','✚',false],['sops','SOPs','§',false],['exams','Exams','✎',false]];
-  tabs.forEach(([v,l,ic,mgr])=>{ if(mgr && !canEditPayroll()) return; items.push({ic, label:l, kind:'Go to', act:()=>setView(v)}); });
+  if(pdOnly()){ items.push({ic:'⚖', label:'Background Checks', kind:'Go to', act:()=>setView('bgcheck')}); return items; }
+  const tabs=[['dash','Dashboard','◧',false],['command','Command Center','★',true],['roster','Roster','☰',false],['clock','Time Clock','◷',false],['payroll','Payroll','$',false],['apps','Applications','✚',false],['bgcheck','Background Checks','⚖','bgc'],['sops','SOPs','§',false],['exams','Exams','✎',false]];
+  tabs.forEach(([v,l,ic,gate])=>{ if(gate===true && !canEditPayroll()) return; if(gate==='bgc' && !(canEditPayroll()||isPD())) return; items.push({ic, label:l, kind:'Go to', act:()=>setView(v)}); });
   const seen={}; divs().forEach(d=>d.members.forEach(m=>{ if(m.nm && !seen[m.nm.toLowerCase()]){ seen[m.nm.toLowerCase()]=1; items.push({ic:'○', label:m.nm, sub:m.cs, kind:'Member', act:()=>openProfile(m.nm)}); } }));
   const on=CLOCK&&myOpenShift();
   items.push({ic:'◷', label: on?'Clock out':'Clock in', kind:'Action', act:()=> on?clockOut():clockIn()});
